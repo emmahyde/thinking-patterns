@@ -12,6 +12,11 @@ import {
 // Fixed chalk import for ESM
 import chalk from 'chalk';
 
+// Import enhanced modular components
+import { EnhancedSequentialThinkingServer } from './src/servers/SequentialThinkingServer.js';
+import { ToolRecommendationEngine } from './src/services/ToolRecommendationEngine.js';
+import { SessionManager } from './src/services/SessionManager.js';
+
 // Data Interfaces
 interface ThoughtData {
   thought: string;
@@ -685,10 +690,10 @@ class CollaborativeReasoningServer {
       throw new Error("Invalid input for CollaborativeReasoning: Missing required fields.");
     }
     if (typeof data.iteration !== 'number' || data.iteration < 0) {
-        throw new Error("Invalid iteration value for CollaborativeReasoningData.");
+      throw new Error("Invalid iteration value for CollaborativeReasoningData.");
     }
     if (typeof data.nextContributionNeeded !== 'boolean') {
-        throw new Error("Invalid nextContributionNeeded value for CollaborativeReasoningData.");
+      throw new Error("Invalid nextContributionNeeded value for CollaborativeReasoningData.");
     }
     return data;
   }
@@ -696,12 +701,12 @@ class CollaborativeReasoningServer {
   processCollaborativeReasoning(input: unknown): CollaborativeReasoningData {
     const validatedData = this.validateInputData(input);
     return {
-        ...validatedData,
-        consensusPoints: validatedData.consensusPoints || [],
-        disagreements: validatedData.disagreements || [],
-        keyInsights: validatedData.keyInsights || [],
-        openQuestions: validatedData.openQuestions || [],
-        suggestedContributionTypes: validatedData.suggestedContributionTypes || [],
+      ...validatedData,
+      consensusPoints: validatedData.consensusPoints || [],
+      disagreements: validatedData.disagreements || [],
+      keyInsights: validatedData.keyInsights || [],
+      openQuestions: validatedData.openQuestions || [],
+      suggestedContributionTypes: validatedData.suggestedContributionTypes || [],
     };
   }
 }
@@ -713,10 +718,10 @@ class DecisionFrameworkServer {
       throw new Error("Invalid input for DecisionFramework: Missing required fields.");
     }
     if (typeof data.iteration !== 'number' || data.iteration < 0) {
-        throw new Error("Invalid iteration value for DecisionFrameworkData.");
+      throw new Error("Invalid iteration value for DecisionFrameworkData.");
     }
     if (typeof data.nextStageNeeded !== 'boolean') {
-        throw new Error("Invalid nextStageNeeded value for DecisionFrameworkData.");
+      throw new Error("Invalid nextStageNeeded value for DecisionFrameworkData.");
     }
     return data;
   }
@@ -724,14 +729,14 @@ class DecisionFrameworkServer {
   processDecisionFramework(input: unknown): DecisionFrameworkData {
     const validatedData = this.validateInputData(input);
     return {
-        ...validatedData,
-        criteria: validatedData.criteria || [],
-        stakeholders: validatedData.stakeholders || [],
-        constraints: validatedData.constraints || [],
-        possibleOutcomes: validatedData.possibleOutcomes || [],
-        criteriaEvaluations: validatedData.criteriaEvaluations || [],
-        informationGaps: validatedData.informationGaps || [],
-        sensitivityInsights: validatedData.sensitivityInsights || [],
+      ...validatedData,
+      criteria: validatedData.criteria || [],
+      stakeholders: validatedData.stakeholders || [],
+      constraints: validatedData.constraints || [],
+      possibleOutcomes: validatedData.possibleOutcomes || [],
+      criteriaEvaluations: validatedData.criteriaEvaluations || [],
+      informationGaps: validatedData.informationGaps || [],
+      sensitivityInsights: validatedData.sensitivityInsights || [],
     };
   }
 }
@@ -742,14 +747,14 @@ class MetacognitiveMonitoringServer {
     if (!data.task || !data.stage || !data.monitoringId) {
       throw new Error("Invalid input for MetacognitiveMonitoring: Missing required fields.");
     }
-     if (typeof data.overallConfidence !== 'number' || data.overallConfidence < 0 || data.overallConfidence > 1) {
-        throw new Error("Invalid overallConfidence value for MetacognitiveMonitoringData.");
+    if (typeof data.overallConfidence !== 'number' || data.overallConfidence < 0 || data.overallConfidence > 1) {
+      throw new Error("Invalid overallConfidence value for MetacognitiveMonitoringData.");
     }
     if (typeof data.iteration !== 'number' || data.iteration < 0) {
-        throw new Error("Invalid iteration value for MetacognitiveMonitoringData.");
+      throw new Error("Invalid iteration value for MetacognitiveMonitoringData.");
     }
     if (typeof data.nextAssessmentNeeded !== 'boolean') {
-        throw new Error("Invalid nextAssessmentNeeded value for MetacognitiveMonitoringData.");
+      throw new Error("Invalid nextAssessmentNeeded value for MetacognitiveMonitoringData.");
     }
     return data;
   }
@@ -757,11 +762,11 @@ class MetacognitiveMonitoringServer {
   processMetacognitiveMonitoring(input: unknown): MetacognitiveMonitoringData {
     const validatedData = this.validateInputData(input);
     return {
-        ...validatedData,
-        claims: validatedData.claims || [],
-        reasoningSteps: validatedData.reasoningSteps || [],
-        uncertaintyAreas: validatedData.uncertaintyAreas || [],
-        suggestedAssessments: validatedData.suggestedAssessments || [],
+      ...validatedData,
+      claims: validatedData.claims || [],
+      reasoningSteps: validatedData.reasoningSteps || [],
+      uncertaintyAreas: validatedData.uncertaintyAreas || [],
+      suggestedAssessments: validatedData.suggestedAssessments || [],
     };
   }
 }
@@ -773,10 +778,10 @@ class ScientificMethodServer {
       throw new Error("Invalid input for ScientificMethod: Missing required fields.");
     }
     if (typeof data.iteration !== 'number' || data.iteration < 0) {
-        throw new Error("Invalid iteration value for ScientificInquiryData.");
+      throw new Error("Invalid iteration value for ScientificInquiryData.");
     }
     if (typeof data.nextStageNeeded !== 'boolean') {
-        throw new Error("Invalid nextStageNeeded value for ScientificInquiryData.");
+      throw new Error("Invalid nextStageNeeded value for ScientificInquiryData.");
     }
     return data;
   }
@@ -827,10 +832,10 @@ class StructuredArgumentationServer {
       throw new Error("Invalid input for StructuredArgumentation: Missing required fields.");
     }
     if (typeof data.confidence !== 'number' || data.confidence < 0 || data.confidence > 1) {
-        throw new Error("Invalid confidence value for ArgumentData.");
+      throw new Error("Invalid confidence value for ArgumentData.");
     }
     if (typeof data.nextArgumentNeeded !== 'boolean') {
-        throw new Error("Invalid nextArgumentNeeded value for ArgumentData.");
+      throw new Error("Invalid nextArgumentNeeded value for ArgumentData.");
     }
     return data;
   }
@@ -838,12 +843,12 @@ class StructuredArgumentationServer {
   processStructuredArgumentation(input: unknown): ArgumentData {
     const validatedData = this.validateInputData(input);
     return {
-        ...validatedData,
-        supports: validatedData.supports || [],
-        contradicts: validatedData.contradicts || [],
-        strengths: validatedData.strengths || [],
-        weaknesses: validatedData.weaknesses || [],
-        suggestedNextTypes: validatedData.suggestedNextTypes || [],
+      ...validatedData,
+      supports: validatedData.supports || [],
+      contradicts: validatedData.contradicts || [],
+      strengths: validatedData.strengths || [],
+      weaknesses: validatedData.weaknesses || [],
+      suggestedNextTypes: validatedData.suggestedNextTypes || [],
     };
   }
 }
@@ -855,10 +860,10 @@ class VisualReasoningServer {
       throw new Error("Invalid input for VisualReasoning: Missing required fields.");
     }
     if (typeof data.iteration !== 'number' || data.iteration < 0) {
-        throw new Error("Invalid iteration value for VisualOperationData.");
+      throw new Error("Invalid iteration value for VisualOperationData.");
     }
     if (typeof data.nextOperationNeeded !== 'boolean') {
-        throw new Error("Invalid nextOperationNeeded value for VisualOperationData.");
+      throw new Error("Invalid nextOperationNeeded value for VisualOperationData.");
     }
     return data;
   }
@@ -866,8 +871,8 @@ class VisualReasoningServer {
   processVisualReasoning(input: unknown): VisualOperationData {
     const validatedData = this.validateInputData(input);
     return {
-        ...validatedData,
-        elements: validatedData.elements || [],
+      ...validatedData,
+      elements: validatedData.elements || [],
     };
   }
 }
@@ -953,66 +958,60 @@ Each approach provides a structured method for identifying and resolving issues.
 
 const SEQUENTIAL_THINKING_TOOL: Tool = {
   name: "sequentialthinking",
-  description: `A detailed tool for dynamic and reflective problem-solving through thoughts.
-This tool helps analyze problems through a flexible thinking process that can adapt and evolve.
-Each thought can build on, question, or revise previous insights as understanding deepens.
+  description: `An enhanced tool for dynamic problem-solving with intelligent tool recommendations.
+This tool combines sequential thinking with adaptive tool suggestions to guide your problem-solving workflow.
+Each thought receives intelligent recommendations for which tools to use next, complete with confidence scores and rationale.
 
 When to use this tool:
-- Breaking down complex problems into steps
-- Planning and design with room for revision
-- Analysis that might need course correction
-- Problems where the full scope might not be clear initially
-- Problems that require a multi-step solution
-- Tasks that need to maintain context over multiple steps
-- Situations where irrelevant information needs to be filtered out
+- Breaking down complex problems into guided steps
+- Getting strategic recommendations for tool usage
+- Planning multi-step solutions with tool guidance
+- Receiving confidence-scored suggestions for next actions
+- Analysis that adapts based on current context
+- Problems requiring intelligent workflow orchestration
 
 Key features:
-- You can adjust total_thoughts up or down as you progress
-- You can question or revise previous thoughts
-- You can add more thoughts even after reaching what seemed like the end
-- You can express uncertainty and explore alternative approaches
-- Not every thought needs to build linearly - you can branch or backtrack
-- Generates a solution hypothesis
-- Verifies the hypothesis based on the Chain of Thought steps
-- Repeats the process until satisfied
-- Provides a correct answer
+- Intelligent tool recommendations with confidence scores (0-1)
+- Detailed rationale for each tool suggestion
+- Step-by-step guidance with expected outcomes
+- Adaptive thinking process that evolves based on context
+- Progress tracking with stage-appropriate recommendations
+- Current step analysis with next action conditions
+- Duration estimates and complexity assessment
+- Support for branching and revision workflows
+
+Enhanced capabilities:
+- Automatically generates tool recommendations based on thought content
+- Provides confidence scores and priority rankings for tools
+- Includes detailed rationale explaining why each tool is suggested
+- Tracks step progress and provides stage-appropriate guidance
+- Estimates duration and complexity for each step
+- Maintains context across thinking sessions
 
 Parameters explained:
-- thought: Your current thinking step, which can include:
-* Regular analytical steps
-* Revisions of previous thoughts
-* Questions about previous decisions
-* Realizations about needing more analysis
-* Changes in approach
-* Hypothesis generation
-* Hypothesis verification
-- next_thought_needed: True if you need more thinking, even if at what seemed like the end
-- thought_number: Current number in sequence (can go beyond initial total if needed)
-- total_thoughts: Current estimate of thoughts needed (can be adjusted up/down)
-- is_revision: A boolean indicating if this thought revises previous thinking
-- revises_thought: If is_revision is true, which thought number is being reconsidered
-- branch_from_thought: If branching, which thought number is the branching point
-- branch_id: Identifier for the current branch (if any)
-- needs_more_thoughts: If reaching end but realizing more thoughts needed
+- thought: Your current thinking step content
+- next_thought_needed: Whether another thought step is needed
+- thought_number: Current step number in the sequence
+- total_thoughts: Estimated total steps needed (adjustable)
+- current_step: Enhanced step information with tool recommendations (optional, auto-generated if not provided)
+- previous_steps: Array of completed steps (optional)
+- remaining_steps: Array of planned future steps (optional)
+- is_revision/revises_thought: For revising previous thoughts
+- branch_from_thought/branch_id: For branching workflows
+- needs_more_thoughts: For extending beyond initial estimate
 
-You should:
-1. Start with an initial estimate of needed thoughts, but be ready to adjust
-2. Feel free to question or revise previous thoughts
-3. Don't hesitate to add more thoughts if needed, even at the "end"
-4. Express uncertainty when present
-5. Mark thoughts that revise previous thinking or branch into new paths
-6. Ignore information that is irrelevant to the current step
-7. Generate a solution hypothesis when appropriate
-8. Verify the hypothesis based on the Chain of Thought steps
-9. Repeat the process until satisfied with the solution
-10. Provide a single, ideally correct answer as the final output
-11. Only set next_thought_needed to false when truly done and a satisfactory answer is reached`,
+The tool automatically provides:
+- Recommended tools with confidence scores
+- Detailed rationale for each recommendation
+- Expected outcomes for the current step
+- Conditions for proceeding to next step
+- Progress tracking and stage analysis`,
   inputSchema: {
     type: "object",
     properties: {
       thought: {
         type: "string",
-        description: "Your current thinking step"
+        description: "Your current thinking step content"
       },
       nextThoughtNeeded: {
         type: "boolean",
@@ -1027,6 +1026,88 @@ You should:
         type: "integer",
         description: "Estimated total thoughts needed",
         minimum: 1
+      },
+      current_step: {
+        type: "object",
+        description: "Current step details with tool recommendations (optional, auto-generated if not provided)",
+        properties: {
+          step_description: {
+            type: "string",
+            description: "Description of current step"
+          },
+          recommended_tools: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                tool_name: {
+                  type: "string",
+                  description: "Name of recommended tool"
+                },
+                confidence: {
+                  type: "number",
+                  minimum: 0,
+                  maximum: 1,
+                  description: "Confidence score for recommendation"
+                },
+                rationale: {
+                  type: "string",
+                  description: "Explanation of why this tool is recommended"
+                },
+                priority: {
+                  type: "integer",
+                  description: "Execution priority (1 = highest)"
+                },
+                alternative_tools: {
+                  type: "array",
+                  items: { type: "string" },
+                  description: "Alternative tool options"
+                }
+              },
+              required: ["tool_name", "confidence", "rationale", "priority"]
+            }
+          },
+          expected_outcome: {
+            type: "string",
+            description: "Expected result from this step"
+          },
+          next_step_conditions: {
+            type: "array",
+            items: { type: "string" },
+            description: "Conditions for proceeding to next step"
+          },
+          step_number: {
+            type: "integer",
+            description: "Current step number"
+          },
+          estimated_duration: {
+            type: "string",
+            description: "Estimated time for this step"
+          },
+          complexity_level: {
+            type: "string",
+            enum: ["low", "medium", "high"],
+            description: "Complexity assessment"
+          }
+        }
+      },
+      previous_steps: {
+        type: "array",
+        description: "Array of completed steps",
+        items: {
+          type: "object",
+          properties: {
+            step_description: { type: "string" },
+            recommended_tools: { type: "array" },
+            expected_outcome: { type: "string" },
+            next_step_conditions: { type: "array", items: { type: "string" } }
+          }
+        }
+      },
+      remaining_steps: {
+        type: "array",
+        items: { type: "string" },
+        description: "High-level descriptions of upcoming steps"
       },
       isRevision: {
         type: "boolean",
@@ -1049,6 +1130,18 @@ You should:
       needsMoreThoughts: {
         type: "boolean",
         description: "If more thoughts are needed"
+      },
+      tool_usage_history: {
+        type: "array",
+        description: "History of tools used in this session",
+        items: {
+          type: "object",
+          properties: {
+            tool_name: { type: "string" },
+            used_at: { type: "string" },
+            effectiveness_score: { type: "number", minimum: 0, maximum: 1 }
+          }
+        }
       }
     },
     required: ["thought", "nextThoughtNeeded", "thoughtNumber", "totalThoughts"]
