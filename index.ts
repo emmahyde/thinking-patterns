@@ -13,9 +13,10 @@ import {
 import chalk from 'chalk';
 
 // Import enhanced modular components
-import { EnhancedSequentialThinkingServer } from './src/servers/SequentialThinkingServer.js';
-import { ToolRecommendationEngine } from './src/services/ToolRecommendationEngine.js';
 import { SessionManager } from './src/services/SessionManager.js';
+
+// Import new registry system
+import { initializeToolRegistry, getToolDefinitions, processToolRequest } from './src/base/toolRegistry.js';
 
 // Data Interfaces
 interface ThoughtData {
@@ -1587,10 +1588,12 @@ It supports various visual elements and operations to facilitate insight generat
 
 // --- END ADDED TOOL DEFINITIONS ---
 
-// Server Instances
+// Initialize the new registry system
+initializeToolRegistry();
+
+// Legacy server instances (will be phased out as tools are migrated)
 const modelServer = new MentalModelServer();
 const debuggingServer = new DebuggingApproachServer();
-const thinkingServer = new SequentialThinkingServer();
 const stochasticServer = new StochasticServer(); // Added stochastic server
 const collaborativeReasoningServer = new CollaborativeReasoningServer();
 const decisionFrameworkServer = new DecisionFrameworkServer();
@@ -1623,9 +1626,12 @@ const server = new Server(
 );
 
 // Request Handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [
-    SEQUENTIAL_THINKING_TOOL,
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  // Get tools from the new registry system
+  const registryTools = getToolDefinitions();
+
+  // Legacy tools (will be removed as they are migrated to registry)
+  const legacyTools = [
     MENTAL_MODEL_TOOL,
     DEBUGGING_APPROACH_TOOL,
     STOCHASTIC_TOOL, // Added to tools list
@@ -1635,15 +1641,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     SCIENTIFIC_METHOD_TOOL,
     STRUCTURED_ARGUMENTATION_TOOL,
     VISUAL_REASONING_TOOL,
-  ],
-}));
+  ];
+
+  return {
+    tools: [...registryTools, ...legacyTools]
+  };
+});
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  // First, try the new registry-based routing
+  const registryResult = processToolRequest(request.params.name, request.params.arguments);
+  if (!registryResult.isError) {
+    return registryResult;
+  }
+
+  // Fall back to legacy routing for tools not yet migrated
   switch (request.params.name) {
-    case "sequentialthinking": {
-      const result = thinkingServer.processThought(request.params.arguments);
-      return result;
-    }
     case "mentalmodel": {
       const result = modelServer.processModel(request.params.arguments);
       return result;
