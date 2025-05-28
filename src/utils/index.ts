@@ -11,6 +11,7 @@ export {
   formatSection,
   bordered,
   divider,
+  getDisplayWidth,
 
   // Themed convenience functions
   successBox,
@@ -26,4 +27,4 @@ export {
 
   // Types
   type BoxConfig,
-} from './prettyBox';
+} from './prettyBox.js';

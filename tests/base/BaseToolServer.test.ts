@@ -127,9 +127,9 @@ describe('BaseToolServer', () => {
         fail('Should have thrown validation error');
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
-        expect(error.message).toContain('Validation failed');
-        expect(error.message).toContain('message');
-        expect(error.message).toContain('count');
+        expect((error as Error).message).toContain('Validation failed');
+        expect((error as Error).message).toContain('message');
+        expect((error as Error).message).toContain('count');
       }
     });
   });
@@ -145,7 +145,6 @@ describe('BaseToolServer', () => {
       const response = testServer.run(validInput);
 
       expect(response).toHaveProperty('content');
-      expect(response).toHaveProperty('isError');
       expect(response.isError).toBeUndefined(); // Success responses don't set isError
       expect(response.content).toHaveLength(1);
       expect(response.content[0]).toHaveProperty('type', 'text');

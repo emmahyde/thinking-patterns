@@ -9,7 +9,7 @@ This is an MCP (Model Context Protocol) server that provides cognitive tools for
 ## Common Development Commands
 
 **Build and Development:**
-- `npm run build` - Compile TypeScript to dist/ directory 
+- `npm run build` - Compile TypeScript to dist/ directory
 - `npm run watch` - Watch for changes and recompile
 - `npm run clean` - Remove dist/ directory
 - `npm start` - Run the compiled server
@@ -28,16 +28,16 @@ This is an MCP (Model Context Protocol) server that provides cognitive tools for
 ### Core Structure
 This is a monolithic MCP server in `index.ts` (1,620 lines) that implements 10 cognitive tools:
 
-1. **sequentialthinking** - Multi-step thinking with revision support
-2. **mentalmodel** - Structured mental models (first principles, opportunity cost, etc.)
-3. **debuggingapproach** - Systematic debugging methods (binary search, divide & conquer, etc.)
-4. **stochasticalgorithm** - Probabilistic algorithms (MDP, MCTS, bandit, Bayesian, HMM)
-5. **collaborativereasoning** - Multi-perspective problem solving
-6. **decisionframework** - Structured decision analysis
-7. **metacognitivemonitoring** - Self-assessment of reasoning quality
-8. **scientificmethod** - Formal hypothesis testing
-9. **structuredargumentation** - Dialectical reasoning
-10. **visualreasoning** - Diagram-based thinking
+1. **sequential_thinking** - Multi-step thinking with revision support
+2. **mental_model** - Structured mental models (first principles, opportunity cost, etc.)
+3. **debugging_approach** - Systematic debugging methods (binary search, divide & conquer, etc.)
+4. **stochastic_algorithm** - Probabilistic algorithms (MDP, MCTS, bandit, Bayesian, HMM)
+5. **collaborative_reasoning** - Multi-perspective problem solving
+6. **decision_framework** - Structured decision analysis
+7. **metacognitive_monitoring** - Self-assessment of reasoning quality
+8. **scientific_method** - Formal hypothesis testing
+9. **structured_argumentation** - Dialectical reasoning
+10. **visual_reasoning** - Diagram-based thinking
 
 ### Key Components
 
@@ -87,7 +87,7 @@ The `src/` directory contains:
 
 - Builds to `dist/index.js` executable
 - Deployed via Smithery platform
-- Docker image: `waldzellai/thinking-patterns`  
+- Docker image: `waldzellai/thinking-patterns`
 - NPM package: `@emmahyde/thought-patterns`
 - Runs on Node.js 18+ via stdio transport
 
@@ -95,7 +95,7 @@ The `src/` directory contains:
 
 Key dependencies:
 - `@modelcontextprotocol/sdk` - MCP framework
-- `chalk` - Console output formatting  
+- `chalk` - Console output formatting
 - `yargs` - CLI argument parsing
 - `zod` - Schema validation (installed but not fully utilized)
 

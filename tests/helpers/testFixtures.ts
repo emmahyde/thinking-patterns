@@ -8,64 +8,64 @@ import { ThoughtData } from '../../src/schemas/ThoughtSchema.js';
 // Sample thought data for testing
 export const validThoughtData: ThoughtData = {
   thought: "This is a test thought for validation",
-  thought_number: 1,
-  total_thoughts: 5,
-  next_thought_needed: true,
-  is_revision: false,
-  revises_thought: undefined,
-  branch_from_thought: undefined,
-  branch_id: undefined,
-  needs_more_thoughts: false,
+  thoughtNumber: 1,
+  totalThoughts: 5,
+  nextThoughtNeeded: true,
+  isRevision: false,
+  revisesThought: undefined,
+  branchFromThought: undefined,
+  branchId: undefined,
+  needsMoreThoughts: false,
 };
 
 export const validThoughtDataWithOptionals: ThoughtData = {
   thought: "This is a revised thought that branches from previous thinking",
-  thought_number: 3,
-  total_thoughts: 5,
-  next_thought_needed: true,
-  is_revision: true,
-  revises_thought: 2,
-  branch_from_thought: 1,
-  branch_id: "branch-a",
-  needs_more_thoughts: true,
+  thoughtNumber: 3,
+  totalThoughts: 5,
+  nextThoughtNeeded: true,
+  isRevision: true,
+  revisesThought: 2,
+  branchFromThought: 1,
+  branchId: "branch-a",
+  needsMoreThoughts: true,
 };
 
 export const finalThoughtData: ThoughtData = {
   thought: "This is the final thought in the sequence",
-  thought_number: 5,
-  total_thoughts: 5,
-  next_thought_needed: false,
-  is_revision: false,
-  revises_thought: undefined,
-  branch_from_thought: undefined,
-  branch_id: undefined,
-  needs_more_thoughts: false,
+  thoughtNumber: 5,
+  totalThoughts: 5,
+  nextThoughtNeeded: false,
+  isRevision: false,
+  revisesThought: undefined,
+  branchFromThought: undefined,
+  branchId: undefined,
+  needsMoreThoughts: false,
 };
 // Invalid test data for schema validation testing
 export const invalidThoughtData = {
   missingRequired: {
     thought: "Missing required fields",
-    // Missing thought_number, total_thoughts, next_thought_needed
+    // Missing thoughtNumber, totalThoughts, nextThoughtNeeded
   },
   invalidTypes: {
     thought: 123, // Should be string
-    thought_number: "not a number", // Should be number
-    total_thoughts: -1, // Should be positive
-    next_thought_needed: "yes", // Should be boolean
+    thoughtNumber: "not a number", // Should be number
+    totalThoughts: -1, // Should be positive
+    nextThoughtNeeded: "yes", // Should be boolean
   },
   negativeNumbers: {
     thought: "Valid thought",
-    thought_number: -1, // Should be positive
-    total_thoughts: 0, // Should be positive
-    next_thought_needed: true,
+    thoughtNumber: -1, // Should be positive
+    totalThoughts: 0, // Should be positive
+    nextThoughtNeeded: true,
   },
   invalidOptionals: {
     thought: "Valid thought",
-    thought_number: 1,
-    total_thoughts: 3,
-    next_thought_needed: true,
-    revises_thought: -1, // Should be positive if provided
-    branch_from_thought: 0, // Should be positive if provided
+    thoughtNumber: 1,
+    totalThoughts: 3,
+    nextThoughtNeeded: true,
+    revisesThought: -1, // Should be positive if provided
+    branchFromThought: 0, // Should be positive if provided
   },
 };
 
@@ -75,7 +75,7 @@ export const sampleMcpRequest = {
   id: "test-request-1",
   method: "tools/call" as const,
   params: {
-    name: "sequentialthinking",
+    name: "sequential_thinking",
     arguments: validThoughtData,
   },
 };
@@ -159,7 +159,7 @@ export const sampleSessionData = {
 
 // Tool recommendation test data
 export const sampleRecommendationContext = {
-  previousTools: ["sequentialthinking", "mentalmodel"],
+  previousTools: ["sequential_thinking", "mental_model"],
   currentProblemType: "analysis",
   userPreferences: {
     verbosity: "detailed",
@@ -171,7 +171,7 @@ export const sampleRecommendationContext = {
 
 export const expectedRecommendations = [
   {
-    toolName: "sequentialthinking",
+    toolName: "sequential_thinking",
     confidence: 0.9,
     reason: "High success rate with analytical problems",
   },

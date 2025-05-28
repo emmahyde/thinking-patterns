@@ -76,11 +76,17 @@ export class InMemorySessionManager implements SessionManager {
 
     for (const sessionId of expiredSessions) {
       this.sessions.delete(sessionId);
-      console.log(`Cleaned up expired session: ${sessionId}`);
+      // Log cleanup to console (suppress during tests)
+      if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
+        console.log(`Cleaned up expired session: ${sessionId}`);
+      }
     }
 
     if (expiredSessions.length > 0) {
-      console.log(`Cleaned up ${expiredSessions.length} expired sessions`);
+      // Log cleanup summary to console (suppress during tests)
+      if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
+        console.log(`Cleaned up ${expiredSessions.length} expired sessions`);
+      }
     }
   }
 
@@ -108,7 +114,7 @@ export class InMemorySessionManager implements SessionManager {
 
   getThoughtHistory(sessionId: string): ThoughtData[] {
     const session = this.getSession(sessionId);
-    return session ? session.thoughtHistory : [];
+    return session ? [...session.thoughtHistory] : [];
   }
 
   getBranches(sessionId: string): Record<string, ThoughtData[]> {

@@ -1,49 +1,112 @@
-import { ToolRegistry, BaseToolServer } from './BaseToolServer.js';
-import { ThoughtSchema, ThoughtData } from '../schemas/index.js';
+import { ToolRegistry } from './BaseToolServer.js';
+import {
+  ThoughtSchema,
+  MentalModelSchema,
+  DebuggingApproachSchema,
+  StochasticAlgorithmSchema,
+  CollaborativeReasoningSchema,
+  DecisionFrameworkSchema,
+  MetacognitiveMonitoringSchema,
+  ScientificMethodSchema,
+  StructuredArgumentationSchema,
+  VisualReasoningSchema
+} from '../schemas/index.js';
+
+// Import all the clear-thought tool servers
+import { SequentialThinkingServer } from '../servers/SequentialThinkingServer.js';
+import { MentalModelServer } from '../servers/MentalModelServer.js';
+import { DebuggingApproachServer } from '../servers/DebuggingApproachServer.js';
+import { StochasticAlgorithmServer } from '../servers/StochasticAlgorithmServer.js';
+import { CollaborativeReasoningServer } from '../servers/CollaborativeReasoningServer.js';
+import { DecisionFrameworkServer } from '../servers/DecisionFrameworkServer.js';
+import { MetacognitiveMonitoringServer } from '../servers/MetacognitiveMonitoringServer.js';
+import { ScientificMethodServer } from '../servers/ScientificMethodServer.js';
+import { StructuredArgumentationServer } from '../servers/StructuredArgumentationServer.js';
+import { VisualReasoningServer } from '../servers/VisualReasoningServer.js';
 
 /**
- * Simple implementation of SequentialThinking using BaseToolServer
- * This demonstrates the new framework pattern
+ * Initialize and register all available clear-thought tools
  */
-class SequentialThinkingServerAdapter extends BaseToolServer<ThoughtData, any> {
-  constructor() {
-    super(ThoughtSchema);
-  }
+export function initializeToolRegistry(): void {
+  // Register Sequential Thinking tool
+  ToolRegistry.register({
+    name: "sequential_thinking",
+    schema: ThoughtSchema,
+    server: new SequentialThinkingServer(),
+    description: "A detailed tool for dynamic and reflective problem-solving through thoughts. This tool helps analyze problems through a flexible thinking process that can adapt and evolve."
+  });
 
-  protected handle(validInput: ThoughtData): any {
-    // For now, return a simple demonstration response
-    // This will be replaced with proper server logic in future phases
-    return {
-      thought_number: validInput.thought_number,
-      total_thoughts: validInput.total_thoughts,
-      next_thought_needed: validInput.next_thought_needed,
-      thought: validInput.thought,
-      status: 'success',
-      timestamp: new Date().toISOString(),
-      framework_version: 'BaseToolServer v1.0',
-      note: 'This is processed through the new registry system!'
-    };
-  }
-}
-/**
- /**
-  * Initialize and register all available tools
-  */
- export function initializeToolRegistry(): void {
-   // Register the SequentialThinking tool
-   ToolRegistry.register({
-     name: "sequentialthinking",
-     schema: ThoughtSchema,
-     server: new SequentialThinkingServerAdapter(),
-     description: "A detailed tool for dynamic and reflective problem-solving through thoughts. This tool helps analyze problems through a flexible thinking process that can adapt and evolve."
-   });
+  // Register Mental Model tool
+  ToolRegistry.register({
+    name: "mental_model",
+    schema: MentalModelSchema,
+    server: new MentalModelServer(),
+    description: "Tool for creating and analyzing mental models to understand complex problems and systems."
+  });
 
-   // TODO: Register other tools as they are migrated to BaseToolServer
-  //   name: "mentalmodel",
-  //   schema: MentalModelSchema,
-  //   server: new MentalModelServerAdapter(),
-  //   description: "Tool for creating and analyzing mental models"
-  // });
+  // Register Debugging Approach tool
+  ToolRegistry.register({
+    name: "debugging_approach",
+    schema: DebuggingApproachSchema,
+    server: new DebuggingApproachServer(),
+    description: "Systematic debugging methodologies for troubleshooting and problem resolution."
+  });
+
+  // Register Stochastic Algorithm tool
+  ToolRegistry.register({
+    name: "stochastic_algorithm",
+    schema: StochasticAlgorithmSchema,
+    server: new StochasticAlgorithmServer(),
+    description: "Probabilistic algorithms for decision-making under uncertainty, including MDPs, MCTS, and Bayesian optimization."
+  });
+
+  // Register Collaborative Reasoning tool
+  ToolRegistry.register({
+    name: "collaborative_reasoning",
+    schema: CollaborativeReasoningSchema,
+    server: new CollaborativeReasoningServer(),
+    description: "Multi-perspective collaborative problem solving with diverse personas and structured contributions."
+  });
+
+  // Register Decision Framework tool
+  ToolRegistry.register({
+    name: "decision_framework",
+    schema: DecisionFrameworkSchema,
+    server: new DecisionFrameworkServer(),
+    description: "Structured decision analysis and rational choice frameworks for complex decisions."
+  });
+
+  // Register Metacognitive Monitoring tool
+  ToolRegistry.register({
+    name: "metacognitive_monitoring",
+    schema: MetacognitiveMonitoringSchema,
+    server: new MetacognitiveMonitoringServer(),
+    description: "Self-assessment of knowledge and reasoning quality for improved metacognition."
+  });
+
+  // Register Scientific Method tool
+  ToolRegistry.register({
+    name: "scientific_method",
+    schema: ScientificMethodSchema,
+    server: new ScientificMethodServer(),
+    description: "Formal hypothesis testing and experimentation following the scientific method."
+  });
+
+  // Register Structured Argumentation tool
+  ToolRegistry.register({
+    name: "structured_argumentation",
+    schema: StructuredArgumentationSchema,
+    server: new StructuredArgumentationServer(),
+    description: "Dialectical reasoning and argument analysis for structured debates and logical reasoning."
+  });
+
+  // Register Visual Reasoning tool
+  ToolRegistry.register({
+    name: "visual_reasoning",
+    schema: VisualReasoningSchema,
+    server: new VisualReasoningServer(),
+    description: "Diagram-based thinking and problem solving with visual elements and transformations."
+  });
 }
 
 /**

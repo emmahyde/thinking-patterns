@@ -2,23 +2,23 @@ import { ToolRecommendation, ToolContext, CurrentStep } from '../interfaces/Thou
 
 export class ToolRecommendationEngine {
   private toolDescriptions: Record<string, string> = {
-    'mentalmodel': 'Structured thinking frameworks like first principles, opportunity cost analysis, and systematic problem decomposition',
-    'debuggingapproach': 'Systematic debugging methods including binary search, divide and conquer, and cause elimination',
-    'stochasticalgorithm': 'Probabilistic decision-making tools including MDPs, Monte Carlo methods, and Bayesian optimization',
-    'collaborativereasoning': 'Multi-perspective problem solving with diverse viewpoints and stakeholder analysis',
-    'decisionframework': 'Structured decision analysis with criteria evaluation and outcome modeling',
-    'metacognitivemonitoring': 'Self-assessment of reasoning quality and knowledge gaps',
-    'scientificmethod': 'Formal hypothesis testing and experimental validation',
-    'structuredargumentation': 'Dialectical reasoning and systematic argument analysis',
-    'visualreasoning': 'Diagram-based thinking and spatial problem solving'
+    'mental_model': 'Structured thinking frameworks like first principles, opportunity cost analysis, and systematic problem decomposition',
+    'debugging_approach': 'Systematic debugging methods including binary search, divide and conquer, and cause elimination',
+    'stochastic_algorithm': 'Probabilistic decision-making tools including MDPs, Monte Carlo methods, and Bayesian optimization',
+    'collaborative_reasoning': 'Multi-perspective problem solving with diverse viewpoints and stakeholder analysis',
+    'decision_framework': 'Structured decision analysis with criteria evaluation and outcome modeling',
+    'metacognitive_monitoring': 'Self-assessment of reasoning quality and knowledge gaps',
+    'scientific_method': 'Formal hypothesis testing and experimental validation',
+    'structured_argumentation': 'Dialectical reasoning and systematic argument analysis',
+    'visual_reasoning': 'Diagram-based thinking and spatial problem solving'
   };
 
   private problemDomainMappings: Record<string, string[]> = {
-    'technical': ['debuggingapproach', 'scientificmethod', 'mentalmodel'],
-    'strategic': ['decisionframework', 'collaborativereasoning', 'stochasticalgorithm'],
-    'research': ['scientificmethod', 'metacognitivemonitoring', 'mentalmodel'],
-    'design': ['visualreasoning', 'collaborativereasoning', 'structuredargumentation'],
-    'analysis': ['mentalmodel', 'debuggingapproach', 'metacognitivemonitoring']
+    'technical': ['debugging_approach', 'scientific_method', 'mental_model'],
+    'strategic': ['decision_framework', 'collaborative_reasoning', 'stochastic_algorithm'],
+    'research': ['scientific_method', 'metacognitive_monitoring', 'mental_model'],
+    'design': ['visual_reasoning', 'collaborative_reasoning', 'structured_argumentation'],
+    'analysis': ['mental_model', 'debugging_approach', 'metacognitive_monitoring']
   };
 
   public generateRecommendations(
@@ -42,7 +42,7 @@ export class ToolRecommendationEngine {
 
     // Generate domain-specific recommendations
     const domainRecommendations = this.getDomainSpecificRecommendations(
-      context.problem_domain || 'general',
+      context.problemDomain || 'general',
       analysisResults
     );
 
@@ -50,7 +50,7 @@ export class ToolRecommendationEngine {
     const combinedRecommendations = this.combineRecommendations(
       stageRecommendations,
       domainRecommendations,
-      context.available_tools
+      context.availableTools
     );
 
     // Sort by confidence and return top recommendations
@@ -69,13 +69,13 @@ export class ToolRecommendationEngine {
     const analysisResults = this.analyzeThoughtContent(thought.toLowerCase());
 
     return {
-      step_description: this.generateStepDescription(thought, thoughtNumber, totalThoughts),
-      recommended_tools: recommendations,
-      expected_outcome: this.generateExpectedOutcome(analysisResults, thoughtNumber, totalThoughts),
-      next_step_conditions: this.generateNextStepConditions(analysisResults, thoughtNumber, totalThoughts),
-      step_number: thoughtNumber,
-      complexity_level: this.assessComplexity(analysisResults),
-      estimated_duration: this.estimateDuration(analysisResults, recommendations.length)
+      stepDescription: this.generateStepDescription(thought, thoughtNumber, totalThoughts),
+      recommendedTools: recommendations,
+      expectedOutcome: this.generateExpectedOutcome(analysisResults, thoughtNumber, totalThoughts),
+      nextStepConditions: this.generateNextStepConditions(analysisResults, thoughtNumber, totalThoughts),
+      stepNumber: thoughtNumber,
+      complexityLevel: this.assessComplexity(analysisResults),
+      estimatedDuration: this.estimateDuration(analysisResults, recommendations.length)
     };
   }
 
@@ -94,7 +94,7 @@ export class ToolRecommendationEngine {
   }
 
   private extractKeywords(thought: string): string[] {
-    const problemKeywords = ['problem', 'issue', 'challenge', 'difficulty', 'error', 'bug'];
+    const problemKeywords = ['problem', 'issue', 'challenge', 'difficulty', 'error', 'bug', 'debug'];
     const analysisKeywords = ['analyze', 'examine', 'investigate', 'research', 'study'];
     const decisionKeywords = ['decide', 'choose', 'select', 'option', 'alternative'];
     const planningKeywords = ['plan', 'strategy', 'approach', 'method', 'process'];
@@ -157,15 +157,15 @@ export class ToolRecommendationEngine {
     switch (stage) {
       case 'initial':
         recommendations.push({
-          tool_name: 'mentalmodel',
+          toolName: 'mental_model',
           confidence: 0.8,
           rationale: 'Mental models help structure initial problem understanding and break down complex issues',
           priority: 1,
-          alternative_tools: ['debuggingapproach']
+          alternativeTools: ['debugging_approach']
         });
         if (analysis.intent === 'problem-identification') {
           recommendations.push({
-            tool_name: 'debuggingapproach',
+            toolName: 'debugging_approach',
             confidence: 0.7,
             rationale: 'Debugging approaches provide systematic methods for identifying root causes',
             priority: 2
@@ -176,14 +176,14 @@ export class ToolRecommendationEngine {
       case 'middle':
         if (analysis.intent === 'analysis') {
           recommendations.push({
-            tool_name: 'scientificmethod',
+            toolName: 'scientific_method',
             confidence: 0.8,
             rationale: 'Scientific method provides rigorous analysis framework for mid-stage investigation',
             priority: 1
           });
         }
         recommendations.push({
-          tool_name: 'metacognitivemonitoring',
+          toolName: 'metacognitive_monitoring',
           confidence: 0.6,
           rationale: 'Monitor reasoning quality and identify knowledge gaps during analysis',
           priority: 3
@@ -192,14 +192,14 @@ export class ToolRecommendationEngine {
 
       case 'final':
         recommendations.push({
-          tool_name: 'decisionframework',
+          toolName: 'decision_framework',
           confidence: 0.9,
           rationale: 'Decision frameworks help evaluate options and make final choices',
           priority: 1
         });
         if (analysis.domain === 'strategic') {
           recommendations.push({
-            tool_name: 'collaborativereasoning',
+            toolName: 'collaborative_reasoning',
             confidence: 0.7,
             rationale: 'Multiple perspectives validate final decisions and identify blind spots',
             priority: 2
@@ -228,7 +228,7 @@ export class ToolRecommendationEngine {
       }
 
       recommendations.push({
-        tool_name: tool,
+        toolName: tool,
         confidence: Math.min(confidence, 1.0),
         rationale,
         priority: index + 1
@@ -247,21 +247,21 @@ export class ToolRecommendationEngine {
 
     // Add stage-based recommendations
     stageRecs.forEach(rec => {
-      if (availableTools.includes(rec.tool_name)) {
-        combined.set(rec.tool_name, rec);
+      if (availableTools.includes(rec.toolName)) {
+        combined.set(rec.toolName, rec);
       }
     });
 
     // Merge domain-based recommendations
     domainRecs.forEach(rec => {
-      if (availableTools.includes(rec.tool_name)) {
-        const existing = combined.get(rec.tool_name);
+      if (availableTools.includes(rec.toolName)) {
+        const existing = combined.get(rec.toolName);
         if (existing) {
           // Combine confidence scores and rationales
           existing.confidence = Math.min((existing.confidence + rec.confidence) / 2 + 0.1, 1.0);
           existing.rationale = `${existing.rationale}; ${rec.rationale}`;
         } else {
-          combined.set(rec.tool_name, rec);
+          combined.set(rec.toolName, rec);
         }
       }
     });
@@ -269,20 +269,31 @@ export class ToolRecommendationEngine {
     return Array.from(combined.values());
   }
 
-  private determineThinkingStage(thoughtNumber: number, totalThoughts: number): string {
+  private determineThinkingStage(thoughtNumber: number, totalThoughts: number): 'initial' | 'middle' | 'final' {
+    // Handle edge cases first
+    if (totalThoughts === 1) return 'final'; // Single thought is always final
+    if (thoughtNumber === 1 && totalThoughts > 1) return 'initial';
+    if (thoughtNumber === totalThoughts) return 'final';
+
+    // For sequences with 2 thoughts, first is initial, second is final
+    if (totalThoughts === 2) {
+      return thoughtNumber === 1 ? 'initial' : 'final';
+    }
+
+    // For longer sequences, use proportional logic
     const progress = thoughtNumber / totalThoughts;
-    if (progress <= 0.3) return 'initial';
-    if (progress >= 0.7) return 'final';
+    if (progress <= 0.33) return 'initial';
+    if (progress >= 0.67) return 'final';
     return 'middle';
   }
 
   private toolMatchesAnalysis(toolName: string, analysis: any): boolean {
     const toolIntentMap: Record<string, string[]> = {
-      'debuggingapproach': ['problem-identification'],
-      'scientificmethod': ['analysis', 'evaluation'],
-      'decisionframework': ['decision-making'],
-      'mentalmodel': ['exploration', 'problem-identification'],
-      'collaborativereasoning': ['planning', 'decision-making']
+      'debugging_approach': ['problem-identification'],
+      'scientific_method': ['analysis', 'evaluation'],
+      'decision_framework': ['decision-making'],
+      'mental_model': ['exploration', 'problem-identification'],
+      'collaborative_reasoning': ['planning', 'decision-making']
     };
 
     const matchingIntents = toolIntentMap[toolName] || [];
@@ -298,9 +309,9 @@ export class ToolRecommendationEngine {
   private generateStepDescription(thought: string, thoughtNumber: number, totalThoughts: number): string {
     const stage = this.determineThinkingStage(thoughtNumber, totalThoughts);
     const stageDescriptions = {
-      'initial': 'Initial problem analysis and framework establishment',
-      'middle': 'Deep analysis and systematic investigation',
-      'final': 'Solution synthesis and decision formulation'
+      initial: 'Initial problem analysis and framework establishment',
+      middle: 'Deep analysis and systematic investigation',
+      final: 'Solution synthesis and decision formulation'
     };
 
     return `${stageDescriptions[stage]} (Step ${thoughtNumber}/${totalThoughts})`;

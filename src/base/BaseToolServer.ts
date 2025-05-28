@@ -62,6 +62,17 @@ export abstract class BaseToolServer<TIn, TOut> {
   protected abstract handle(validInput: TIn): TOut;
 
   /**
+   * Standardized process method for unified server interface
+   * Default implementation delegates to handle method for backward compatibility
+   * Servers can override this to provide standardized processing interface
+   * @param validInput - Validated input data
+   * @returns Processed output data
+   */
+  public process(validInput: TIn): TOut {
+    return this.handle(validInput);
+  }
+
+  /**
    * Main entry point that wraps validation, processing, and error handling
    * Provides standardized {content, isError} envelope response
    * @param rawInput - Raw input data from MCP request

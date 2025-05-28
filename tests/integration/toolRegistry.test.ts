@@ -121,14 +121,14 @@ describe('Tool Registry Integration Tests', () => {
     beforeEach(() => {
       // Register test tools
       ToolRegistry.register({
-        name: "sequentialthinking",
+        name: "sequential_thinking",
         schema: ThoughtSchema,
         server: testToolServer,
         description: "Sequential thinking tool"
       });
 
       ToolRegistry.register({
-        name: "mentalmodel",
+        name: "mental_model",
         schema: ThoughtSchema,
         server: alternativeToolServer,
         description: "Mental model tool"
@@ -136,10 +136,10 @@ describe('Tool Registry Integration Tests', () => {
     });
 
     it('should find registered tool by name', () => {
-      const foundTool = ToolRegistry.findTool("sequentialthinking");
+      const foundTool = ToolRegistry.findTool("sequential_thinking");
 
       expect(foundTool).toBeDefined();
-      expect(foundTool?.name).toBe("sequentialthinking");
+      expect(foundTool?.name).toBe("sequential_thinking");
       expect(foundTool?.server).toBe(testToolServer);
     });
 
@@ -160,7 +160,7 @@ describe('Tool Registry Integration Tests', () => {
 
       expect(allTools).toHaveLength(2);
       expect(allTools.map(t => t.name)).toEqual(
-        expect.arrayContaining(["sequentialthinking", "mentalmodel"])
+        expect.arrayContaining(["sequential_thinking", "mental_model"])
       );
     });
   });
@@ -235,7 +235,7 @@ describe('Tool Registry Integration Tests', () => {
   describe('MCP tool definitions generation', () => {
     beforeEach(() => {
       ToolRegistry.register({
-        name: "sequentialthinking",
+        name: "sequential_thinking",
         schema: ThoughtSchema,
         server: testToolServer,
         description: "Sequential thinking for systematic analysis"
@@ -254,7 +254,7 @@ describe('Tool Registry Integration Tests', () => {
 
       expect(toolDefinitions).toHaveLength(2);
 
-      const sequentialTool = toolDefinitions.find(t => t.name === "sequentialthinking");
+      const sequentialTool = toolDefinitions.find(t => t.name === "sequential_thinking");
       expect(sequentialTool).toBeDefined();
       expect(sequentialTool?.description).toBe("Sequential thinking for systematic analysis");
       expect(sequentialTool?.inputSchema).toBeDefined();
