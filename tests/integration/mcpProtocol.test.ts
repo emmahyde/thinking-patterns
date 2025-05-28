@@ -195,8 +195,8 @@ describe('MCP Protocol Integration Tests', () => {
     });
 
     it('should return registered tools list', async () => {
-      mcpServer.registerTool("sequentialthinking", testToolServer);
-      mcpServer.registerTool("mentalmodel", testToolServer);
+      mcpServer.registerTool("sequential_thinking", testToolServer);
+      mcpServer.registerTool("mental_model", testToolServer);
 
       const request: McpRequest = {
         jsonrpc: "2.0",
@@ -212,8 +212,8 @@ describe('MCP Protocol Integration Tests', () => {
       expect(response.result.tools).toHaveLength(2);
 
       const toolNames = response.result.tools.map((t: any) => t.name);
-      expect(toolNames).toContain("sequentialthinking");
-      expect(toolNames).toContain("mentalmodel");
+      expect(toolNames).toContain("sequential_thinking");
+      expect(toolNames).toContain("mental_model");
     });
 
     it('should include proper tool metadata', async () => {
@@ -388,7 +388,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "concurrent-tool",
-          arguments: createMockThoughtData({ thought_number: i + 1 })
+          arguments: createMockThoughtData({ thoughtNumber: i + 1 })
         }
       }));
 
@@ -577,7 +577,7 @@ describe('MCP Protocol Integration Tests', () => {
     it('should handle special characters in tool names', async () => {
       const specialNames = [
         "tool-with-dashes",
-        "tool_with_underscores",
+        "toolWithUnderscores",
         "tool.with.dots",
         "tool123numbers"
       ];

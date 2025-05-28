@@ -108,7 +108,7 @@ export class InMemorySessionManager implements SessionManager {
 
   getThoughtHistory(sessionId: string): ThoughtData[] {
     const session = this.getSession(sessionId);
-    return session ? session.thoughtHistory : [];
+    return session ? [...session.thoughtHistory] : [];
   }
 
   getBranches(sessionId: string): Record<string, ThoughtData[]> {

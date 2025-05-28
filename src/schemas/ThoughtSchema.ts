@@ -2,58 +2,58 @@ import { z } from 'zod';
 
 // Schema for ToolRecommendation
 export const ToolRecommendationSchema = z.object({
-  tool_name: z.string(),
+  toolName: z.string(),
   confidence: z.number().min(0).max(1), // 0.0-1.0
   rationale: z.string(),
   priority: z.number(),
-  alternative_tools: z.array(z.string()).optional(),
+  alternativeTools: z.array(z.string()).optional(),
 });
 
 // Schema for StepRecommendation
 export const StepRecommendationSchema = z.object({
-  step_description: z.string(),
-  recommended_tools: z.array(ToolRecommendationSchema),
-  expected_outcome: z.string(),
-  next_step_conditions: z.array(z.string()),
+  stepDescription: z.string(),
+  recommendedTools: z.array(ToolRecommendationSchema),
+  expectedOutcome: z.string(),
+  nextStepConditions: z.array(z.string()),
 });
 
 // Schema for CurrentStep (extends StepRecommendation)
 export const CurrentStepSchema = StepRecommendationSchema.extend({
-  step_number: z.number().optional(),
-  estimated_duration: z.string().optional(),
-  complexity_level: z.enum(['low', 'medium', 'high']).optional(),
+  stepNumber: z.number().optional(),
+  estimatedDuration: z.string().optional(),
+  complexityLevel: z.enum(['low', 'medium', 'high']).optional(),
 });
 
 // Schema for tool usage history entry
 export const ToolUsageHistorySchema = z.object({
-  tool_name: z.string(),
-  used_at: z.string(),
-  effectiveness_score: z.number().optional(),
+  toolName: z.string(),
+  usedAt: z.string(),
+  effectivenessScore: z.number().optional(),
 });
 
 // Schema for EnhancedThoughtData (main schema)
 export const ThoughtSchema = z.object({
-  thought: z.string(),
-  thought_number: z.number().int().positive(),
-  total_thoughts: z.number().int().positive(),
-  next_thought_needed: z.boolean(),
-  is_revision: z.boolean().optional(),
-  revises_thought: z.number().int().positive().optional(),
-  branch_from_thought: z.number().int().positive().optional(),
-  branch_id: z.string().optional(),
-  needs_more_thoughts: z.boolean().optional(),
-  current_step: CurrentStepSchema.optional(),
-  previous_steps: z.array(StepRecommendationSchema).optional(),
-  remaining_steps: z.array(z.string()).optional(),
-  tool_usage_history: z.array(ToolUsageHistorySchema).optional(),
+  thought: z.string().min(1),
+  thoughtNumber: z.number().int().positive(),
+  totalThoughts: z.number().int().positive(),
+  nextThoughtNeeded: z.boolean(),
+  isRevision: z.boolean().optional(),
+  revisesThought: z.number().int().positive().optional(),
+  branchFromThought: z.number().int().positive().optional(),
+  branchId: z.string().optional(),
+  needsMoreThoughts: z.boolean().optional(),
+  currentStep: CurrentStepSchema.optional(),
+  previousSteps: z.array(StepRecommendationSchema).optional(),
+  remainingSteps: z.array(z.string()).optional(),
+  toolUsageHistory: z.array(ToolUsageHistorySchema).optional(),
 });
 
 // Schema for ToolContext
 export const ToolContextSchema = z.object({
-  available_tools: z.array(z.string()),
-  user_preferences: z.record(z.any()).optional(),
-  session_history: z.array(z.string()).optional(),
-  problem_domain: z.string().optional(),
+  availableTools: z.array(z.string()),
+  userPreferences: z.record(z.any()).optional(),
+  sessionHistory: z.array(z.string()).optional(),
+  problemDomain: z.string().optional(),
 });
 
 // Type inference for TypeScript

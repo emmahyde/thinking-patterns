@@ -6,7 +6,16 @@ export class ValidationError extends Error {
     super(message);
     this.name = 'ValidationError';
     this.code = 'VALIDATION_ERROR';
-    this.details = details;
+    this.details = details === null ? null : (details ? { ...details } : undefined); // Preserve null vs undefined
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      name: this.name,
+      code: this.code,
+      details: this.details
+    };
   }
 }
 
@@ -20,6 +29,15 @@ export class StateError extends Error {
     this.code = 'STATE_ERROR';
     this.sessionId = sessionId;
   }
+
+  toJSON() {
+    return {
+      message: this.message,
+      name: this.name,
+      code: this.code,
+      sessionId: this.sessionId
+    };
+  }
 }
 
 export class SecurityError extends Error {
@@ -32,6 +50,15 @@ export class SecurityError extends Error {
     this.code = 'SECURITY_ERROR';
     this.severity = severity;
   }
+
+  toJSON() {
+    return {
+      message: this.message,
+      name: this.name,
+      code: this.code,
+      severity: this.severity
+    };
+  }
 }
 
 export class ProcessingError extends Error {
@@ -42,7 +69,16 @@ export class ProcessingError extends Error {
     super(message);
     this.name = 'ProcessingError';
     this.code = 'PROCESSING_ERROR';
-    this.context = context;
+    this.context = context === null ? null : (context ? { ...context } : undefined); // Preserve null vs undefined
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      name: this.name,
+      code: this.code,
+      context: this.context
+    };
   }
 }
 

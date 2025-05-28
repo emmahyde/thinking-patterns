@@ -2,6 +2,7 @@
  * Jest test setup file
  * Configures global test environment settings
  */
+import { jest } from '@jest/globals';
 
 // Mock console methods to avoid noise in test output
 global.console = {
@@ -42,7 +43,7 @@ declare global {
 // Custom Jest matchers
 expect.extend({
   toBeValidThoughtData(received: any) {
-    const requiredFields = ['thought', 'thought_number', 'total_thoughts', 'next_thought_needed'];
+    const requiredFields = ['thought', 'thoughtNumber', 'totalThoughts', 'nextThoughtNeeded'];
     const missingFields = requiredFields.filter(field => !(field in received));
 
     if (missingFields.length > 0) {
@@ -59,23 +60,23 @@ expect.extend({
       };
     }
 
-    if (typeof received.thought_number !== 'number' || received.thought_number < 1) {
+    if (typeof received.thoughtNumber !== 'number' || received.thoughtNumber < 1) {
       return {
-        message: () => `Expected thought_number to be a positive number, got ${received.thought_number}`,
+        message: () => `Expected thoughtNumber to be a positive number, got ${received.thoughtNumber}`,
         pass: false,
       };
     }
 
-    if (typeof received.total_thoughts !== 'number' || received.total_thoughts < 1) {
+    if (typeof received.totalThoughts !== 'number' || received.totalThoughts < 1) {
       return {
-        message: () => `Expected total_thoughts to be a positive number, got ${received.total_thoughts}`,
+        message: () => `Expected totalThoughts to be a positive number, got ${received.totalThoughts}`,
         pass: false,
       };
     }
 
-    if (typeof received.next_thought_needed !== 'boolean') {
+    if (typeof received.nextThoughtNeeded !== 'boolean') {
       return {
-        message: () => `Expected next_thought_needed to be a boolean, got ${typeof received.next_thought_needed}`,
+        message: () => `Expected nextThoughtNeeded to be a boolean, got ${typeof received.nextThoughtNeeded}`,
         pass: false,
       };
     }
@@ -116,4 +117,4 @@ expect.extend({
 });
 
 // Export to make this file a module (required for global augmentation)
-export {};
+export { };

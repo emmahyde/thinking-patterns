@@ -32,14 +32,14 @@ describe('Schema Integration Tests', () => {
       // Create a complete workflow that uses all schemas
       const toolRecommendations: ToolRecommendation[] = [
         ToolRecommendationSchema.parse({
-          tool_name: "sequentialthinking",
+          toolName: "sequential_thinking",
           confidence: 0.9,
           rationale: "Best for systematic analysis",
           priority: 1,
-          alternative_tools: ["mentalmodel", "debugging"]
+          alternativeTools: ["mental_model", "debugging"]
         }),
         ToolRecommendationSchema.parse({
-          tool_name: "mentalmodel",
+          toolName: "mental_model",
           confidence: 0.7,
           rationale: "Good for understanding structure",
           priority: 2
@@ -47,104 +47,114 @@ describe('Schema Integration Tests', () => {
       ];
 
       const currentStep: CurrentStep = CurrentStepSchema.parse({
-        step_description: "Analyze the problem systematically",
-        recommended_tools: toolRecommendations,
-        expected_outcome: "Clear understanding of the problem",
-        next_step_conditions: ["Analysis complete", "Key insights identified"],
-        step_number: 2,
-        estimated_duration: "15 minutes",
-        complexity_level: "high"
+        stepDescription: "Analyze the problem systematically",
+        recommendedTools: toolRecommendations,
+        expectedOutcome: "Clear understanding of the problem",
+        nextStepConditions: ["Analysis complete", "Key insights identified"],
+        stepNumber: 2,
+        estimatedDuration: "15 minutes",
+        complexityLevel: "high"
       });
 
       const previousSteps: StepRecommendation[] = [
         StepRecommendationSchema.parse({
-          step_description: "Initial problem identification",
-          recommended_tools: toolRecommendations.slice(1),
-          expected_outcome: "Problem clearly defined",
-          next_step_conditions: ["Problem scope understood"]
+          stepDescription: "Initial problem identification",
+          recommendedTools: toolRecommendations.slice(1),
+          expectedOutcome: "Problem clearly defined",
+          nextStepConditions: ["Problem scope understood"]
         })
       ];
 
       const toolHistory: ToolUsageHistory[] = [
         ToolUsageHistorySchema.parse({
-          tool_name: "mentalmodel",
-          used_at: "2024-01-01T10:00:00Z",
-          effectiveness_score: 0.85
+          toolName: "mental_model",
+          usedAt: "2024-01-01T10:00:00Z",
+          effectivenessScore: 0.85
         }),
         ToolUsageHistorySchema.parse({
-          tool_name: "sequentialthinking",
-          used_at: "2024-01-01T10:15:00Z",
-          effectiveness_score: 0.92
+          toolName: "sequential_thinking",
+          usedAt: "2024-01-01T10:15:00Z",
+          effectivenessScore: 0.92
         })
       ];
 
       const thoughtData: ThoughtData = ThoughtSchema.parse({
         thought: "Based on the mental model analysis, I need to break this down systematically",
-        thought_number: 2,
-        total_thoughts: 5,
-        next_thought_needed: true,
-        is_revision: false,
-        current_step: currentStep,
-        previous_steps: previousSteps,
-        remaining_steps: ["Synthesis", "Conclusion", "Validation"],
-        tool_usage_history: toolHistory
+        thoughtNumber: 2,
+        totalThoughts: 5,
+        nextThoughtNeeded: true,
+        isRevision: false,
+        currentStep: currentStep,
+        previousSteps: previousSteps,
+        remainingSteps: ["Synthesis", "Conclusion", "Validation"],
+        toolUsageHistory: toolHistory
       });
 
       // Verify the integrated structure
-      expect(thoughtData).toBeValidThoughtData();
-      expect(thoughtData.current_step?.recommended_tools).toHaveLength(2);
-      expect(thoughtData.previous_steps).toHaveLength(1);
-      expect(thoughtData.tool_usage_history).toHaveLength(2);
-      expect(thoughtData.remaining_steps).toHaveLength(3);
+      expect(thoughtData).toMatchObject({
+        thought: expect.any(String),
+        thoughtNumber: expect.any(Number),
+        totalThoughts: expect.any(Number),
+        nextThoughtNeeded: expect.any(Boolean)
+      });
+      expect(thoughtData.currentStep?.recommendedTools).toHaveLength(2);
+      expect(thoughtData.previousSteps).toHaveLength(1);
+      expect(thoughtData.toolUsageHistory).toHaveLength(2);
+      expect(thoughtData.remainingSteps).toHaveLength(3);
 
       // Verify tool recommendations are properly nested
-      expect(thoughtData.current_step?.recommended_tools[0].tool_name).toBe("sequentialthinking");
-      expect(thoughtData.current_step?.recommended_tools[0].confidence).toBe(0.9);
+      expect(thoughtData.currentStep?.recommendedTools[0].toolName).toBe("sequential_thinking");
+      expect(thoughtData.currentStep?.recommendedTools[0].confidence).toBe(0.9);
 
       // Verify tool history integration
-      expect(thoughtData.tool_usage_history?.[1].tool_name).toBe("sequentialthinking");
-      expect(thoughtData.tool_usage_history?.[1].effectiveness_score).toBe(0.92);
+      expect(thoughtData.toolUsageHistory?.[1].toolName).toBe("sequential_thinking");
+      expect(thoughtData.toolUsageHistory?.[1].effectivenessScore).toBe(0.92);
     });
 
     it('should validate tool context integration with other schemas', () => {
       const context: ToolContext = ToolContextSchema.parse({
-        available_tools: ["sequentialthinking", "mentalmodel", "debugging", "stochastic"],
-        user_preferences: {
+        availableTools: ["sequential_thinking", "mental_model", "debugging", "stochastic"],
+        userPreferences: {
           style: "detailed",
           format: "structured",
           verbosity: "high"
         },
-        session_history: [
+        sessionHistory: [
           "Previous analysis of similar problem",
           "Used mental model successfully",
           "Sequential thinking helped break down complexity"
         ],
-        problem_domain: "complex_analysis"
+        problemDomain: "complexAnalysis"
       });
 
       // Create thought data that references tools from the context
       const thoughtWithContext: ThoughtData = ThoughtSchema.parse({
         thought: "Using the available tools from context to approach this problem",
-        thought_number: 1,
-        total_thoughts: 3,
-        next_thought_needed: true,
-        current_step: {
-          step_description: "Select appropriate tools based on context",
-          recommended_tools: context.available_tools.slice(0, 2).map(toolName => ({
-            tool_name: toolName,
+        thoughtNumber: 1,
+        totalThoughts: 3,
+        nextThoughtNeeded: true,
+        currentStep: {
+          stepDescription: "Select appropriate tools based on context",
+          recommendedTools: context.availableTools.slice(0, 2).map(toolName => ({
+            toolName: toolName,
             confidence: 0.8,
             rationale: `Tool ${toolName} is available in context`,
             priority: 1
           })),
-          expected_outcome: "Optimal tool selection",
-          next_step_conditions: ["Tools selected", "Context considered"]
+          expectedOutcome: "Optimal tool selection",
+          nextStepConditions: ["Tools selected", "Context considered"]
         }
       });
 
-      expect(thoughtWithContext).toBeValidThoughtData();
-      expect(thoughtWithContext.current_step?.recommended_tools).toHaveLength(2);
-      expect(thoughtWithContext.current_step?.recommended_tools[0].tool_name).toBe("sequentialthinking");
-      expect(thoughtWithContext.current_step?.recommended_tools[1].tool_name).toBe("mentalmodel");
+      expect(thoughtWithContext).toMatchObject({
+        thought: expect.any(String),
+        thoughtNumber: expect.any(Number),
+        totalThoughts: expect.any(Number),
+        nextThoughtNeeded: expect.any(Boolean)
+      });
+      expect(thoughtWithContext.currentStep?.recommendedTools).toHaveLength(2);
+      expect(thoughtWithContext.currentStep?.recommendedTools[0].toolName).toBe("sequential_thinking");
+      expect(thoughtWithContext.currentStep?.recommendedTools[1].toolName).toBe("mental_model");
     });
   });
 
@@ -152,114 +162,119 @@ describe('Schema Integration Tests', () => {
     it('should handle deeply nested schema structures', () => {
       const deeplyNestedThought = {
         thought: "This tests deep nesting of all schema types",
-        thought_number: 3,
-        total_thoughts: 5,
-        next_thought_needed: true,
-        current_step: {
-          step_description: "Deep analysis step",
-          recommended_tools: [
+        thoughtNumber: 3,
+        totalThoughts: 5,
+        nextThoughtNeeded: true,
+        currentStep: {
+          stepDescription: "Deep analysis step",
+          recommendedTools: [
             {
-              tool_name: "sequentialthinking",
+              toolName: "sequential_thinking",
               confidence: 0.95,
               rationale: "Perfect for deep analysis",
               priority: 1,
-              alternative_tools: ["mentalmodel", "debugging", "stochastic"]
+              alternativeTools: ["mental_model", "debugging", "stochastic"]
             },
             {
-              tool_name: "collaborative",
+              toolName: "collaborative",
               confidence: 0.8,
               rationale: "Good for complex problems",
               priority: 2,
-              alternative_tools: ["mentalmodel"]
+              alternativeTools: ["mental_model"]
             }
           ],
-          expected_outcome: "Comprehensive understanding",
-          next_step_conditions: [
+          expectedOutcome: "Comprehensive understanding",
+          nextStepConditions: [
             "All aspects analyzed",
             "Edge cases considered",
             "Alternative approaches evaluated"
           ],
-          step_number: 3,
-          estimated_duration: "25 minutes",
-          complexity_level: "high" as const
+          stepNumber: 3,
+          estimatedDuration: "25 minutes",
+          complexityLevel: "high" as const
         },
-        previous_steps: [
+        previousSteps: [
           {
-            step_description: "Initial exploration",
-            recommended_tools: [
+            stepDescription: "Initial exploration",
+            recommendedTools: [
               {
-                tool_name: "mentalmodel",
+                toolName: "mental_model",
                 confidence: 0.7,
                 rationale: "Good starting point",
                 priority: 1
               }
             ],
-            expected_outcome: "Problem framework",
-            next_step_conditions: ["Framework established"]
+            expectedOutcome: "Problem framework",
+            nextStepConditions: ["Framework established"]
           },
           {
-            step_description: "Detailed analysis",
-            recommended_tools: [
+            stepDescription: "Detailed analysis",
+            recommendedTools: [
               {
-                tool_name: "debugging",
+                toolName: "debugging",
                 confidence: 0.85,
                 rationale: "Systematic approach needed",
                 priority: 1
               },
               {
-                tool_name: "sequentialthinking",
+                toolName: "sequential_thinking",
                 confidence: 0.9,
                 rationale: "Step-by-step breakdown",
                 priority: 2
               }
             ],
-            expected_outcome: "Detailed understanding",
-            next_step_conditions: ["Analysis complete", "Patterns identified"]
+            expectedOutcome: "Detailed understanding",
+            nextStepConditions: ["Analysis complete", "Patterns identified"]
           }
         ],
-        remaining_steps: [
+        remainingSteps: [
           "Synthesis and integration",
           "Solution formulation"
         ],
-        tool_usage_history: [
+        toolUsageHistory: [
           {
-            tool_name: "mentalmodel",
-            used_at: "2024-01-01T09:00:00Z",
-            effectiveness_score: 0.7
+            toolName: "mental_model",
+            usedAt: "2024-01-01T09:00:00Z",
+            effectivenessScore: 0.7
           },
           {
-            tool_name: "debugging",
-            used_at: "2024-01-01T09:30:00Z",
-            effectiveness_score: 0.85
+            toolName: "debugging",
+            usedAt: "2024-01-01T09:30:00Z",
+            effectivenessScore: 0.85
           },
           {
-            tool_name: "sequentialthinking",
-            used_at: "2024-01-01T10:00:00Z",
-            effectiveness_score: 0.9
+            toolName: "sequential_thinking",
+            usedAt: "2024-01-01T10:00:00Z",
+            effectivenessScore: 0.9
           }
         ]
       };
 
       const result = ThoughtSchema.parse(deeplyNestedThought);
 
-      expect(result).toBeValidThoughtData();
-      expect(result.current_step?.recommended_tools).toHaveLength(2);
-      expect(result.previous_steps).toHaveLength(2);
-      expect(result.tool_usage_history).toHaveLength(3);
+      expect(result).toMatchObject({
+        thought: expect.any(String),
+        thoughtNumber: expect.any(Number),
+        totalThoughts: expect.any(Number),
+        nextThoughtNeeded: expect.any(Boolean)
+      });
+      expect(result.currentStep?.recommendedTools).toHaveLength(2);
+      expect(result.previousSteps).toHaveLength(2);
+      expect(result.toolUsageHistory).toHaveLength(3);
 
       // Verify nested tool recommendations
-      expect(result.current_step?.recommended_tools[0].alternative_tools).toHaveLength(3);
-      expect(result.previous_steps?.[1].recommended_tools).toHaveLength(2);
+      expect(result.currentStep?.recommendedTools[0].alternativeTools).toHaveLength(3);
+      expect(result.previousSteps?.[1].recommendedTools).toHaveLength(2);
 
       // Verify consistency across the structure
       const allRecommendedTools = [
-        ...(result.current_step?.recommended_tools || []),
-        ...(result.previous_steps?.flatMap(step => step.recommended_tools) || [])
+        ...(result.currentStep?.recommendedTools || []),
+        ...(result.previousSteps?.flatMap(step => step.recommendedTools) || [])
       ];
-      const allHistoryTools = result.tool_usage_history?.map(h => h.tool_name) || [];
+      const allHistoryTools = result.toolUsageHistory?.map(h => h.toolName) || [];
 
       // Some recommended tools should appear in history
-      const recommendedToolNames = allRecommendedTools.map(t => t.tool_name);
+      const recommendedToolNames = allRecommendedTools.map(t => t.toolName);
       const intersection = recommendedToolNames.filter(name => allHistoryTools.includes(name));
       expect(intersection.length).toBeGreaterThan(0);
     });
@@ -268,37 +283,37 @@ describe('Schema Integration Tests', () => {
       const mixedComplexitySteps: StepRecommendation[] = [
         // Simple step
         {
-          step_description: "Simple initial step",
-          recommended_tools: [{
-            tool_name: "mentalmodel",
+          stepDescription: "Simple initial step",
+          recommendedTools: [{
+            toolName: "mental_model",
             confidence: 0.8,
             rationale: "Basic framework",
             priority: 1
           }],
-          expected_outcome: "Basic understanding",
-          next_step_conditions: ["Basics covered"]
+          expectedOutcome: "Basic understanding",
+          nextStepConditions: ["Basics covered"]
         },
         // Complex step
         {
-          step_description: "Complex analytical step",
-          recommended_tools: [
+          stepDescription: "Complex analytical step",
+          recommendedTools: [
             {
-              tool_name: "sequentialthinking",
+              toolName: "sequential_thinking",
               confidence: 0.95,
               rationale: "Systematic breakdown needed",
               priority: 1,
-              alternative_tools: ["debugging", "stochastic", "collaborative"]
+              alternativeTools: ["debugging", "stochastic", "collaborative"]
             },
             {
-              tool_name: "debugging",
+              toolName: "debugging",
               confidence: 0.85,
               rationale: "Error checking required",
               priority: 2,
-              alternative_tools: ["sequentialthinking"]
+              alternativeTools: ["sequential_thinking"]
             }
           ],
-          expected_outcome: "Comprehensive analysis complete",
-          next_step_conditions: [
+          expectedOutcome: "Comprehensive analysis complete",
+          nextStepConditions: [
             "All variables considered",
             "Edge cases identified",
             "Alternative solutions explored"
@@ -312,20 +327,20 @@ describe('Schema Integration Tests', () => {
       );
 
       expect(validatedSteps).toHaveLength(2);
-      expect(validatedSteps[0].recommended_tools).toHaveLength(1);
-      expect(validatedSteps[1].recommended_tools).toHaveLength(2);
-      expect(validatedSteps[1].recommended_tools[0].alternative_tools).toHaveLength(3);
+      expect(validatedSteps[0].recommendedTools).toHaveLength(1);
+      expect(validatedSteps[1].recommendedTools).toHaveLength(2);
+      expect(validatedSteps[1].recommendedTools[0].alternativeTools).toHaveLength(3);
 
       // Use in a ThoughtData structure
       const thoughtWithMixedSteps = ThoughtSchema.parse({
         thought: "Processing steps of varying complexity",
-        thought_number: 2,
-        total_thoughts: 3,
-        next_thought_needed: true,
-        previous_steps: validatedSteps
+        thoughtNumber: 2,
+        totalThoughts: 3,
+        nextThoughtNeeded: true,
+        previousSteps: validatedSteps
       });
 
-      expect(thoughtWithMixedSteps.previous_steps).toHaveLength(2);
+      expect(thoughtWithMixedSteps.previousSteps).toHaveLength(2);
     });
   });
 
@@ -356,19 +371,19 @@ describe('Schema Integration Tests', () => {
 
     it('should handle complex nested structures without performance degradation', () => {
       const complexThoughtData = createMockThoughtData({
-        current_step: createMockCurrentStep({
-          recommended_tools: generateLargeToolRecommendations(10)
+        currentStep: createMockCurrentStep({
+          recommendedTools: generateLargeToolRecommendations(10)
         }),
-        previous_steps: Array.from({ length: 5 }, () => ({
-          step_description: "Previous step",
-          recommended_tools: generateLargeToolRecommendations(5),
-          expected_outcome: "Step outcome",
-          next_step_conditions: ["Condition 1", "Condition 2"]
+        previousSteps: Array.from({ length: 5 }, () => ({
+          stepDescription: "Previous step",
+          recommendedTools: generateLargeToolRecommendations(5),
+          expectedOutcome: "Step outcome",
+          nextStepConditions: ["Condition 1", "Condition 2"]
         })),
-        tool_usage_history: Array.from({ length: 20 }, (_, i) => ({
-          tool_name: `tool_${i}`,
-          used_at: new Date().toISOString(),
-          effectiveness_score: Math.random()
+        toolUsageHistory: Array.from({ length: 20 }, (_, i) => ({
+          toolName: `tool_${i}`,
+          usedAt: new Date().toISOString(),
+          effectivenessScore: Math.random()
         }))
       });
 
@@ -376,10 +391,15 @@ describe('Schema Integration Tests', () => {
       const result = ThoughtSchema.parse(complexThoughtData);
       const elapsed = Date.now() - start;
 
-      expect(result).toBeValidThoughtData();
-      expect(result.current_step?.recommended_tools).toHaveLength(10);
-      expect(result.previous_steps).toHaveLength(5);
-      expect(result.tool_usage_history).toHaveLength(20);
+      expect(result).toMatchObject({
+        thought: expect.any(String),
+        thoughtNumber: expect.any(Number),
+        totalThoughts: expect.any(Number),
+        nextThoughtNeeded: expect.any(Boolean)
+      });
+      expect(result.currentStep?.recommendedTools).toHaveLength(10);
+      expect(result.previousSteps).toHaveLength(5);
+      expect(result.toolUsageHistory).toHaveLength(20);
       expect(elapsed).toBeLessThan(100); // Should be very fast for single validation
     });
   });
@@ -388,27 +408,27 @@ describe('Schema Integration Tests', () => {
     it('should provide detailed error paths for nested validation failures', () => {
       const invalidNestedStructure = {
         thought: "Valid thought",
-        thought_number: 1,
-        total_thoughts: 3,
-        next_thought_needed: true,
-        current_step: {
-          step_description: "Valid description",
-          recommended_tools: [
+        thoughtNumber: 1,
+        totalThoughts: 3,
+        nextThoughtNeeded: true,
+        currentStep: {
+          stepDescription: "Valid description",
+          recommendedTools: [
             {
-              tool_name: "valid_tool",
+              toolName: "validTool",
               confidence: 1.5, // Invalid - greater than 1
               rationale: "Valid rationale",
               priority: 1
             },
             {
-              tool_name: "", // Invalid - empty string
+              toolName: "", // Invalid - empty string
               confidence: 0.8,
               rationale: "Valid rationale",
               priority: "invalid" // Invalid - should be number
             }
           ],
-          expected_outcome: "Valid outcome",
-          next_step_conditions: ["Valid condition"]
+          expectedOutcome: "Valid outcome",
+          nextStepConditions: ["Valid condition"]
         }
       };
 
@@ -420,38 +440,43 @@ describe('Schema Integration Tests', () => {
 
         // Should have errors for nested paths
         const errorPaths = error.errors.map((err: any) => err.path.join('.'));
-        expect(errorPaths.some((path: string) => path.includes('current_step'))).toBe(true);
-        expect(errorPaths.some((path: string) => path.includes('recommended_tools'))).toBe(true);
+        expect(errorPaths.some((path: string) => path.includes('currentStep'))).toBe(true);
+        expect(errorPaths.some((path: string) => path.includes('recommendedTools'))).toBe(true);
       }
     });
 
     it('should validate partial schemas when some optional fields fail', () => {
       const partiallyValidData = {
         thought: "Valid thought",
-        thought_number: 1,
-        total_thoughts: 3,
-        next_thought_needed: true,
+        thoughtNumber: 1,
+        totalThoughts: 3,
+        nextThoughtNeeded: true,
         // Valid optional field
-        is_revision: false,
+        isRevision: false,
         // Invalid optional field that should be ignored in this test
-        tool_usage_history: [
+        toolUsageHistory: [
           {
-            tool_name: "valid_tool",
-            used_at: "2024-01-01T10:00:00Z",
-            effectiveness_score: 0.8
+            toolName: "validTool",
+            usedAt: "2024-01-01T10:00:00Z",
+            effectivenessScore: 0.8
           },
           {
-            tool_name: "another_tool",
-            used_at: "invalid_date", // This might be okay as it's just a string
-            effectiveness_score: 1.2 // This might be okay as there's no constraint
+            toolName: "anotherTool",
+            usedAt: "invalidDate", // This might be okay as it's just a string
+            effectivenessScore: 1.2 // This might be okay as there's no constraint
           }
         ]
       };
 
       // This should pass because the schema doesn't enforce date format or score range for tool usage
       const result = ThoughtSchema.parse(partiallyValidData);
-      expect(result).toBeValidThoughtData();
-      expect(result.tool_usage_history).toHaveLength(2);
+      expect(result).toMatchObject({
+        thought: expect.any(String),
+        thoughtNumber: expect.any(Number),
+        totalThoughts: expect.any(Number),
+        nextThoughtNeeded: expect.any(Boolean)
+      });
+      expect(result.toolUsageHistory).toHaveLength(2);
     });
   });
 
@@ -460,41 +485,46 @@ describe('Schema Integration Tests', () => {
       // Test with minimal required fields (like an older version might have)
       const minimalThought = {
         thought: "Minimal thought for compatibility test",
-        thought_number: 1,
-        total_thoughts: 1,
-        next_thought_needed: false
+        thoughtNumber: 1,
+        totalThoughts: 1,
+        nextThoughtNeeded: false
       };
 
       const result = ThoughtSchema.parse(minimalThought);
-      expect(result).toBeValidThoughtData();
+      expect(result).toMatchObject({
+        thought: expect.any(String),
+        thoughtNumber: expect.any(Number),
+        totalThoughts: expect.any(Number),
+        nextThoughtNeeded: expect.any(Boolean)
+      });
 
       // All optional fields should be undefined
-      expect(result.is_revision).toBeUndefined();
-      expect(result.current_step).toBeUndefined();
-      expect(result.previous_steps).toBeUndefined();
-      expect(result.tool_usage_history).toBeUndefined();
+      expect(result.isRevision).toBeUndefined();
+      expect(result.currentStep).toBeUndefined();
+      expect(result.previousSteps).toBeUndefined();
+      expect(result.toolUsageHistory).toBeUndefined();
     });
 
     it('should support schema extension patterns', () => {
       // Test that the schema can be extended for future use
       const extendedThoughtSchema = ThoughtSchema.extend({
         // Future fields that might be added
-        experimental_field: z.string().optional(),
+        experimentalField: z.string().optional(),
         version: z.string().default("1.0")
       });
 
       const extendedData = {
         thought: "Extended thought",
-        thought_number: 1,
-        total_thoughts: 1,
-        next_thought_needed: false,
-        experimental_field: "test_value",
+        thoughtNumber: 1,
+        totalThoughts: 1,
+        nextThoughtNeeded: false,
+        experimentalField: "testValue",
         version: "1.1"
       };
 
       const result = extendedThoughtSchema.parse(extendedData);
       expect(result.thought).toBe("Extended thought");
-      expect((result as any).experimental_field).toBe("test_value");
+      expect((result as any).experimentalField).toBe("testValue");
       expect((result as any).version).toBe("1.1");
     });
 
@@ -512,18 +542,23 @@ describe('Schema Integration Tests', () => {
       // Transform to new format
       const transformedData = {
         thought: oldFormatData.thought,
-        thought_number: oldFormatData.thoughtNumber,
-        total_thoughts: oldFormatData.totalThoughts,
-        next_thought_needed: oldFormatData.nextThoughtNeeded,
-        is_revision: oldFormatData.isRevision
+        thoughtNumber: oldFormatData.thoughtNumber,
+        totalThoughts: oldFormatData.totalThoughts,
+        nextThoughtNeeded: oldFormatData.nextThoughtNeeded,
+        isRevision: oldFormatData.isRevision
       };
 
       const result = ThoughtSchema.parse(transformedData);
-      expect(result).toBeValidThoughtData();
-      expect(result.thought_number).toBe(1);
-      expect(result.total_thoughts).toBe(3);
-      expect(result.next_thought_needed).toBe(true);
-      expect(result.is_revision).toBe(false);
+      expect(result).toMatchObject({
+        thought: expect.any(String),
+        thoughtNumber: expect.any(Number),
+        totalThoughts: expect.any(Number),
+        nextThoughtNeeded: expect.any(Boolean)
+      });
+      expect(result.thoughtNumber).toBe(1);
+      expect(result.totalThoughts).toBe(3);
+      expect(result.nextThoughtNeeded).toBe(true);
+      expect(result.isRevision).toBe(false);
     });
   });
 });

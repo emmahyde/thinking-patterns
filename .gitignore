@@ -1,4 +1,4 @@
-node_modules/* 
+nodeModules/*
 .DS_Store
 .history
 .git

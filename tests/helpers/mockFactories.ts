@@ -10,45 +10,45 @@ import { BaseToolServer } from '../../src/base/BaseToolServer.js';
 // Mock factory for creating ThoughtData with customizable fields
 export const createMockThoughtData = (overrides: Partial<ThoughtData> = {}): ThoughtData => ({
   thought: "Mock thought for testing",
-  thought_number: 1,
-  total_thoughts: 3,
-  next_thought_needed: true,
-  is_revision: false,
-  revises_thought: undefined,
-  branch_from_thought: undefined,
-  branch_id: undefined,
-  needs_more_thoughts: false,
-  current_step: undefined,
-  previous_steps: undefined,
-  remaining_steps: undefined,
-  tool_usage_history: undefined,
+  thoughtNumber: 1,
+  totalThoughts: 3,
+  nextThoughtNeeded: true,
+  isRevision: false,
+  revisesThought: undefined,
+  branchFromThought: undefined,
+  branchId: undefined,
+  needsMoreThoughts: false,
+  currentStep: undefined,
+  previousSteps: undefined,
+  remainingSteps: undefined,
+  toolUsageHistory: undefined,
   ...overrides,
 });
 
 // Mock factory for ToolRecommendation
 export const createMockToolRecommendation = (overrides: Partial<ToolRecommendation> = {}): ToolRecommendation => ({
-  tool_name: "sequentialthinking",
+  toolName: "sequential_thinking",
   confidence: 0.8,
   rationale: "Mock rationale for testing",
   priority: 1,
-  alternative_tools: ["mentalmodel", "debugging"],
+  alternativeTools: ["mental_model", "debugging"],
   ...overrides,
 });
 
 // Mock factory for CurrentStep
 export const createMockCurrentStep = (overrides: Partial<CurrentStep> = {}): CurrentStep => ({
-  step_description: "Mock step description",
-  recommended_tools: [createMockToolRecommendation()],
-  expected_outcome: "Mock expected outcome",
-  next_step_conditions: ["Condition 1", "Condition 2"],
-  step_number: 1,
-  estimated_duration: "5 minutes",
-  complexity_level: "medium" as const,
+  stepDescription: "Mock step description",
+  recommendedTools: [createMockToolRecommendation()],
+  expectedOutcome: "Mock expected outcome",
+  nextStepConditions: ["Condition 1", "Condition 2"],
+  stepNumber: 1,
+  estimatedDuration: "5 minutes",
+  complexityLevel: "medium" as const,
   ...overrides,
 });
 
 // Mock factory for MCP request
-export const createMockMcpRequest = (toolName: string = "sequentialthinking", args: any = {}) => ({
+export const createMockMcpRequest = (toolName: string = "sequential_thinking", args: any = {}) => ({
   jsonrpc: "2.0" as const,
   id: `mock-request-${Date.now()}`,
   method: "tools/call" as const,
@@ -210,19 +210,19 @@ export const generateLargeThoughtHistory = (count: number = 100): ThoughtData[] 
   return Array.from({ length: count }, (_, i) =>
     createMockThoughtData({
       thought: `Thought ${i + 1}: ${createRandomString(50)}`,
-      thought_number: i + 1,
-      total_thoughts: count,
-      next_thought_needed: i < count - 1,
+      thoughtNumber: i + 1,
+      totalThoughts: count,
+      nextThoughtNeeded: i < count - 1,
     })
   );
 };
 
 export const generateLargeToolRecommendations = (count: number = 50): ToolRecommendation[] => {
-  const tools = ["sequentialthinking", "mentalmodel", "debugging", "stochastic", "collaborative"];
+  const tools = ["sequential_thinking", "mental_model", "debugging", "stochastic", "collaborative"];
 
   return Array.from({ length: count }, (_, i) =>
     createMockToolRecommendation({
-      tool_name: tools[i % tools.length],
+      toolName: tools[i % tools.length],
       confidence: Math.random(),
       priority: i + 1,
       rationale: `Rationale ${i + 1}: ${createRandomString(30)}`,

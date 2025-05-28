@@ -1,7 +1,13 @@
 /**
  * UI Utilities for consistent formatting and display
  * Provides shared utilities for creating boxes, headers, and sections
+ *
+ * Modernized implementation using boxen + ecosystem packages
  */
+
+import boxen from 'boxen';
+import stringWidth from 'string-width';
+import wrapAnsi from 'wrap-ansi';
 
 // ANSI color codes for console output
 export const Colors = {
@@ -57,22 +63,8 @@ export const DEFAULT_BOX_CONFIG: BoxConfig = {
 /**
  * Calculate the display width of a string, accounting for ANSI escape sequences and emojis
  */
-function getDisplayWidth(text: string): number {
-  // Remove ANSI escape sequences
-  const cleanText = text.replace(/\x1b\[[0-9;]*m/g, '');
-
-  // Count emoji and other unicode characters as 2 width
-  let width = 0;
-  for (const char of cleanText) {
-    const code = char.codePointAt(0);
-    if (code && code > 0x1F600) {
-      // Emoji and other wide characters
-      width += 2;
-    } else {
-      width += 1;
-    }
-  }
-  return width;
+export function getDisplayWidth(text: string): number {
+  return stringWidth(text);
 }
 
 /**
@@ -92,31 +84,7 @@ function wrapText(text: string, width: number): string[] {
     return [text];
   }
 
-  const words = text.split(' ');
-  const lines: string[] = [];
-  let currentLine = '';
-
-  for (const word of words) {
-    const testLine = currentLine ? `${currentLine} ${word}` : word;
-
-    if (getDisplayWidth(testLine) <= width) {
-      currentLine = testLine;
-    } else {
-      if (currentLine) {
-        lines.push(currentLine);
-        currentLine = word;
-      } else {
-        // Word is too long, break it
-        lines.push(word.substring(0, width - 3) + '...');
-      }
-    }
-  }
-
-  if (currentLine) {
-    lines.push(currentLine);
-  }
-
-  return lines;
+  return wrapAnsi(text, width, { hard: true }).split('\n');
 }
 
 /**

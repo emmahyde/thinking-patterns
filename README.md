@@ -66,7 +66,7 @@ npx @waldzellai/thinking-patterns
 
 ### Mental Models
 ```typescript
-const response = await mcp.callTool("mentalmodel", {
+const response = await mcp.callTool("mental_model", {
   modelName: "first_principles",
   problem: "How to implement a new feature?",
   steps: [
@@ -79,7 +79,7 @@ const response = await mcp.callTool("mentalmodel", {
 
 ### Sequential Thinking
 ```typescript
-const response = await mcp.callTool("sequentialthinking", {
+const response = await mcp.callTool("sequential_thinking", {
   thought: "Initial analysis of the problem",
   thoughtNumber: 1,
   totalThoughts: 3,
@@ -90,7 +90,7 @@ const response = await mcp.callTool("sequentialthinking", {
 ### Stochastic Algorithms
 ```typescript
 // Markov Decision Process
-const response = await mcp.callTool("stochasticalgorithm", {
+const response = await mcp.callTool("stochastic_algorithm", {
   algorithm: "mdp",
   problem: "Optimize robot navigation policy",
   parameters: {
@@ -102,7 +102,7 @@ const response = await mcp.callTool("stochasticalgorithm", {
 });
 
 // Monte Carlo Tree Search
-const response = await mcp.callTool("stochasticalgorithm", {
+const response = await mcp.callTool("stochastic_algorithm", {
   algorithm: "mcts",
   problem: "Find optimal game moves",
   parameters: {
@@ -115,7 +115,7 @@ const response = await mcp.callTool("stochasticalgorithm", {
 
 ### Debugging Approaches
 ```typescript
-const response = await mcp.callTool("debuggingapproach", {
+const response = await mcp.callTool("debugging_approach", {
   approachName: "binary_search",
   issue: "Performance degradation in the system",
   steps: [
@@ -128,7 +128,7 @@ const response = await mcp.callTool("debuggingapproach", {
 
 ### Collaborative Reasoning
 ```typescript
-const response = await mcp.callTool("collaborativereasoning", {
+const response = await mcp.callTool("collaborative_reasoning", {
   topic: "System architecture decision",
   personas: [
     {
@@ -199,16 +199,16 @@ docker run -it emmahyde/thinking-patterns
 
 ## Available Tools
 
-1. **sequentialthinking** - Dynamic multi-step thinking with revision support
-2. **mentalmodel** - Structured mental models for problem-solving
-3. **debuggingapproach** - Systematic debugging methodologies
-4. **stochasticalgorithm** - Probabilistic algorithms for decision-making under uncertainty
-5. **collaborativereasoning** - Multi-perspective collaborative problem solving
-6. **decisionframework** - Structured decision analysis and rational choice
-7. **metacognitivemonitoring** - Self-assessment of knowledge and reasoning quality
-8. **scientificmethod** - Formal hypothesis testing and experimentation
-9. **structuredargumentation** - Dialectical reasoning and argument analysis
-10. **visualreasoning** - Diagram-based thinking and problem solving
+1. **sequential_thinking** - Dynamic multi-step thinking with revision support
+2. **mental_model** - Structured mental models for problem-solving
+3. **debugging_approach** - Systematic debugging methodologies
+4. **stochastic_algorithm** - Probabilistic algorithms for decision-making under uncertainty
+5. **collaborative_reasoning** - Multi-perspective collaborative problem solving
+6. **decision_framework** - Structured decision analysis and rational choice
+7. **metacognitive_monitoring** - Self-assessment of knowledge and reasoning quality
+8. **scientific_method** - Formal hypothesis testing and experimentation
+9. **structured_argumentation** - Dialectical reasoning and argument analysis
+10. **visual_reasoning** - Diagram-based thinking and problem solving
 
 ## Contributing
 

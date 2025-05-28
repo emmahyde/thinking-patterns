@@ -25,7 +25,10 @@
     "start": "node dist/index.js",
     "docker": "docker build -t waldzellai/thinking-patterns .",
     "dev": "npm run watch",
-    "test": "echo \"No tests yet\" && exit 0",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false",
     "lint": "echo \"No linting configured\" && exit 0",
     "deploy": "smithery deploy"
   },
@@ -36,7 +39,11 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.5.0",
     "@types/chalk": "^0.4.31",
+    "ascii-table3": "^0.9.0",
+    "boxen": "^8.0.1",
     "chalk": "^5.3.0",
+    "string-width": "^7.2.0",
+    "wrap-ansi": "^9.0.0",
     "yargs": "^17.7.2",
     "zod": "^3.25.30"
   },
@@ -46,6 +53,7 @@
     "@types/yargs": "^17.0.32",
     "jest": "^29.7.0",
     "jest-mock-extended": "^4.0.0-beta1",
+    "source-map": "^0.7.4",
     "ts-jest": "^29.3.4",
     "typescript": "^5.3.3"
   },
