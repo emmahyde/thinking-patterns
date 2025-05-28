@@ -1,6 +1,7 @@
 name: NPM tests
 
 on:
+  push:
   pull_request:
 
 jobs:
@@ -22,3 +23,4 @@ jobs:
 
     - name: Run tests
       run: npm run test:ci
+
