@@ -13,7 +13,6 @@ export default {
       {
         // ---- ts-jest options ----
         useESM: true,             // emit native ESM
-        isolatedModules: true,    // faster transpile-only mode
         tsconfig: {
           module: 'ESNext',       // ensure TS outputs ESM
           target: 'ES2020',

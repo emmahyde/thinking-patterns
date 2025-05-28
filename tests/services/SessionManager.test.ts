@@ -72,8 +72,8 @@ describe('InMemorySessionManager', () => {
         nextThoughtNeeded: false
       });
 
-      // Wait a moment to ensure different timestamp
-      await new Promise(resolve => setTimeout(resolve, 1));
+      // Wait a moment to ensure different timestamp (increased for CI reliability)
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       // Create new session with same ID
       manager.createSession(sessionId);
