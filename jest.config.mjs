@@ -1,6 +1,6 @@
 export default {
   preset: 'ts-jest/presets/default-esm',
-  extensionsToTreatAsEsm: ['.ts'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^#ansi-styles$': 'ansi-styles',
@@ -9,7 +9,7 @@ export default {
   collectCoverageFrom: ['src/**/*.ts'],
   coverageDirectory: 'coverage',
   transform: {
-    '^.+\\.ts$': ['ts-jest', { 
+    '^.+\\.ts$': ['ts-jest', {
       useESM: true,
       tsconfig: {
         module: 'ESNext',
@@ -18,8 +18,8 @@ export default {
     }],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(chalk|ansi-styles)/)'
+    'node_modules/(?!(string-width|strip-ansi|ansi-regex|boxen|wrap-ansi|ansi-styles|chalk|cli-boxes|camelcase|widest-line)/)'
   ],
-  moduleDirectories: ['node_modules'],
+  moduleDirectories: ['src', 'node_modules'],
   setupFilesAfterEnv: ['<rootDir>/tests/helpers/testSetup.ts'],
 };

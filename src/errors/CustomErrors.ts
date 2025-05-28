@@ -1,6 +1,6 @@
 export class ValidationError extends Error {
   public readonly code: string;
-  public readonly details?: Record<string, any>;
+  public readonly details?: Record<string, any> | null;
 
   constructor(message: string, details?: Record<string, any>) {
     super(message);
@@ -63,7 +63,7 @@ export class SecurityError extends Error {
 
 export class ProcessingError extends Error {
   public readonly code: string;
-  public readonly context?: Record<string, any>;
+  public readonly context?: Record<string, any> | null;
 
   constructor(message: string, context?: Record<string, any>) {
     super(message);
@@ -85,7 +85,7 @@ export class ProcessingError extends Error {
 export interface ErrorResponse {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, any> | null;
   timestamp: string;
   requestId?: string;
 }

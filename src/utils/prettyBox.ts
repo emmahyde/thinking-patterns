@@ -5,9 +5,8 @@
  * Modernized implementation using boxen + ecosystem packages
  */
 
-import boxen from 'boxen';
-import stringWidth from 'string-width';
-import wrapAnsi from 'wrap-ansi';
+var stringWidth = require('string-width');
+var wrapAnsi = require('wrap-ansi');
 
 // ANSI color codes for console output
 export const Colors = {
