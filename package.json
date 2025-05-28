@@ -54,7 +54,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.23",
     "@types/yargs": "^17.0.33",
-    "jest": "^29.7.0",
+    "jest": "^29.7.0", 
     "jest-mock-extended": "^4.0.0-beta1",
     "source-map": "^0.7.4",
     "ts-jest": "^29.3.4",
