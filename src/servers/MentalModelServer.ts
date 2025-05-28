@@ -24,8 +24,10 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
     // Format output using boxed utility
     const formattedOutput = this.formatMentalModelOutput(validInput);
 
-    // Log formatted output to console
-    console.error(formattedOutput);
+    // Log formatted output to console (suppress during tests)
+    if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
+      console.error(formattedOutput);
+    }
 
     return {
       modelName: validInput.modelName,

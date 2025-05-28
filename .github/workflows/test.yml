@@ -18,7 +18,7 @@ jobs:
         cache: 'node'
 
     - name: Install dependencies
-      run: npm install
+      run: npm install --frozen-lockfile
 
     - name: Run tests
-      run: npm run test --forceExit
+      run: npm run test:ci --forceExit

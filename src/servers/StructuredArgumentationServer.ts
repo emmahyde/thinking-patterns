@@ -24,8 +24,10 @@ export class StructuredArgumentationServer extends BaseToolServer<StructuredArgu
     // Format output using boxed utility
     const formattedOutput = this.formatArgumentationOutput(validInput);
 
-    // Log formatted output to console
-    console.error(formattedOutput);
+    // Log formatted output to console (suppress during tests)
+    if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
+      console.error(formattedOutput);
+    }
 
     return {
       claim: validInput.claim,

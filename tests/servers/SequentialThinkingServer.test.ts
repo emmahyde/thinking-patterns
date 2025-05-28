@@ -276,8 +276,14 @@ describe('SequentialThinkingServer', () => {
   });
 
   describe('console output', () => {
-    it('should log formatted output to console.error', () => {
+    it('should log formatted output to console.error when not in test environment', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Temporarily remove test environment indicators
+      const originalNodeEnv = process.env.NODE_ENV;
+      const originalJestWorker = process.env.JEST_WORKER_ID;
+      delete process.env.NODE_ENV;
+      delete process.env.JEST_WORKER_ID;
 
       const validInput = createMockThoughtData({
         thought: "Test thought for console output",
@@ -290,6 +296,26 @@ describe('SequentialThinkingServer', () => {
 
       expect(consoleSpy).toHaveBeenCalledTimes(1);
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('💭 Sequential Thinking'));
+
+      // Restore environment
+      if (originalNodeEnv !== undefined) process.env.NODE_ENV = originalNodeEnv;
+      if (originalJestWorker !== undefined) process.env.JEST_WORKER_ID = originalJestWorker;
+      consoleSpy.mockRestore();
+    });
+
+    it('should not log to console.error during tests', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const validInput = createMockThoughtData({
+        thought: "Test thought for console output",
+        thoughtNumber: 2,
+        totalThoughts: 5,
+        nextThoughtNeeded: true
+      });
+
+      server.process(validInput);
+
+      expect(consoleSpy).toHaveBeenCalledTimes(0);
 
       consoleSpy.mockRestore();
     });

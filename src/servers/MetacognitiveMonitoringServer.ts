@@ -24,8 +24,10 @@ export class MetacognitiveMonitoringServer extends BaseToolServer<MetacognitiveM
     // Format output using boxed utility
     const formattedOutput = this.formatMetacognitiveOutput(validInput);
 
-    // Log formatted output to console
-    console.error(formattedOutput);
+    // Log formatted output to console (suppress during tests)
+    if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
+      console.error(formattedOutput);
+    }
 
     return {
       task: validInput.task,
