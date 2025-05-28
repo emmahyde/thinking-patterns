@@ -1,25 +1,25 @@
 export default {
-  preset: 'ts-jest/presets/default-esm',
+  // Tell Jest to treat .ts/.tsx as modules
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-    '^#ansi-styles$': 'ansi-styles',
-  },
-  testMatch: ['**/tests/**/*.test.ts'],
-  collectCoverageFrom: ['src/**/*.ts'],
-  coverageDirectory: 'coverage',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
-      useESM: true,
-      tsconfig: {
-        module: 'ESNext',
-        moduleResolution: 'Node'
+    // Embed your ts-jest options here—no more globals block
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        // ---- ts-jest options ----
+        useESM: true,             // emit native ESM
+        isolatedModules: true,    // faster transpile-only mode
+        tsconfig: {
+          module: 'ESNext',       // ensure TS outputs ESM
+          target: 'ES2020',
+          esModuleInterop: true
+        }
+        // ------------------------
       }
-    }],
+    ]
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(string-width|strip-ansi|ansi-regex|boxen|wrap-ansi|ansi-styles|chalk|cli-boxes|camelcase|widest-line)/)'
-  ],
-  moduleDirectories: ['src', 'node_modules'],
-  setupFilesAfterEnv: ['<rootDir>/tests/helpers/testSetup.ts'],
+  testEnvironment: 'node',
+  // when running, still require:
+  // NODE_OPTIONS=--experimental-vm-modules npx jest
 };

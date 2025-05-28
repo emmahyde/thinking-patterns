@@ -25,10 +25,10 @@
     "start": "node dist/index.js",
     "docker": "docker build -t waldzellai/thinking-patterns .",
     "dev": "npm run watch",
-    "test": "npx --experimental-vm-modules node_modules/.bin/jest",
-    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
-    "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
-    "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --ci --coverage --watchAll=false",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --config jest.config.mjs",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules npx jest --config jest.config.mjs --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules npx jest --config jest.config.mjs --coverage",
+    "test:ci": "NODE_OPTIONS=--experimental-vm-modules npx jest --config jest.config.mjs --ci --coverage --watchAll=false",
     "lint": "echo \"No linting configured\" && exit 0",
     "deploy": "smithery deploy"
   },
@@ -81,6 +81,6 @@
     "cognitive-tools"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

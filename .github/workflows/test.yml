@@ -15,10 +15,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20.19'
-        cache: 'yarn'
+        cache: 'node'
 
     - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      run: npm install
 
-    - name: Run tests with coverage
-      run: yarn test
+    - name: Run tests
+      run: npm run test --forceExit

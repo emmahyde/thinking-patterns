@@ -1,5 +1,3 @@
-import { jest } from '@jest/globals';
-
 import { ScientificMethodServer } from '../../src/servers/ScientificMethodServer.js';
 
 describe('ScientificMethodServer', () => {
