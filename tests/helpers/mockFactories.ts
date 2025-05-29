@@ -4,7 +4,7 @@
 
 import { jest } from '@jest/globals';
 import { mockDeep, MockProxy } from 'jest-mock-extended';
-import { ThoughtData, ToolRecommendation, CurrentStep } from '../../src/schemas/ThoughtSchema.js';
+import { ThoughtData, ToolRecommendation, CurrentStep } from '../../src/schemas/SequentialThoughtSchema.js';
 import { BaseToolServer } from '../../src/base/BaseToolServer.js';
 
 // Mock factory for creating ThoughtData with customizable fields

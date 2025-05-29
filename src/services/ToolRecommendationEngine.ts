@@ -1,4 +1,4 @@
-import { ToolRecommendation, ToolContext, CurrentStep } from '../interfaces/ThoughtData.js';
+import { ToolRecommendation, ToolContext, CurrentStep } from '../interfaces/SequentialThoughtInterfaces.js';
 
 export class ToolRecommendationEngine {
   private toolDescriptions: Record<string, string> = {

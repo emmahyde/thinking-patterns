@@ -4,7 +4,7 @@
  */
 
 import {
-  ThoughtSchema,
+  SequentialThoughtSchema,
   ToolRecommendationSchema,
   StepRecommendationSchema,
   CurrentStepSchema,
@@ -13,7 +13,7 @@ import {
   type ThoughtData,
   type ToolRecommendation,
   type CurrentStep
-} from '../../src/schemas/ThoughtSchema.js';
+} from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   validThoughtData,
   validThoughtDataWithOptionals,
@@ -25,7 +25,7 @@ import { createMockThoughtData, createMockToolRecommendation } from '../helpers/
 describe('ThoughtSchema', () => {
   describe('valid input validation', () => {
     it('should validate minimal valid thought data', () => {
-      const result = ThoughtSchema.parse(validThoughtData);
+      const result = SequentialThoughtSchema.parse(validThoughtData);
 
       expect(result).toMatchObject({
         thought: expect.any(String),
@@ -40,7 +40,7 @@ describe('ThoughtSchema', () => {
     });
 
     it('should validate thought data with all optional fields', () => {
-      const result = ThoughtSchema.parse(validThoughtDataWithOptionals);
+      const result = SequentialThoughtSchema.parse(validThoughtDataWithOptionals);
 
       expect(result).toMatchObject({
         thought: expect.any(String),
@@ -56,7 +56,7 @@ describe('ThoughtSchema', () => {
     });
 
     it('should validate final thought data', () => {
-      const result = ThoughtSchema.parse(finalThoughtData);
+      const result = SequentialThoughtSchema.parse(finalThoughtData);
 
       expect(result).toMatchObject({
         thought: expect.any(String),
@@ -77,7 +77,7 @@ describe('ThoughtSchema', () => {
         // All optional fields undefined
       };
 
-      const result = ThoughtSchema.parse(input);
+      const result = SequentialThoughtSchema.parse(input);
 
       expect(result.isRevision).toBeUndefined();
       expect(result.revisesThought).toBeUndefined();
@@ -126,7 +126,7 @@ describe('ThoughtSchema', () => {
         }]
       };
 
-      const result = ThoughtSchema.parse(complexThought);
+      const result = SequentialThoughtSchema.parse(complexThought);
 
       expect(result).toMatchObject({
         thought: expect.any(String),
@@ -144,28 +144,28 @@ describe('ThoughtSchema', () => {
 
   describe('invalid input rejection', () => {
     it('should reject missing required fields', () => {
-      expect(() => ThoughtSchema.parse(invalidThoughtData.missingRequired))
+      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.missingRequired))
         .toThrow();
     });
 
     it('should reject invalid field types', () => {
-      expect(() => ThoughtSchema.parse(invalidThoughtData.invalidTypes))
+      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.invalidTypes))
         .toThrow();
     });
 
     it('should reject negative numbers', () => {
-      expect(() => ThoughtSchema.parse(invalidThoughtData.negativeNumbers))
+      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.negativeNumbers))
         .toThrow();
     });
 
     it('should reject invalid optional field values', () => {
-      expect(() => ThoughtSchema.parse(invalidThoughtData.invalidOptionals))
+      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.invalidOptionals))
         .toThrow();
     });
 
     it('should provide detailed error messages for validation failures', () => {
       try {
-        ThoughtSchema.parse({
+        SequentialThoughtSchema.parse({
           thought: 123, // Invalid type
           thoughtNumber: "not a number", // Invalid type
           totalThoughts: -1, // Invalid value
@@ -186,7 +186,7 @@ describe('ThoughtSchema', () => {
     });
 
     it('should reject null values for required fields', () => {
-      expect(() => ThoughtSchema.parse({
+      expect(() => SequentialThoughtSchema.parse({
         thought: null,
         thoughtNumber: 1,
         totalThoughts: 3,
@@ -195,7 +195,7 @@ describe('ThoughtSchema', () => {
     });
 
     it('should reject empty strings for thought field', () => {
-      expect(() => ThoughtSchema.parse({
+      expect(() => SequentialThoughtSchema.parse({
         thought: "",
         thoughtNumber: 1,
         totalThoughts: 3,
@@ -204,14 +204,14 @@ describe('ThoughtSchema', () => {
     });
 
     it('should reject zero values for positive number fields', () => {
-      expect(() => ThoughtSchema.parse({
+      expect(() => SequentialThoughtSchema.parse({
         thought: "Valid thought",
         thoughtNumber: 0, // Should be positive
         totalThoughts: 3,
         nextThoughtNeeded: true
       })).toThrow();
 
-      expect(() => ThoughtSchema.parse({
+      expect(() => SequentialThoughtSchema.parse({
         thought: "Valid thought",
         thoughtNumber: 1,
         totalThoughts: 0, // Should be positive
@@ -244,7 +244,7 @@ describe('ThoughtSchema', () => {
     });
 
     it('should maintain type safety for optional fields', () => {
-      const parsed = ThoughtSchema.parse(validThoughtDataWithOptionals);
+      const parsed = SequentialThoughtSchema.parse(validThoughtDataWithOptionals);
 
       // TypeScript should know these can be undefined
       if (parsed.isRevision !== undefined) {
@@ -271,7 +271,7 @@ describe('ThoughtSchema', () => {
         nextThoughtNeeded: false
       };
 
-      const result = ThoughtSchema.parse(data);
+      const result = SequentialThoughtSchema.parse(data);
       expect(result.thought).toBe(longThought);
       expect(result.thought.length).toBe(10000);
     });
@@ -284,7 +284,7 @@ describe('ThoughtSchema', () => {
         nextThoughtNeeded: true
       };
 
-      const result = ThoughtSchema.parse(data);
+      const result = SequentialThoughtSchema.parse(data);
       expect(result.thoughtNumber).toBe(Number.MAX_SAFE_INTEGER);
       expect(result.totalThoughts).toBe(Number.MAX_SAFE_INTEGER);
     });
@@ -298,7 +298,7 @@ describe('ThoughtSchema', () => {
         nextThoughtNeeded: false
       };
 
-      const result = ThoughtSchema.parse(data);
+      const result = SequentialThoughtSchema.parse(data);
       expect(result.thought).toBe(unicodeThought);
     });
 
@@ -311,13 +311,13 @@ describe('ThoughtSchema', () => {
         nextThoughtNeeded: false
       };
 
-      const result = ThoughtSchema.parse(data);
+      const result = SequentialThoughtSchema.parse(data);
       expect(result.thoughtNumber).toBe(5);
       expect(result.totalThoughts).toBe(3);
     });
 
     it('should handle floating point numbers by rejecting them', () => {
-      expect(() => ThoughtSchema.parse({
+      expect(() => SequentialThoughtSchema.parse({
         thought: "Float test",
         thoughtNumber: 1.5, // Should be integer
         totalThoughts: 3,
@@ -336,7 +336,7 @@ describe('ThoughtSchema', () => {
           totalThoughts: 1000
         });
 
-        const result = ThoughtSchema.parse(data);
+        const result = SequentialThoughtSchema.parse(data);
         expect(result).toMatchObject({
         thought: expect.any(String),
         thoughtNumber: expect.any(Number),
@@ -364,7 +364,7 @@ describe('ThoughtSchema', () => {
         toolUsageHistory: largeToolHistory
       };
 
-      const result = ThoughtSchema.parse(data);
+      const result = SequentialThoughtSchema.parse(data);
       expect(result.toolUsageHistory).toHaveLength(100);
     });
   });

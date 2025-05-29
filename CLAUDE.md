@@ -88,7 +88,7 @@ The `src/` directory contains:
 - Builds to `dist/index.js` executable
 - Deployed via Smithery platform
 - Docker image: `waldzellai/thinking-patterns`
-- NPM package: `@emmahyde/thought-patterns`
+- NPM package: `@emmahyde/thinking-patterns`
 - Runs on Node.js 18+ via stdio transport
 
 ## Dependencies

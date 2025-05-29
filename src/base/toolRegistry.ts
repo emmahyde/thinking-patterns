@@ -1,6 +1,6 @@
 import { ToolRegistry } from './BaseToolServer.js';
 import {
-  ThoughtSchema,
+  SequentialThoughtSchema,
   MentalModelSchema,
   DebuggingApproachSchema,
   StochasticAlgorithmSchema,
@@ -31,7 +31,7 @@ export function initializeToolRegistry(): void {
   // Register Sequential Thinking tool
   ToolRegistry.register({
     name: "sequential_thinking",
-    schema: ThoughtSchema,
+    schema: SequentialThoughtSchema,
     server: new SequentialThinkingServer(),
     description: "A detailed tool for dynamic and reflective problem-solving through thoughts. This tool helps analyze problems through a flexible thinking process that can adapt and evolve."
   });

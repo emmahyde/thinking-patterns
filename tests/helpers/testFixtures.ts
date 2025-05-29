@@ -2,7 +2,7 @@
  * Test fixtures and sample data for testing
  */
 
-import { ThoughtData } from '../../src/schemas/ThoughtSchema.js';
+import { ThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
 
 // Sample thought data for testing
 // Sample thought data for testing

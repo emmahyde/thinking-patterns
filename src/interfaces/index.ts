@@ -1,7 +1,7 @@
 // Export all interface types for easy importing
 
 export * from './CoreInterfaces.js';
-export * from './ThoughtData.js';
+export * from './SequentialThoughtInterfaces.js';
 export * from './CollaborativeReasoningInterfaces.js';
 export * from './DecisionFrameworkInterfaces.js';
 export * from './MetacognitiveMonitoringInterfaces.js';

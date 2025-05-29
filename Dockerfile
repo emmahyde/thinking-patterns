@@ -25,6 +25,6 @@ USER node
 CMD ["node", "dist/index.js"]
 
 # Label the image
-LABEL org.opencontainers.image.source="https://github.com/emmahyde/thought-patterns"
+LABEL org.opencontainers.image.source="https://github.com/emmahyde/thinking-patterns"
 LABEL org.opencontainers.image.description="MCP server combining systematic thinking, mental models, debugging approaches, and stochastic algorithms"
 LABEL org.opencontainers.image.licenses="MIT"

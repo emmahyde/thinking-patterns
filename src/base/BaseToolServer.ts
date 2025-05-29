@@ -19,6 +19,111 @@ export interface MCPResponse {
 }
 
 /**
+ * Convert Zod schema to JSON schema for MCP tool definitions
+ */
+function zodToJsonSchema(zodSchema: z.ZodSchema): Record<string, unknown> {
+  // Basic conversion for common Zod types
+  // This is a simplified implementation - could be enhanced with a library like zod-to-json-schema
+  
+  if (zodSchema instanceof z.ZodObject) {
+    const shape = zodSchema._def.shape();
+    const properties: Record<string, unknown> = {};
+    const required: string[] = [];
+    
+    for (const [key, fieldSchema] of Object.entries(shape)) {
+      const field = fieldSchema as z.ZodSchema;
+      properties[key] = getFieldSchema(field);
+      
+      // Check if field is required (not optional)
+      if (!field.isOptional()) {
+        required.push(key);
+      }
+    }
+    
+    return {
+      type: "object",
+      properties,
+      required,
+      additionalProperties: false
+    };
+  }
+  
+  // Fallback for non-object schemas
+  return {
+    type: "object",
+    properties: {},
+    required: []
+  };
+}
+
+/**
+ * Get JSON schema for individual Zod field
+ */
+function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
+  if (field instanceof z.ZodString) {
+    const schema: Record<string, unknown> = { type: "string" };
+    if (field._def.checks) {
+      for (const check of field._def.checks) {
+        if (check.kind === "min") {
+          schema.minLength = check.value;
+        }
+        if (check.kind === "max") {
+          schema.maxLength = check.value;
+        }
+      }
+    }
+    return schema;
+  }
+  
+  if (field instanceof z.ZodNumber) {
+    const schema: Record<string, unknown> = { type: "number" };
+    if (field._def.checks) {
+      for (const check of field._def.checks) {
+        if (check.kind === "min") {
+          schema.minimum = check.value;
+        }
+        if (check.kind === "max") {
+          schema.maximum = check.value;
+        }
+        if (check.kind === "int") {
+          schema.type = "integer";
+        }
+      }
+    }
+    return schema;
+  }
+  
+  if (field instanceof z.ZodBoolean) {
+    return { type: "boolean" };
+  }
+  
+  if (field instanceof z.ZodArray) {
+    return {
+      type: "array",
+      items: getFieldSchema(field._def.type)
+    };
+  }
+  
+  if (field instanceof z.ZodObject) {
+    return zodToJsonSchema(field);
+  }
+  
+  if (field instanceof z.ZodOptional) {
+    return getFieldSchema(field._def.innerType);
+  }
+  
+  if (field instanceof z.ZodEnum) {
+    return {
+      type: "string",
+      enum: field._def.values
+    };
+  }
+  
+  // Fallback for unknown types
+  return { type: "string" };
+}
+
+/**
  * Abstract base class for all tool servers
  * Provides standardized validation, error handling, and response formatting
  */
@@ -181,11 +286,7 @@ export class ToolRegistry {
     return this.tools.map(tool => ({
       name: tool.name,
       description: tool.description || `Tool for ${tool.name} operations`,
-      inputSchema: {
-        type: "object",
-        properties: {},
-        required: []
-      }
+      inputSchema: zodToJsonSchema(tool.schema)
     }));
   }
 }

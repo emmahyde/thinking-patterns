@@ -1,13 +1,5 @@
 import { z } from 'zod';
-
-// Schema for ToolRecommendation
-export const ToolRecommendationSchema = z.object({
-  toolName: z.string(),
-  confidence: z.number().min(0).max(1), // 0.0-1.0
-  rationale: z.string(),
-  priority: z.number(),
-  alternativeTools: z.array(z.string()).optional(),
-});
+import { ToolRecommendationSchema, ToolUsageHistorySchema } from './ToolSchemas.js';
 
 // Schema for StepRecommendation
 export const StepRecommendationSchema = z.object({
@@ -24,15 +16,8 @@ export const CurrentStepSchema = StepRecommendationSchema.extend({
   complexityLevel: z.enum(['low', 'medium', 'high']).optional(),
 });
 
-// Schema for tool usage history entry
-export const ToolUsageHistorySchema = z.object({
-  toolName: z.string(),
-  usedAt: z.string(),
-  effectivenessScore: z.number().optional(),
-});
-
-// Schema for EnhancedThoughtData (main schema)
-export const ThoughtSchema = z.object({
+// Schema for ThoughtData (main schema)
+export const SequentialThoughtSchema = z.object({
   thought: z.string().min(1),
   thoughtNumber: z.number().int().positive(),
   totalThoughts: z.number().int().positive(),
@@ -48,21 +33,7 @@ export const ThoughtSchema = z.object({
   toolUsageHistory: z.array(ToolUsageHistorySchema).optional(),
 });
 
-// Schema for ToolContext
-export const ToolContextSchema = z.object({
-  availableTools: z.array(z.string()),
-  userPreferences: z.record(z.any()).optional(),
-  sessionHistory: z.array(z.string()).optional(),
-  problemDomain: z.string().optional(),
-});
-
 // Type inference for TypeScript
-export type ToolRecommendation = z.infer<typeof ToolRecommendationSchema>;
 export type StepRecommendation = z.infer<typeof StepRecommendationSchema>;
 export type CurrentStep = z.infer<typeof CurrentStepSchema>;
-export type ToolUsageHistory = z.infer<typeof ToolUsageHistorySchema>;
-export type ThoughtData = z.infer<typeof ThoughtSchema>;
-export type ToolContext = z.infer<typeof ToolContextSchema>;
-
-// Enhanced ThoughtData alias for backward compatibility
-export type EnhancedThoughtData = ThoughtData;
+export type ThoughtData = z.infer<typeof SequentialThoughtSchema>;

@@ -4,7 +4,7 @@
  */
 
 import { ToolRegistry, BaseToolServer, ToolRegistryEntry } from '../../src/base/BaseToolServer.js';
-import { ThoughtSchema, type ThoughtData } from '../../src/schemas/ThoughtSchema.js';
+import { SequentialThoughtSchema, type ThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   createMockThoughtData,
   createMockMcpRequest,
@@ -15,7 +15,7 @@ import { validThoughtData } from '../helpers/testFixtures.js';
 // Test implementation of BaseToolServer for registry testing
 class TestToolServer extends BaseToolServer<ThoughtData, { success: boolean; message: string }> {
   constructor() {
-    super(ThoughtSchema);
+    super(SequentialThoughtSchema);
   }
 
   protected handle(validInput: ThoughtData): { success: boolean; message: string } {
@@ -29,7 +29,7 @@ class TestToolServer extends BaseToolServer<ThoughtData, { success: boolean; mes
 // Another test server for multiple tool testing
 class AlternativeToolServer extends BaseToolServer<ThoughtData, { result: string; processed: boolean }> {
   constructor() {
-    super(ThoughtSchema);
+    super(SequentialThoughtSchema);
   }
 
   protected handle(validInput: ThoughtData): { result: string; processed: boolean } {
@@ -61,7 +61,7 @@ describe('Tool Registry Integration Tests', () => {
     it('should register a tool successfully', () => {
       const toolEntry: ToolRegistryEntry<ThoughtData, { success: boolean; message: string }> = {
         name: "test-tool",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer,
         description: "Test tool for integration testing"
       };
@@ -77,14 +77,14 @@ describe('Tool Registry Integration Tests', () => {
     it('should register multiple tools', () => {
       const toolEntry1: ToolRegistryEntry = {
         name: "tool-one",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer,
         description: "First test tool"
       };
 
       const toolEntry2: ToolRegistryEntry = {
         name: "tool-two",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: alternativeToolServer,
         description: "Second test tool"
       };
@@ -103,7 +103,7 @@ describe('Tool Registry Integration Tests', () => {
     it('should handle tool registration with minimal fields', () => {
       const minimalToolEntry: ToolRegistryEntry = {
         name: "minimal-tool",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer
         // No description provided
       };
@@ -122,14 +122,14 @@ describe('Tool Registry Integration Tests', () => {
       // Register test tools
       ToolRegistry.register({
         name: "sequential_thinking",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer,
         description: "Sequential thinking tool"
       });
 
       ToolRegistry.register({
         name: "mental_model",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: alternativeToolServer,
         description: "Mental model tool"
       });
@@ -169,7 +169,7 @@ describe('Tool Registry Integration Tests', () => {
     beforeEach(() => {
       ToolRegistry.register({
         name: "test-processor",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer,
         description: "Test processing tool"
       });
@@ -211,7 +211,7 @@ describe('Tool Registry Integration Tests', () => {
     it('should route different tools correctly', () => {
       ToolRegistry.register({
         name: "alternative-processor",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: alternativeToolServer,
         description: "Alternative processing tool"
       });
@@ -236,14 +236,14 @@ describe('Tool Registry Integration Tests', () => {
     beforeEach(() => {
       ToolRegistry.register({
         name: "sequential_thinking",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer,
         description: "Sequential thinking for systematic analysis"
       });
 
       ToolRegistry.register({
         name: "debugging",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: alternativeToolServer
         // No description
       });
@@ -276,11 +276,14 @@ describe('Tool Registry Integration Tests', () => {
       const toolDefinitions = ToolRegistry.getToolDefinitions();
 
       toolDefinitions.forEach(toolDef => {
-        expect(toolDef.inputSchema).toEqual({
-          type: "object",
-          properties: {},
-          required: []
-        });
+        expect(toolDef.inputSchema).toBeDefined();
+        expect(toolDef.inputSchema.type).toBe("object");
+        expect(toolDef.inputSchema).toHaveProperty("properties");
+        expect(toolDef.inputSchema).toHaveProperty("required");
+        expect(toolDef.inputSchema).toHaveProperty("additionalProperties", false);
+        
+        // Should have actual properties from the schema, not empty
+        expect(Object.keys(toolDef.inputSchema.properties as Record<string, unknown>)).not.toHaveLength(0);
       });
     });
   });
@@ -292,7 +295,7 @@ describe('Tool Registry Integration Tests', () => {
 
       ToolRegistry.register({
         name: "isolation-test",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer
       });
 
@@ -302,14 +305,14 @@ describe('Tool Registry Integration Tests', () => {
     it('should handle multiple registrations of same name', () => {
       const tool1 = {
         name: "duplicate-name",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer,
         description: "First registration"
       };
 
       const tool2 = {
         name: "duplicate-name",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: alternativeToolServer,
         description: "Second registration"
       };
@@ -330,7 +333,7 @@ describe('Tool Registry Integration Tests', () => {
     it('should handle server errors gracefully', () => {
       class ErrorThrowingServer extends BaseToolServer<ThoughtData, any> {
         constructor() {
-          super(ThoughtSchema);
+          super(SequentialThoughtSchema);
         }
 
         protected handle(_validInput: ThoughtData): any {
@@ -340,7 +343,7 @@ describe('Tool Registry Integration Tests', () => {
 
       ToolRegistry.register({
         name: "error-server",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: new ErrorThrowingServer()
       });
 
@@ -355,7 +358,7 @@ describe('Tool Registry Integration Tests', () => {
     it('should handle empty tool name', () => {
       ToolRegistry.register({
         name: "",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer
       });
 
@@ -367,7 +370,7 @@ describe('Tool Registry Integration Tests', () => {
     it('should handle null/undefined search', () => {
       ToolRegistry.register({
         name: "valid-tool",
-        schema: ThoughtSchema,
+        schema: SequentialThoughtSchema,
         server: testToolServer
       });
 
@@ -384,7 +387,7 @@ describe('Tool Registry Integration Tests', () => {
       for (let i = 0; i < 100; i++) {
         ToolRegistry.register({
           name: `performance-tool-${i}`,
-          schema: ThoughtSchema,
+          schema: SequentialThoughtSchema,
           server: testToolServer,
           description: `Performance test tool ${i}`
         });
@@ -410,7 +413,7 @@ describe('Tool Registry Integration Tests', () => {
       for (let i = 0; i < 50; i++) {
         ToolRegistry.register({
           name: `def-tool-${i}`,
-          schema: ThoughtSchema,
+          schema: SequentialThoughtSchema,
           server: testToolServer,
           description: `Definition test tool ${i}`
         });

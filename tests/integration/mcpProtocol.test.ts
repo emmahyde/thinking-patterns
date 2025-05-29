@@ -4,7 +4,7 @@
  */
 
 import { ToolRegistry, BaseToolServer } from '../../src/base/BaseToolServer.js';
-import { ThoughtSchema, type ThoughtData } from '../../src/schemas/ThoughtSchema.js';
+import { SequentialThoughtSchema, type ThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   createMockMcpRequest,
   createMockThoughtData,
@@ -15,7 +15,7 @@ import { validThoughtData, invalidThoughtData } from '../helpers/testFixtures.js
 // Mock MCP server implementation for testing
 class MockMcpToolServer extends BaseToolServer<ThoughtData, { analysis: string; confidence: number }> {
   constructor() {
-    super(ThoughtSchema);
+    super(SequentialThoughtSchema);
   }
 
   protected handle(validInput: ThoughtData): { analysis: string; confidence: number } {
@@ -53,7 +53,7 @@ class McpServerSimulator {
     this.tools.set(name, server);
     ToolRegistry.register({
       name,
-      schema: ThoughtSchema,
+      schema: SequentialThoughtSchema,
       server,
       description: `MCP tool: ${name}`
     });
@@ -411,7 +411,7 @@ describe('MCP Protocol Integration Tests', () => {
     it('should propagate tool server errors correctly', async () => {
       class ErrorThrowingServer extends BaseToolServer<ThoughtData, any> {
         constructor() {
-          super(ThoughtSchema);
+          super(SequentialThoughtSchema);
         }
 
         protected handle(_validInput: ThoughtData): any {

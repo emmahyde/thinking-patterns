@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 import {
-  ThoughtSchema,
+  SequentialThoughtSchema,
   ToolRecommendationSchema,
   StepRecommendationSchema,
   CurrentStepSchema,
@@ -17,7 +17,7 @@ import {
   type CurrentStep,
   type ToolUsageHistory,
   type ToolContext
-} from '../../src/schemas/ThoughtSchema.js';
+} from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   createMockThoughtData,
   createMockToolRecommendation,
@@ -78,7 +78,7 @@ describe('Schema Integration Tests', () => {
         })
       ];
 
-      const thoughtData: ThoughtData = ThoughtSchema.parse({
+      const thoughtData: ThoughtData = SequentialThoughtSchema.parse({
         thought: "Based on the mental model analysis, I need to break this down systematically",
         thoughtNumber: 2,
         totalThoughts: 5,
@@ -128,7 +128,7 @@ describe('Schema Integration Tests', () => {
       });
 
       // Create thought data that references tools from the context
-      const thoughtWithContext: ThoughtData = ThoughtSchema.parse({
+      const thoughtWithContext: ThoughtData = SequentialThoughtSchema.parse({
         thought: "Using the available tools from context to approach this problem",
         thoughtNumber: 1,
         totalThoughts: 3,
@@ -250,7 +250,7 @@ describe('Schema Integration Tests', () => {
         ]
       };
 
-      const result = ThoughtSchema.parse(deeplyNestedThought);
+      const result = SequentialThoughtSchema.parse(deeplyNestedThought);
 
       expect(result).toMatchObject({
         thought: expect.any(String),
@@ -332,7 +332,7 @@ describe('Schema Integration Tests', () => {
       expect(validatedSteps[1].recommendedTools[0].alternativeTools).toHaveLength(3);
 
       // Use in a ThoughtData structure
-      const thoughtWithMixedSteps = ThoughtSchema.parse({
+      const thoughtWithMixedSteps = SequentialThoughtSchema.parse({
         thought: "Processing steps of varying complexity",
         thoughtNumber: 2,
         totalThoughts: 3,
@@ -354,7 +354,7 @@ describe('Schema Integration Tests', () => {
 
       // Validate all thought data
       const validatedThoughts = largeThoughtHistory.map(thought =>
-        ThoughtSchema.parse(thought)
+        SequentialThoughtSchema.parse(thought)
       );
 
       // Validate all tool recommendations
@@ -388,7 +388,7 @@ describe('Schema Integration Tests', () => {
       });
 
       const start = Date.now();
-      const result = ThoughtSchema.parse(complexThoughtData);
+      const result = SequentialThoughtSchema.parse(complexThoughtData);
       const elapsed = Date.now() - start;
 
       expect(result).toMatchObject({
@@ -433,7 +433,7 @@ describe('Schema Integration Tests', () => {
       };
 
       try {
-        ThoughtSchema.parse(invalidNestedStructure);
+        SequentialThoughtSchema.parse(invalidNestedStructure);
         fail('Should have thrown validation error');
       } catch (error: any) {
         expect(error.errors).toBeDefined();
@@ -469,7 +469,7 @@ describe('Schema Integration Tests', () => {
       };
 
       // This should pass because the schema doesn't enforce date format or score range for tool usage
-      const result = ThoughtSchema.parse(partiallyValidData);
+      const result = SequentialThoughtSchema.parse(partiallyValidData);
       expect(result).toMatchObject({
         thought: expect.any(String),
         thoughtNumber: expect.any(Number),
@@ -490,7 +490,7 @@ describe('Schema Integration Tests', () => {
         nextThoughtNeeded: false
       };
 
-      const result = ThoughtSchema.parse(minimalThought);
+      const result = SequentialThoughtSchema.parse(minimalThought);
       expect(result).toMatchObject({
         thought: expect.any(String),
         thoughtNumber: expect.any(Number),
@@ -507,7 +507,7 @@ describe('Schema Integration Tests', () => {
 
     it('should support schema extension patterns', () => {
       // Test that the schema can be extended for future use
-      const extendedThoughtSchema = ThoughtSchema.extend({
+      const extendedThoughtSchema = SequentialThoughtSchema.extend({
         // Future fields that might be added
         experimentalField: z.string().optional(),
         version: z.string().default("1.0")
@@ -548,7 +548,7 @@ describe('Schema Integration Tests', () => {
         isRevision: oldFormatData.isRevision
       };
 
-      const result = ThoughtSchema.parse(transformedData);
+      const result = SequentialThoughtSchema.parse(transformedData);
       expect(result).toMatchObject({
         thought: expect.any(String),
         thoughtNumber: expect.any(Number),

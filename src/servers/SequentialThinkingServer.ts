@@ -1,5 +1,5 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
-import { ThoughtSchema, ThoughtData } from '../schemas/index.js';
+import { SequentialThoughtSchema, ThoughtData } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
 
 /**
@@ -8,7 +8,7 @@ import { boxed } from '../utils/index.js';
  */
 export class SequentialThinkingServer extends BaseToolServer<ThoughtData, any> {
   constructor() {
-    super(ThoughtSchema);
+    super(SequentialThoughtSchema);
   }
 
   protected handle(validInput: ThoughtData): any {
