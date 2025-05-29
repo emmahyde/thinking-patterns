@@ -50,7 +50,7 @@ npm install @emmahyde/thinking-patterns
 Or run with npx:
 
 ```bash
-npx @emmahyde/thinking-patterns
+npx -y @emmahyde/thinking-patterns
 ```
 
 ### Docker
