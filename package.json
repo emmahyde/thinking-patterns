@@ -8,7 +8,7 @@
   "bugs": "https://github.com/emmahyde/thinking-patterns/issues",
   "type": "module",
   "bin": {
-    "mcp-server-thinking-patterns": "dist/index.js"
+    "mcp-server-thinking-patterns": "NODE_OPTIONS=--experimental-vm-modules npx jest --config jest.config.mjs tests/"
   },
   "files": [
     "dist",
