@@ -4,13 +4,14 @@
  */
 
 import { ToolRegistry, BaseToolServer } from '../../src/base/BaseToolServer.js';
-import { SequentialThoughtSchema, type ThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
+import { ThoughtData } from '../../src/interfaces/index.js';
+import { SequentialThoughtSchema, type SequentialThought } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   createMockMcpRequest,
   createMockThoughtData,
   createMockValidationError
 } from '../helpers/mockFactories.js';
-import { validThoughtData, invalidThoughtData } from '../helpers/testFixtures.js';
+import { validSequentialThought, finalThoughtData } from '../helpers/testFixtures.js';
 
 // Mock MCP server implementation for testing
 class MockMcpToolServer extends BaseToolServer<ThoughtData, { analysis: string; confidence: number }> {
@@ -247,7 +248,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "test-processor",
-          arguments: validThoughtData
+          arguments: validSequentialThought
         }
       };
 
@@ -275,7 +276,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "test-processor",
-          arguments: invalidThoughtData.missingRequired
+          arguments: validSequentialThought.missingRequired
         }
       };
 
@@ -297,7 +298,7 @@ describe('MCP Protocol Integration Tests', () => {
         id: "call-3",
         method: "tools/call",
         params: {
-          arguments: validThoughtData
+          arguments: validSequentialThought
           // Missing name
         }
       };
@@ -318,7 +319,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "nonexistent-tool",
-          arguments: validThoughtData
+          arguments: validSequentialThought
         }
       };
 
@@ -427,7 +428,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "error-tool",
-          arguments: validThoughtData
+          arguments: validSequentialThought
         }
       };
 
@@ -448,7 +449,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "validation-tool",
-          arguments: invalidThoughtData.invalidTypes
+          arguments: validSequentialThought.invalidTypes
         }
       };
 
@@ -504,7 +505,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "rapid-tool",
-          arguments: validThoughtData
+          arguments: validSequentialThought
         }
       }));
 
@@ -591,7 +592,7 @@ describe('MCP Protocol Integration Tests', () => {
           method: "tools/call",
           params: {
             name,
-            arguments: validThoughtData
+            arguments: validSequentialThought
           }
         };
 

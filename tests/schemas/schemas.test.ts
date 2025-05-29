@@ -6,18 +6,22 @@
 import { z } from 'zod';
 import {
   SequentialThoughtSchema,
-  ToolRecommendationSchema,
   StepRecommendationSchema,
   CurrentStepSchema,
+  type SequentialThought,
+  type StepRecommendationData,
+  type CurrentStep,
+} from '../../src/schemas/SequentialThoughtSchema.js';
+
+import {
+  ToolRecommendationSchema,
   ToolUsageHistorySchema,
   ToolContextSchema,
-  type ThoughtData,
   type ToolRecommendation,
-  type StepRecommendation,
-  type CurrentStep,
   type ToolUsageHistory,
   type ToolContext
-} from '../../src/schemas/SequentialThoughtSchema.js';
+} from '../../src/schemas/ToolSchemas.js';
+
 import {
   createMockThoughtData,
   createMockToolRecommendation,
@@ -56,7 +60,7 @@ describe('Schema Integration Tests', () => {
         complexityLevel: "high"
       });
 
-      const previousSteps: StepRecommendation[] = [
+      const previousSteps: StepRecommendationData[] = [
         StepRecommendationSchema.parse({
           stepDescription: "Initial problem identification",
           recommendedTools: toolRecommendations.slice(1),
@@ -78,7 +82,7 @@ describe('Schema Integration Tests', () => {
         })
       ];
 
-      const thoughtData: ThoughtData = SequentialThoughtSchema.parse({
+      const thoughtData: SequentialThought = SequentialThoughtSchema.parse({
         thought: "Based on the mental model analysis, I need to break this down systematically",
         thoughtNumber: 2,
         totalThoughts: 5,
@@ -128,7 +132,7 @@ describe('Schema Integration Tests', () => {
       });
 
       // Create thought data that references tools from the context
-      const thoughtWithContext: ThoughtData = SequentialThoughtSchema.parse({
+                const thoughtWithContext: SequentialThought = SequentialThoughtSchema.parse({
         thought: "Using the available tools from context to approach this problem",
         thoughtNumber: 1,
         totalThoughts: 3,
@@ -280,7 +284,7 @@ describe('Schema Integration Tests', () => {
     });
 
     it('should validate schema arrays with mixed complexity', () => {
-      const mixedComplexitySteps: StepRecommendation[] = [
+      const mixedComplexitySteps: StepRecommendationData[] = [
         // Simple step
         {
           stepDescription: "Simple initial step",

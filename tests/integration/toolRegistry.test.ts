@@ -4,21 +4,22 @@
  */
 
 import { ToolRegistry, BaseToolServer, ToolRegistryEntry } from '../../src/base/BaseToolServer.js';
-import { SequentialThoughtSchema, type ThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
+import { SequentialThoughtData } from '../../src/interfaces/SequentialThoughtInterfaces.js';
+import { SequentialThoughtSchema, type SequentialThought } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   createMockThoughtData,
   createMockMcpRequest,
   createMockMcpResponse
 } from '../helpers/mockFactories.js';
-import { validThoughtData } from '../helpers/testFixtures.js';
+import { validSequentialThought } from '../helpers/testFixtures.js';
 
 // Test implementation of BaseToolServer for registry testing
-class TestToolServer extends BaseToolServer<ThoughtData, { success: boolean; message: string }> {
+class TestToolServer extends BaseToolServer<SequentialThoughtData, { success: boolean; message: string }> {
   constructor() {
     super(SequentialThoughtSchema);
   }
 
-  protected handle(validInput: ThoughtData): { success: boolean; message: string } {
+  protected handle(validInput: SequentialThoughtData): { success: boolean; message: string } {
     return {
       success: true,
       message: `Processed thought: ${validInput.thought}`
@@ -27,12 +28,12 @@ class TestToolServer extends BaseToolServer<ThoughtData, { success: boolean; mes
 }
 
 // Another test server for multiple tool testing
-class AlternativeToolServer extends BaseToolServer<ThoughtData, { result: string; processed: boolean }> {
+class AlternativeToolServer extends BaseToolServer<SequentialThoughtData, { result: string; processed: boolean }> {
   constructor() {
     super(SequentialThoughtSchema);
   }
 
-  protected handle(validInput: ThoughtData): { result: string; processed: boolean } {
+  protected handle(validInput: SequentialThoughtData): { result: string; processed: boolean } {
     return {
       result: `Alternative processing of: ${validInput.thought}`,
       processed: true
@@ -59,7 +60,7 @@ describe('Tool Registry Integration Tests', () => {
 
   describe('tool registration', () => {
     it('should register a tool successfully', () => {
-      const toolEntry: ToolRegistryEntry<ThoughtData, { success: boolean; message: string }> = {
+      const toolEntry: ToolRegistryEntry<SequentialThoughtData, { success: boolean; message: string }> = {
         name: "test-tool",
         schema: SequentialThoughtSchema,
         server: testToolServer,
@@ -179,7 +180,7 @@ describe('Tool Registry Integration Tests', () => {
       const tool = ToolRegistry.findTool("test-processor");
       expect(tool).toBeDefined();
 
-      const response = tool!.server.run(validThoughtData);
+      const response = tool!.server.run(validSequentialThought);
 
       expect(response.isError).toBeUndefined();
       expect(response.content).toHaveLength(1);
@@ -219,8 +220,8 @@ describe('Tool Registry Integration Tests', () => {
       const tool1 = ToolRegistry.findTool("test-processor");
       const tool2 = ToolRegistry.findTool("alternative-processor");
 
-      const response1 = tool1!.server.run(validThoughtData);
-      const response2 = tool2!.server.run(validThoughtData);
+      const response1 = tool1!.server.run(validSequentialThought);
+      const response2 = tool2!.server.run(validSequentialThought);
 
       const result1 = JSON.parse(response1.content[0].text);
       const result2 = JSON.parse(response2.content[0].text);
@@ -331,12 +332,12 @@ describe('Tool Registry Integration Tests', () => {
 
   describe('error handling and edge cases', () => {
     it('should handle server errors gracefully', () => {
-      class ErrorThrowingServer extends BaseToolServer<ThoughtData, any> {
+      class ErrorThrowingServer extends BaseToolServer<SequentialThoughtData, any> {
         constructor() {
           super(SequentialThoughtSchema);
         }
 
-        protected handle(_validInput: ThoughtData): any {
+        protected handle(_validInput: SequentialThoughtData): any {
           throw new Error("Server processing error");
         }
       }
@@ -348,7 +349,7 @@ describe('Tool Registry Integration Tests', () => {
       });
 
       const tool = ToolRegistry.findTool("error-server");
-      const response = tool!.server.run(validThoughtData);
+      const response = tool!.server.run(validSequentialThought);
 
       expect(response.isError).toBe(true);
       const error = JSON.parse(response.content[0].text);

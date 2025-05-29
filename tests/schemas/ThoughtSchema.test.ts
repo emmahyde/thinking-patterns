@@ -5,27 +5,29 @@
 
 import {
   SequentialThoughtSchema,
-  ToolRecommendationSchema,
   StepRecommendationSchema,
   CurrentStepSchema,
-  ToolUsageHistorySchema,
-  ToolContextSchema,
-  type ThoughtData,
-  type ToolRecommendation,
+  type SequentialThought,
   type CurrentStep
 } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
-  validThoughtData,
-  validThoughtDataWithOptionals,
+  ToolRecommendationSchema,
+  ToolUsageHistorySchema,
+  ToolContextSchema,
+  type ToolRecommendation
+} from '../../src/schemas/ToolSchemas.js';
+import {
+  validSequentialThought,
+  validSequentialThoughtWithOptionals,
   finalThoughtData,
-  invalidThoughtData
+  invalidSequentialThought
 } from '../helpers/testFixtures.js';
 import { createMockThoughtData, createMockToolRecommendation } from '../helpers/mockFactories.js';
 
 describe('ThoughtSchema', () => {
   describe('valid input validation', () => {
     it('should validate minimal valid thought data', () => {
-      const result = SequentialThoughtSchema.parse(validThoughtData);
+      const result = SequentialThoughtSchema.parse(validSequentialThought);
 
       expect(result).toMatchObject({
         thought: expect.any(String),
@@ -33,14 +35,14 @@ describe('ThoughtSchema', () => {
         totalThoughts: expect.any(Number),
         nextThoughtNeeded: expect.any(Boolean)
       });
-      expect(result.thought).toBe(validThoughtData.thought);
-      expect(result.thoughtNumber).toBe(validThoughtData.thoughtNumber);
-      expect(result.totalThoughts).toBe(validThoughtData.totalThoughts);
-      expect(result.nextThoughtNeeded).toBe(validThoughtData.nextThoughtNeeded);
+      expect(result.thought).toBe(validSequentialThought.thought);
+      expect(result.thoughtNumber).toBe(validSequentialThought.thoughtNumber);
+      expect(result.totalThoughts).toBe(validSequentialThought.totalThoughts);
+      expect(result.nextThoughtNeeded).toBe(validSequentialThought.nextThoughtNeeded);
     });
 
     it('should validate thought data with all optional fields', () => {
-      const result = SequentialThoughtSchema.parse(validThoughtDataWithOptionals);
+      const result = SequentialThoughtSchema.parse(validSequentialThoughtWithOptionals);
 
       expect(result).toMatchObject({
         thought: expect.any(String),
@@ -144,22 +146,22 @@ describe('ThoughtSchema', () => {
 
   describe('invalid input rejection', () => {
     it('should reject missing required fields', () => {
-      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.missingRequired))
+      expect(() => SequentialThoughtSchema.parse(finalThoughtData?.missingRequired))
         .toThrow();
     });
 
     it('should reject invalid field types', () => {
-      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.invalidTypes))
+      expect(() => SequentialThoughtSchema.parse(finalThoughtData.invalidTypes))
         .toThrow();
     });
 
     it('should reject negative numbers', () => {
-      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.negativeNumbers))
+      expect(() => SequentialThoughtSchema.parse(finalThoughtData.negativeNumbers))
         .toThrow();
     });
 
     it('should reject invalid optional field values', () => {
-      expect(() => SequentialThoughtSchema.parse(invalidThoughtData.invalidOptionals))
+      expect(() => SequentialThoughtSchema.parse(finalThoughtData.invalidOptionals))
         .toThrow();
     });
 
@@ -172,7 +174,7 @@ describe('ThoughtSchema', () => {
           nextThoughtNeeded: "yes" // Invalid type
         });
         fail('Should have thrown validation error');
-      } catch (error: any) {
+      } catch (error: any) {  
         expect(error.errors).toBeDefined();
         expect(error.errors.length).toBeGreaterThan(0);
 
@@ -222,7 +224,7 @@ describe('ThoughtSchema', () => {
 
   describe('type inference', () => {
     it('should infer correct TypeScript types', () => {
-      const validData: ThoughtData = {
+      const validData: SequentialThought = {
         thought: "Type test",
         thoughtNumber: 1,
         totalThoughts: 3,
@@ -244,7 +246,7 @@ describe('ThoughtSchema', () => {
     });
 
     it('should maintain type safety for optional fields', () => {
-      const parsed = SequentialThoughtSchema.parse(validThoughtDataWithOptionals);
+      const parsed = SequentialThoughtSchema.parse(validSequentialThoughtWithOptionals);
 
       // TypeScript should know these can be undefined
       if (parsed.isRevision !== undefined) {

@@ -1,17 +1,17 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
-import { SequentialThoughtSchema, ThoughtData } from '../schemas/index.js';
+import { SequentialThoughtSchema, SequentialThought } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
 
 /**
  * Sequential Thinking Server using clear-thought tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
-export class SequentialThinkingServer extends BaseToolServer<ThoughtData, any> {
+export class SequentialThinkingServer extends BaseToolServer<SequentialThought, any> {
   constructor() {
     super(SequentialThoughtSchema);
   }
 
-  protected handle(validInput: ThoughtData): any {
+  protected handle(validInput: SequentialThought): any {
     return this.process(validInput);
   }
 
@@ -20,7 +20,7 @@ export class SequentialThinkingServer extends BaseToolServer<ThoughtData, any> {
    * @param validInput - Validated thought data
    * @returns Processed thought result
    */
-  public process(validInput: ThoughtData): any {
+  public process(validInput: SequentialThought): any {
     // Format output using boxed utility
     const formattedOutput = this.formatThoughtOutput(validInput);
 
@@ -49,7 +49,7 @@ export class SequentialThinkingServer extends BaseToolServer<ThoughtData, any> {
     return this.run(input);
   }
 
-  private formatThoughtOutput(data: ThoughtData): string {
+  private formatThoughtOutput(data: SequentialThought): string {
     const sections: Record<string, string | string[]> = {
       'Thought': `${data.thoughtNumber}/${data.totalThoughts}`,
       'Content': data.thought

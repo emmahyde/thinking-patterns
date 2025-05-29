@@ -4,11 +4,11 @@
 
 import { jest } from '@jest/globals';
 import { mockDeep, MockProxy } from 'jest-mock-extended';
-import { ThoughtData, ToolRecommendation, CurrentStep } from '../../src/schemas/SequentialThoughtSchema.js';
+import { SequentialThoughtData as SequentialThoughtData, CurrentStep, ToolRecommendation } from '../../src/interfaces/SequentialThoughtInterfaces.js';
 import { BaseToolServer } from '../../src/base/BaseToolServer.js';
 
-// Mock factory for creating ThoughtData with customizable fields
-export const createMockThoughtData = (overrides: Partial<ThoughtData> = {}): ThoughtData => ({
+// Mock factory for creating SequentialThoughtData with customizable fields
+export const createMockThoughtData = (overrides: Partial<SequentialThoughtData> = {}): SequentialThoughtData => ({
   thought: "Mock thought for testing",
   thoughtNumber: 1,
   totalThoughts: 3,
@@ -206,7 +206,7 @@ export const createRandomBoolean = (): boolean => {
 };
 
 // Test data generators for stress testing
-export const generateLargeThoughtHistory = (count: number = 100): ThoughtData[] => {
+export const generateLargeThoughtHistory = (count: number = 100): SequentialThoughtData[] => {
   return Array.from({ length: count }, (_, i) =>
     createMockThoughtData({
       thought: `Thought ${i + 1}: ${createRandomString(50)}`,

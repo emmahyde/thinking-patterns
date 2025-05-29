@@ -2,11 +2,11 @@
  * Test fixtures and sample data for testing
  */
 
-import { ThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
+import { SequentialThought } from '../../src/schemas/SequentialThoughtSchema.js';
 
 // Sample thought data for testing
 // Sample thought data for testing
-export const validThoughtData: ThoughtData = {
+export const validSequentialThought: SequentialThought = {
   thought: "This is a test thought for validation",
   thoughtNumber: 1,
   totalThoughts: 5,
@@ -18,7 +18,7 @@ export const validThoughtData: ThoughtData = {
   needsMoreThoughts: false,
 };
 
-export const validThoughtDataWithOptionals: ThoughtData = {
+export const validSequentialThoughtWithOptionals: SequentialThought = {
   thought: "This is a revised thought that branches from previous thinking",
   thoughtNumber: 3,
   totalThoughts: 5,
@@ -30,7 +30,7 @@ export const validThoughtDataWithOptionals: ThoughtData = {
   needsMoreThoughts: true,
 };
 
-export const finalThoughtData: ThoughtData = {
+export const finalThoughtData: SequentialThought = {
   thought: "This is the final thought in the sequence",
   thoughtNumber: 5,
   totalThoughts: 5,
@@ -42,7 +42,7 @@ export const finalThoughtData: ThoughtData = {
   needsMoreThoughts: false,
 };
 // Invalid test data for schema validation testing
-export const invalidThoughtData = {
+export const invalidSequentialThought = {
   missingRequired: {
     thought: "Missing required fields",
     // Missing thoughtNumber, totalThoughts, nextThoughtNeeded
@@ -76,7 +76,7 @@ export const sampleMcpRequest = {
   method: "tools/call" as const,
   params: {
     name: "sequential_thinking",
-    arguments: validThoughtData,
+    arguments: validSequentialThought,
   },
 };
 
@@ -150,7 +150,7 @@ export const sampleSessionData = {
   userId: "test-user-456",
   createdAt: new Date('2024-01-01T10:00:00Z'),
   lastActivity: new Date('2024-01-01T10:05:00Z'),
-  thoughtHistory: [validThoughtData, validThoughtDataWithOptionals],
+  thoughtHistory: [validSequentialThought, validSequentialThoughtWithOptionals],
   metadata: {
     userAgent: "test-agent/1.0",
     clientId: "test-client",

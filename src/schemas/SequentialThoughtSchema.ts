@@ -34,6 +34,6 @@ export const SequentialThoughtSchema = z.object({
 });
 
 // Type inference for TypeScript
-export type StepRecommendation = z.infer<typeof StepRecommendationSchema>;
+export type StepRecommendationData = z.infer<typeof StepRecommendationSchema>;
 export type CurrentStep = z.infer<typeof CurrentStepSchema>;
-export type ThoughtData = z.infer<typeof SequentialThoughtSchema>;
+export type SequentialThought = z.infer<typeof SequentialThoughtSchema>;
