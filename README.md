@@ -74,6 +74,20 @@ docker run -it emmahyde/thinking-patterns
 3. Build the project: `npm run build`
 4. Start the server: `npm start`
 
+### MCP config
+```json
+{
+  "mcpServers": {
+    "thinking-patterns": {
+      "command": "npx",
+      "args": ["-y", "@emmahyde/thinking-patterns"]
+    }
+  }
+}
+```
+<img width="1100" alt="Screenshot 2025-05-29 at 08 41 05" src="https://github.com/user-attachments/assets/43d0c2b7-68fc-4e77-80b6-232d1d19a77c" />
+
+
 ## Usage Examples
 
 ### Mental Models
