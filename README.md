@@ -1,7 +1,7 @@
 # Thinking Patterns MCP Server
 
-![smithery badge](https://smithery.ai/badge/@emmahyde/thinking-patterns)
-![NPM Version](https://img.shields.io/npm/v/%40emmahyde%2Fthinking-patterns)
+[![smithery badge](https://smithery.ai/badge/@emmahyde/thinking-patterns)](https://smithery.ai/server/@emmahyde/thinking-patterns)
+[![NPM Version](https://img.shields.io/npm/v/%40emmahyde%2Fthinking-patterns)](https://www.npmjs.com/package/@emmahyde/thinking-patterns)
 
 A comprehensive Model Context Protocol (MCP) server that combines systematic thinking, mental models, debugging approaches, and stochastic algorithms for enhanced problem-solving capabilities. This server merges the functionality of Clear Thought and Stochastic Thinking servers into a unified cognitive toolkit.
 
