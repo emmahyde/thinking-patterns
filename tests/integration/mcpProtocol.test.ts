@@ -11,7 +11,7 @@ import {
   createMockThoughtData,
   createMockValidationError
 } from '../helpers/mockFactories.js';
-import { validSequentialThought, finalThoughtData } from '../helpers/testFixtures.js';
+import { validSequentialThought, invalidSequentialThought, finalThoughtData } from '../helpers/testFixtures.js';
 
 // Mock MCP server implementation for testing
 class MockMcpToolServer extends BaseToolServer<ThoughtData, { analysis: string; confidence: number }> {
@@ -276,7 +276,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "test-processor",
-          arguments: validSequentialThought.missingRequired
+          arguments: invalidSequentialThought.missingRequired
         }
       };
 
