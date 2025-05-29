@@ -4,42 +4,30 @@ A comprehensive Model Context Protocol (MCP) server that combines systematic thi
 
 ## Features
 
-### Mental Models
-- First Principles Thinking
-- Opportunity Cost Analysis
-- Error Propagation Understanding
-- Rubber Duck Debugging
-- Pareto Principle
-- Occam's Razor
+### Available Tools
 
-### Debugging Approaches
-- Binary Search
-- Reverse Engineering
-- Divide and Conquer
-- Backtracking
-- Cause Elimination
-- Program Slicing
+1. **sequential_thinking** - Dynamic multi-step thinking with revision support
+2. **mental_model** - Structured mental models for problem-solving
+3. **debugging_approach** - Systematic debugging methodologies
+4. **stochastic_algorithm** - Probabilistic algorithms for decision-making under uncertainty
+5. **collaborative_reasoning** - Multi-perspective collaborative problem solving
+6. **decision_framework** - Structured decision analysis and rational choice
+7. **metacognitive_monitoring** - Self-assessment of knowledge and reasoning quality
+8. **scientific_method** - Formal hypothesis testing and experimentation
+9. **structured_argumentation** - Dialectical reasoning and argument analysis
+10. **visual_reasoning** - Diagram-based thinking and problem solving
 
-### 💭 Sequential Thinking
-- Structured thought process with branching support
-- Revision and context maintenance
-- Dynamic adjustment of thought sequences
-- Multi-step problem solving
+### Stochastic Algorithm Selection Guide
 
-### 🎲 Stochastic Algorithms
-- **Markov Decision Processes (MDPs)**: Optimize policies over long sequences of decisions
-- **Monte Carlo Tree Search (MCTS)**: Simulate future action sequences for large decision spaces
-- **Multi-Armed Bandit**: Balance exploration vs exploitation in action selection
-- **Bayesian Optimization**: Optimize decisions with probabilistic inference
-- **Hidden Markov Models (HMMs)**: Infer latent states affecting decision outcomes
+**Markov Decision Processes**: Sequential decision-making with clear state transitions and defined rewards.
 
-### 🤝 Advanced Cognitive Tools
-- **Collaborative Reasoning**: Multi-perspective problem solving
-- **Decision Frameworks**: Structured decision analysis and rational choice
-- **Metacognitive Monitoring**: Self-assessment of knowledge and reasoning quality
-- **Scientific Method**: Formal hypothesis testing and experimentation
-- **Structured Argumentation**: Dialectical reasoning and argument analysis
-- **Visual Reasoning**: Diagram-based thinking and problem solving
+**Monte Carlo Tree Search**: Game playing, strategic planning, large decision spaces where simulation is possible.
+
+**Multi-Armed Bandit**: A/B testing, resource allocation, online advertising, quick adaptation needs.
+
+**Bayesian Optimization**: Hyperparameter tuning, expensive function optimization, continuous parameter spaces.
+
+**Hidden Markov Models**: Time series analysis, pattern recognition, state inference, sequential data modeling.
 
 ## Installation
 
@@ -59,8 +47,29 @@ npm install @emmahyde/thought-patterns
 Or run with npx:
 
 ```bash
-npx @waldzellai/thinking-patterns
+npx @emmahyde/thinking-patterns
 ```
+
+### Docker
+
+Build the Docker image:
+
+```bash
+docker build -t emmahyde/thinking-patterns .
+```
+
+Run the container:
+
+```bash
+docker run -it emmahyde/thinking-patterns
+```
+
+### Development
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Build the project: `npm run build`
+4. Start the server: `npm start`
 
 ## Usage Examples
 
@@ -211,66 +220,6 @@ const response = await mcp.callTool("visual_reasoning", {
 });
 ```
 
-## Tool Selection Guide
-
-### When to Use Each Tool
-
-**Mental Models**: Best for initial problem understanding, breaking down complex systems, analyzing trade-offs, and finding root causes.
-
-**Sequential Thinking**: Ideal for complex multi-step analysis, decision refinement, comprehensive planning, and problems requiring iterative thinking.
-
-**Debugging Approaches**: Perfect for troubleshooting issues, performance optimization, system analysis, and error resolution.
-
-**Stochastic Algorithms**: Essential for decision-making under uncertainty, optimization problems, resource allocation, and probabilistic modeling.
-
-**Advanced Cognitive Tools**: Use for complex collaborative analysis, formal decision-making, scientific reasoning, and structured argumentation.
-
-### Algorithm Selection Guide
-
-**Markov Decision Processes**: Sequential decision-making with clear state transitions and defined rewards.
-
-**Monte Carlo Tree Search**: Game playing, strategic planning, large decision spaces where simulation is possible.
-
-**Multi-Armed Bandit**: A/B testing, resource allocation, online advertising, quick adaptation needs.
-
-**Bayesian Optimization**: Hyperparameter tuning, expensive function optimization, continuous parameter spaces.
-
-**Hidden Markov Models**: Time series analysis, pattern recognition, state inference, sequential data modeling.
-
-## Development
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Build the project: `npm run build`
-4. Start the server: `npm start`
-
-## Docker
-
-Build the Docker image:
-
-```bash
-docker build -t emmahyde/thinking-patterns .
-```
-
-Run the container:
-
-```bash
-docker run -it emmahyde/thinking-patterns
-```
-
-## Available Tools
-
-1. **sequential_thinking** - Dynamic multi-step thinking with revision support
-2. **mental_model** - Structured mental models for problem-solving
-3. **debugging_approach** - Systematic debugging methodologies
-4. **stochastic_algorithm** - Probabilistic algorithms for decision-making under uncertainty
-5. **collaborative_reasoning** - Multi-perspective collaborative problem solving
-6. **decision_framework** - Structured decision analysis and rational choice
-7. **metacognitive_monitoring** - Self-assessment of knowledge and reasoning quality
-8. **scientific_method** - Formal hypothesis testing and experimentation
-9. **structured_argumentation** - Dialectical reasoning and argument analysis
-10. **visual_reasoning** - Diagram-based thinking and problem solving
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -281,7 +230,7 @@ MIT License - see LICENSE for details.
 
 ## Acknowledgments
 
-- Based on the Model Context Protocol (MCP) by Anthropic
+- Based on [the clear-thought server](https://github.com/waldzellai/waldzell-mcp), which is based on the Model Context Protocol (MCP) by Anthropic
 - Combines functionality from Clear Thought and Stochastic Thinking MCP servers
 - Mental Models framework inspired by [James Clear's comprehensive guide to mental models](https://jamesclear.com/mental-models)
 - Stochastic algorithms based on classic works in reinforcement learning and decision theory
