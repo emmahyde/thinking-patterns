@@ -1,5 +1,7 @@
 # Thinking Patterns MCP Server
 
+[npm package](https://www.npmjs.com/package/@emmahyde/thinking-patterns)
+
 A comprehensive Model Context Protocol (MCP) server that combines systematic thinking, mental models, debugging approaches, and stochastic algorithms for enhanced problem-solving capabilities. This server merges the functionality of Clear Thought and Stochastic Thinking servers into a unified cognitive toolkit.
 
 ## Features
