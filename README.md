@@ -150,6 +150,67 @@ const response = await mcp.callTool("collaborative_reasoning", {
 });
 ```
 
+### Decision Framework
+```typescript
+const response = await mcp.callTool("decision_framework", {
+  decisionContext: "Selecting a cloud provider",
+  options: ["AWS", "GCP", "Azure"],
+  criteria: ["cost", "scalability", "support"],
+  weights: { cost: 0.5, scalability: 0.3, support: 0.2 },
+  rationale: "Prioritize cost and scalability for a startup."
+});
+```
+
+### Metacognitive Monitoring
+```typescript
+const response = await mcp.callTool("metacognitive_monitoring", {
+  task: "Code review for critical bug fix",
+  confidenceLevel: 0.7,
+  knowledgeGaps: ["edge case handling"],
+  reflection: "Need to double-check concurrency issues."
+});
+```
+
+### Scientific Method
+```typescript
+const response = await mcp.callTool("scientific_method", {
+  hypothesis: "Increasing cache size will improve response time",
+  experiment: {
+    control: { cacheSize: 128 },
+    variant: { cacheSize: 512 },
+    metric: "averageResponseTime"
+  },
+  results: null,
+  nextStep: "Run A/B test and collect data"
+});
+```
+
+### Structured Argumentation
+```typescript
+const response = await mcp.callTool("structured_argumentation", {
+  claim: "Microservices are better than monoliths for scaling",
+  argumentsFor: ["Independent deployment", "Fault isolation"],
+  argumentsAgainst: ["Increased complexity", "Operational overhead"],
+  conclusion: null
+});
+```
+
+### Visual Reasoning
+```typescript
+const response = await mcp.callTool("visual_reasoning", {
+  problem: "Optimize network topology",
+  diagramType: "graph",
+  nodes: ["A", "B", "C", "D"],
+  edges: [
+    { from: "A", to: "B" },
+    { from: "B", to: "C" },
+    { from: "C", to: "D" },
+    { from: "A", to: "D" }
+  ],
+  transformation: "minimize total edge length"
+});
+```
+
 ## Tool Selection Guide
 
 ### When to Use Each Tool
