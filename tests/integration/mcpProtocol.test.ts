@@ -449,7 +449,7 @@ describe('MCP Protocol Integration Tests', () => {
         method: "tools/call",
         params: {
           name: "validation-tool",
-          arguments: validSequentialThought.invalidTypes
+          arguments: invalidSequentialThought.invalidTypes
         }
       };
 

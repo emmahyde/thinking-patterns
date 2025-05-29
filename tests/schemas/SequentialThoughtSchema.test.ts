@@ -19,8 +19,8 @@ import {
 import {
   validSequentialThought,
   validSequentialThoughtWithOptionals,
-  finalThoughtData,
-  invalidSequentialThought
+  invalidSequentialThought,
+  finalThoughtData
 } from '../helpers/testFixtures.js';
 import { createMockThoughtData, createMockToolRecommendation } from '../helpers/mockFactories.js';
 
@@ -57,7 +57,7 @@ describe('ThoughtSchema', () => {
       expect(result.needsMoreThoughts).toBe(true);
     });
 
-    it('should validate final thought data', () => {
+      it('should validate final thought data', () => {
       const result = SequentialThoughtSchema.parse(finalThoughtData);
 
       expect(result).toMatchObject({
@@ -146,22 +146,22 @@ describe('ThoughtSchema', () => {
 
   describe('invalid input rejection', () => {
     it('should reject missing required fields', () => {
-      expect(() => SequentialThoughtSchema.parse(finalThoughtData?.missingRequired))
+      expect(() => SequentialThoughtSchema.parse(invalidSequentialThought?.missingRequired))
         .toThrow();
     });
 
     it('should reject invalid field types', () => {
-      expect(() => SequentialThoughtSchema.parse(finalThoughtData.invalidTypes))
+      expect(() => SequentialThoughtSchema.parse(invalidSequentialThought.invalidTypes))
         .toThrow();
     });
 
     it('should reject negative numbers', () => {
-      expect(() => SequentialThoughtSchema.parse(finalThoughtData.negativeNumbers))
+      expect(() => SequentialThoughtSchema.parse(invalidSequentialThought.negativeNumbers))
         .toThrow();
     });
 
     it('should reject invalid optional field values', () => {
-      expect(() => SequentialThoughtSchema.parse(finalThoughtData.invalidOptionals))
+      expect(() => SequentialThoughtSchema.parse(invalidSequentialThought.invalidOptionals))
         .toThrow();
     });
 
