@@ -32,8 +32,12 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
     return {
       modelName: validInput.modelName,
       problem: validInput.problem,
+      steps: validInput.steps,
+      reasoning: validInput.reasoning,
+      conclusion: validInput.conclusion,
       status: 'success',
       hasSteps: (validInput.steps?.length ?? 0) > 0,
+      hasReasoning: !!validInput.reasoning,
       hasConclusion: !!validInput.conclusion,
       stepCount: validInput.steps?.length ?? 0,
       timestamp: new Date().toISOString(),

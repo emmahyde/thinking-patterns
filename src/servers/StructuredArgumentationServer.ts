@@ -31,15 +31,27 @@ export class StructuredArgumentationServer extends BaseToolServer<StructuredArgu
 
     return {
       claim: validInput.claim,
+      premises: validInput.premises,
+      conclusion: validInput.conclusion,
       argumentId: validInput.argumentId,
       argumentType: validInput.argumentType,
       confidence: validInput.confidence,
+      respondsTo: validInput.respondsTo,
+      supports: validInput.supports,
+      contradicts: validInput.contradicts,
+      strengths: validInput.strengths,
+      weaknesses: validInput.weaknesses,
+      suggestedNextTypes: validInput.suggestedNextTypes,
       nextArgumentNeeded: validInput.nextArgumentNeeded,
       status: 'success',
       premiseCount: validInput.premises.length,
       hasConclusion: !!validInput.conclusion,
+      hasRespondsTo: !!validInput.respondsTo,
+      hasSupports: !!validInput.supports && validInput.supports.length > 0,
+      hasContradicts: !!validInput.contradicts && validInput.contradicts.length > 0,
       strengthCount: validInput.strengths?.length ?? 0,
       weaknessCount: validInput.weaknesses?.length ?? 0,
+      hasSuggestedNextTypes: !!validInput.suggestedNextTypes && validInput.suggestedNextTypes.length > 0,
       timestamp: new Date().toISOString(),
       framework: 'clear-thought-tools'
     };

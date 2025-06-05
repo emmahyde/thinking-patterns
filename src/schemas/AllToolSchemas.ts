@@ -182,6 +182,9 @@ export const MetacognitiveMonitoringSchema = z.object({
   monitoringId: z.string(),
   iteration: z.number(),
   suggestedAssessments: z.array(z.enum(["knowledge", "claim", "reasoning", "overall"])).optional(),
+  previousSteps: z.array(z.string()).optional(),
+  remainingSteps: z.array(z.string()).optional(),
+  toolUsageHistory: z.array(z.string()).optional(),
   nextAssessmentNeeded: z.boolean()
 });
 

@@ -35,12 +35,17 @@ export class VisualReasoningServer extends BaseToolServer<VisualReasoningData, a
       operation: validInput.operation,
       iteration: validInput.iteration,
       nextOperationNeeded: validInput.nextOperationNeeded,
+      elements: validInput.elements,
+      transformationType: validInput.transformationType,
+      observation: validInput.observation,
+      insight: validInput.insight,
+      hypothesis: validInput.hypothesis,
       status: 'success',
       elementCount: validInput.elements?.length ?? 0,
       hasObservation: !!validInput.observation,
       hasInsight: !!validInput.insight,
       hasHypothesis: !!validInput.hypothesis,
-      transformationType: validInput.transformationType,
+      hasTransformationType: !!validInput.transformationType,
       timestamp: new Date().toISOString(),
       framework: 'clear-thought-tools'
     };

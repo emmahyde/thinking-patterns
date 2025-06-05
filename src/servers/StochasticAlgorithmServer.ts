@@ -35,10 +35,12 @@ export class StochasticAlgorithmServer extends BaseToolServer<StochasticAlgorith
     return {
       algorithm: validInput.algorithm,
       problem: validInput.problem,
+      parameters: validInput.parameters,
+      result,
       status: 'success',
+      hasParameters: !!validInput.parameters && Object.keys(validInput.parameters || {}).length > 0,
       hasResult: !!result,
       parameterCount: Object.keys(validInput.parameters || {}).length,
-      result,
       timestamp: new Date().toISOString(),
       framework: 'clear-thought-tools'
     };

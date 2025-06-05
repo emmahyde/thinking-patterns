@@ -32,8 +32,12 @@ export class DebuggingApproachServer extends BaseToolServer<DebuggingApproachDat
     return {
       approachName: validInput.approachName,
       issue: validInput.issue,
+      steps: validInput.steps,
+      findings: validInput.findings,
+      resolution: validInput.resolution,
       status: 'success',
       hasSteps: (validInput.steps?.length ?? 0) > 0,
+      hasFindings: !!validInput.findings,
       hasResolution: !!validInput.resolution,
       stepCount: validInput.steps?.length ?? 0,
       timestamp: new Date().toISOString(),
