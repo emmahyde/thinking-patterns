@@ -36,10 +36,10 @@ A comprehensive Model Context Protocol (MCP) server that combines systematic thi
 
 ### Installing via Smithery
 
-To install Thinking Patterns MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@emmahyde/thinking-patterns):
+To install Thinking Patterns MCP Server for Cursor automatically via [Smithery](https://smithery.ai/server/@emmahyde/thinking-patterns):
 
 ```bash
-npx -y @smithery/cli install @emmahyde/thinking-patterns --client claude
+npx -y @smithery/cli install @emmahyde/thinking-patterns --client cursor
 ```
 
 ### Manual Installation
