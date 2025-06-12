@@ -13,11 +13,6 @@ export default {
       {
         // ---- ts-jest options ----
         useESM: true,             // emit native ESM
-        tsconfig: {
-          module: 'ESNext',       // ensure TS outputs ESM
-          target: 'ES2020',
-          esModuleInterop: true
-        }
         // ------------------------
       }
     ]
