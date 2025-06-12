@@ -184,15 +184,15 @@ describe('CriticalThinkingServer', () => {
 
   describe('edge cases and error handling', () => {
     it('should handle null input', () => {
-      expect(() => server.process(null)).toThrow();
+      expect(() => server.process(null as any)).toThrow();
     });
 
     it('should handle undefined input', () => {
-      expect(() => server.process(undefined)).toThrow();
+      expect(() => server.process(undefined as any)).toThrow();
     });
 
     it('should handle empty object input', () => {
-      expect(() => server.process({})).toThrow();
+      expect(() => server.process({} as any)).toThrow();
     });
 
     it('should handle invalid field types', () => {
@@ -204,7 +204,7 @@ describe('CriticalThinkingServer', () => {
         alternativeApproaches: []
       };
 
-      expect(() => server.process(invalidInput)).toThrow();
+      expect(() => server.process(invalidInput as any)).toThrow();
     });
 
     it('should handle very long subject strings', () => {

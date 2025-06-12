@@ -60,8 +60,14 @@ function zodToJsonSchema(zodSchema: z.ZodSchema): Record<string, unknown> {
  * Get JSON schema for individual Zod field
  */
 function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
+  // Extract description if available
+  const description = field._def.description;
+  
   if (field instanceof z.ZodString) {
     const schema: Record<string, unknown> = { type: "string" };
+    if (description) {
+      schema.description = description;
+    }
     if (field._def.checks) {
       for (const check of field._def.checks) {
         if (check.kind === "min") {
@@ -77,6 +83,9 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
   
   if (field instanceof z.ZodNumber) {
     const schema: Record<string, unknown> = { type: "number" };
+    if (description) {
+      schema.description = description;
+    }
     if (field._def.checks) {
       for (const check of field._def.checks) {
         if (check.kind === "min") {
@@ -94,33 +103,69 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
   }
   
   if (field instanceof z.ZodBoolean) {
-    return { type: "boolean" };
+    const schema: Record<string, unknown> = { type: "boolean" };
+    if (description) {
+      schema.description = description;
+    }
+    return schema;
   }
   
   if (field instanceof z.ZodArray) {
-    return {
+    const schema: Record<string, unknown> = {
       type: "array",
       items: getFieldSchema(field._def.type)
     };
+    if (description) {
+      schema.description = description;
+    }
+    return schema;
   }
   
   if (field instanceof z.ZodObject) {
-    return zodToJsonSchema(field);
+    const schema = zodToJsonSchema(field);
+    if (description) {
+      schema.description = description;
+    }
+    return schema;
   }
   
   if (field instanceof z.ZodOptional) {
-    return getFieldSchema(field._def.innerType);
+    const innerSchema = getFieldSchema(field._def.innerType);
+    // Preserve description from the optional wrapper if it exists
+    if (description && !innerSchema.description) {
+      innerSchema.description = description;
+    }
+    return innerSchema;
   }
   
   if (field instanceof z.ZodEnum) {
-    return {
+    const schema: Record<string, unknown> = {
       type: "string",
       enum: field._def.values
     };
+    if (description) {
+      schema.description = description;
+    }
+    return schema;
+  }
+
+  if (field instanceof z.ZodRecord) {
+    const schema: Record<string, unknown> = {
+      type: "object",
+      additionalProperties: getFieldSchema(field._def.valueType)
+    };
+    if (description) {
+      schema.description = description;
+    }
+    return schema;
   }
   
   // Fallback for unknown types
-  return { type: "string" };
+  const schema: Record<string, unknown> = { type: "string" };
+  if (description) {
+    schema.description = description;
+  }
+  return schema;
 }
 
 /**

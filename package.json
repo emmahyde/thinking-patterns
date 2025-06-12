@@ -8,7 +8,7 @@
   "bugs": "https://github.com/emmahyde/thinking-patterns/issues",
   "type": "module",
   "bin": {
-    "mcp-thinking-patterns": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' npx vitest run tests/"
+    "thinking-patterns": "dist/index.js"
   },
   "files": [
     "dist",
