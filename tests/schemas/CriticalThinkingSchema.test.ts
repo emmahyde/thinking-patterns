@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { CriticalThinkingSchema } from '../../src/schemas/CriticalThinkingSchema.js';
 
 describe('CriticalThinkingSchema', () => {

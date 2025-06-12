@@ -3,7 +3,7 @@ import { StochasticAlgorithmSchema, StochasticAlgorithmData } from '../schemas/i
 import { boxed } from '../utils/index.js';
 
 /**
- * Stochastic Algorithm Server using clear-thought tools approach
+ * Stochastic Algorithm Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class StochasticAlgorithmServer extends BaseToolServer<StochasticAlgorithmData, any> {

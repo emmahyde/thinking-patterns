@@ -3,7 +3,7 @@ import { DebuggingApproachSchema, DebuggingApproachData } from '../schemas/index
 import { boxed } from '../utils/index.js';
 
 /**
- * Debugging Approach Server using clear-thought tools approach
+ * Debugging Approach Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class DebuggingApproachServer extends BaseToolServer<DebuggingApproachData, any> {

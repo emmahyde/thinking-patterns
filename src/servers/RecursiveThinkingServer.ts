@@ -1,35 +1,45 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
-import { RecursiveThinkingSchema, RecursiveThinking } from '../schemas/index.js';
+import { RecursiveThinkingSchema, RecursiveThinkingData } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
 
-export class RecursiveThinkingServer extends BaseToolServer<RecursiveThinking, any> {
+/**
+ * Recursive Thinking Server using thinking-patterns tools approach
+ * Extends BaseToolServer for standardized validation and error handling
+ */
+export class RecursiveThinkingServer extends BaseToolServer<RecursiveThinkingData, any> {
   constructor() {
     super(RecursiveThinkingSchema);
   }
 
-  protected handle(validInput: RecursiveThinking): any {
+  protected handle(validInput: RecursiveThinkingData): any {
     return this.process(validInput);
   }
 
-  public process(validInput: RecursiveThinking): any {
+  /**
+   * Standardized process method for recursive thinking
+   * @param validInput - Validated recursive thinking data
+   * @returns Processed recursive thinking result
+   */
+  public process(validInput: RecursiveThinkingData): any {
     const formattedOutput = this.formatOutput(validInput);
 
+    // Log formatted output to console (suppress during tests)
     if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
       console.error(formattedOutput);
     }
 
     return {
-      problem: validInput.problem,
-      baseCases: validInput.baseCases,
-      recursiveCases: validInput.recursiveCases,
-      terminationConditions: validInput.terminationConditions,
-      iterativeAlternatives: validInput.iterativeAlternatives,
+      ...validInput,
       status: 'success',
       timestamp: new Date().toISOString(),
+      baseCaseCount: validInput.baseCases.length,
+      recursiveCaseCount: validInput.recursiveCases.length,
+      optimizationCount: validInput.optimizations?.length || 0,
+      alternativeCount: validInput.iterativeAlternatives?.length || 0,
     };
   }
 
-  private formatOutput(data: RecursiveThinking): string {
+  private formatOutput(data: RecursiveThinkingData): string {
     const sections: Record<string, string | string[]> = {
       'Problem': data.problem,
     };

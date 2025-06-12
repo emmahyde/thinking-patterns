@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Recursive Thinking Schema
+ * 
+ * Defines the structure for recursive problem-solving and algorithmic thinking.
+ * Includes base cases, recursive cases, complexity analysis, optimization
+ * strategies, and iterative alternatives for comprehensive recursive analysis.
+ */
+
 // Enhanced Recursive Thinking Schema with complex structural information
 export const BaseCaseSchema = z.object({
   id: z.string().optional().describe("A unique identifier for the base case."),
@@ -79,9 +87,9 @@ export const RecursiveThinkingSchema = z.object({
 });
 
 // Type exports for TypeScript
-export type RecursiveThinking = z.infer<typeof RecursiveThinkingSchema>;
-export type BaseCase = z.infer<typeof BaseCaseSchema>;
-export type RecursiveCase = z.infer<typeof RecursiveCaseSchema>;
-export type ComplexityAnalysis = z.infer<typeof ComplexityAnalysisSchema>;
-export type Optimization = z.infer<typeof OptimizationSchema>;
-export type IterativeAlternative = z.infer<typeof IterativeAlternativeSchema>; 
+export type RecursiveThinkingData = z.infer<typeof RecursiveThinkingSchema>;
+export type BaseCaseData = z.infer<typeof BaseCaseSchema>;
+export type RecursiveCaseData = z.infer<typeof RecursiveCaseSchema>;
+export type ComplexityAnalysisData = z.infer<typeof ComplexityAnalysisSchema>;
+export type OptimizationData = z.infer<typeof OptimizationSchema>;
+export type IterativeAlternativeData = z.infer<typeof IterativeAlternativeSchema>; 

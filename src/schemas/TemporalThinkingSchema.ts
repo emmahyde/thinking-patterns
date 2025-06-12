@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Temporal Thinking Schema
+ * 
+ * Defines the structure for temporal reasoning and state-based modeling.
+ * Includes state machines, event handling, transition analysis, temporal
+ * constraints, and validation frameworks for time-dependent systems.
+ */
+
 // Enhanced Temporal Thinking Schema with complex structural information
 export const StatePropertiesSchema = z.object({
   isInitial: z.boolean().optional().describe("Whether this is an initial state."),
@@ -145,12 +153,12 @@ export const TemporalThinkingSchema = z.object({
 });
 
 // Type exports for TypeScript
-export type State = z.infer<typeof StateSchema>;
-export type Event = z.infer<typeof EventSchema>;
-export type Transition = z.infer<typeof TransitionSchema>;
-export type TemporalThinking = z.infer<typeof TemporalThinkingSchema>;
-export type StateProperties = z.infer<typeof StatePropertiesSchema>;
-export type EventProperties = z.infer<typeof EventPropertiesSchema>;
-export type TransitionProperties = z.infer<typeof TransitionPropertiesSchema>;
-export type TemporalAnalysis = z.infer<typeof TemporalAnalysisSchema>;
-export type ValidationResults = z.infer<typeof ValidationResultsSchema>; 
+export type StateData = z.infer<typeof StateSchema>;
+export type EventData = z.infer<typeof EventSchema>;
+export type TransitionData = z.infer<typeof TransitionSchema>;
+export type TemporalThinkingData = z.infer<typeof TemporalThinkingSchema>;
+export type StatePropertiesData = z.infer<typeof StatePropertiesSchema>;
+export type EventPropertiesData = z.infer<typeof EventPropertiesSchema>;
+export type TransitionPropertiesData = z.infer<typeof TransitionPropertiesSchema>;
+export type TemporalAnalysisData = z.infer<typeof TemporalAnalysisSchema>;
+export type ValidationResultsData = z.infer<typeof ValidationResultsSchema>; 

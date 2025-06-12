@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import {
   TemporalThinkingSchema,
   StateSchema,
@@ -9,7 +8,7 @@ import {
   TransitionPropertiesSchema,
   TemporalAnalysisSchema,
   ValidationResultsSchema,
-  type TemporalThinking
+  type TemporalThinkingData
 } from '../../src/schemas/TemporalThinkingSchema.js';
 
 describe('TemporalThinkingSchema', () => {
@@ -393,7 +392,7 @@ describe('TemporalThinkingSchema', () => {
       expect(result.success).toBe(true);
       
       if (result.success) {
-        const data: TemporalThinking = result.data;
+        const data: TemporalThinkingData = result.data;
         expect(data.context).toBe('Simple state machine for user authentication');
         expect(data.initialState).toBe('logged_out');
         expect(data.states).toHaveLength(2);
@@ -595,7 +594,7 @@ describe('TemporalThinkingSchema', () => {
       expect(result.success).toBe(true);
       
       if (result.success) {
-        const data: TemporalThinking = result.data;
+        const data: TemporalThinkingData = result.data;
         expect(data.states).toHaveLength(4);
         expect(data.events).toHaveLength(3);
         expect(data.transitions).toHaveLength(3);
@@ -710,7 +709,7 @@ describe('TemporalThinkingSchema', () => {
       expect(result.success).toBe(true);
       
       if (result.success) {
-        const data: TemporalThinking = result.data;
+        const data: TemporalThinkingData = result.data;
         
         // TypeScript should infer these types correctly
         expect(typeof data.context).toBe('string');

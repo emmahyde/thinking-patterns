@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Critical Thinking Schema
+ * 
+ * Defines the structure for systematic critical analysis of code, designs,
+ * requirements, or concepts. Includes identification of potential issues,
+ * edge cases, invalid assumptions, and alternative approaches.
+ */
+
 // Critical Thinking Schema with enhanced structural complexity
 export const IssueSchema = z.object({
   id: z.string().optional().describe("A unique identifier for the issue."),
@@ -69,8 +77,8 @@ export const CriticalThinkingSchema = z.object({
 });
 
 // Type exports for TypeScript
-export type CriticalThinking = z.infer<typeof CriticalThinkingSchema>;
-export type Issue = z.infer<typeof IssueSchema>;
-export type EdgeCase = z.infer<typeof EdgeCaseSchema>;
-export type Assumption = z.infer<typeof AssumptionSchema>;
-export type AlternativeApproach = z.infer<typeof AlternativeApproachSchema>; 
+export type CriticalThinkingData = z.infer<typeof CriticalThinkingSchema>;
+export type IssueData = z.infer<typeof IssueSchema>;
+export type EdgeCaseData = z.infer<typeof EdgeCaseSchema>;
+export type AssumptionData = z.infer<typeof AssumptionSchema>;
+export type AlternativeApproachData = z.infer<typeof AlternativeApproachSchema>; 

@@ -3,7 +3,7 @@ import { MetacognitiveMonitoringSchema, MetacognitiveMonitoringData } from '../s
 import { boxed } from '../utils/index.js';
 
 /**
- * Metacognitive Monitoring Server using clear-thought tools approach
+ * Metacognitive Monitoring Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class MetacognitiveMonitoringServer extends BaseToolServer<MetacognitiveMonitoringData, any> {

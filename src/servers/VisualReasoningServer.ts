@@ -3,7 +3,7 @@ import { VisualReasoningSchema, VisualReasoningData } from '../schemas/index.js'
 import { boxed } from '../utils/index.js';
 
 /**
- * Visual Reasoning Server using clear-thought tools approach
+ * Visual Reasoning Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class VisualReasoningServer extends BaseToolServer<VisualReasoningData, any> {
@@ -118,17 +118,17 @@ export class VisualReasoningServer extends BaseToolServer<VisualReasoningData, a
         suggestions.push('• Verify logical flow and completeness');
         suggestions.push('• Check for parallel processes and dependencies');
         break;
-      case 'stateDiagram':
+      case 'state-diagram':
         suggestions.push('• Validate state transitions and completeness');
         suggestions.push('• Identify unreachable or dead-end states');
         suggestions.push('• Analyze state complexity and interaction patterns');
         break;
-      case 'conceptMap':
+      case 'concept-map':
         suggestions.push('• Examine concept hierarchies and relationships');
         suggestions.push('• Look for missing connections or concepts');
         suggestions.push('• Assess conceptual coherence and organization');
         break;
-      case 'treeDiagram':
+      case 'tree-diagram':
         suggestions.push('• Analyze branching patterns and depth');
         suggestions.push('• Check for balanced structure and completeness');
         suggestions.push('• Identify leaf nodes and decision points');

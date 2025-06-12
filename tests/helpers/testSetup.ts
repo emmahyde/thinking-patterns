@@ -2,7 +2,6 @@
  * Vitest test setup file
  * Configures global test environment settings
  */
-import { vi, afterEach, afterAll, expect } from 'vitest';
 
 // Mock console methods to avoid noise in test output
 global.console = {

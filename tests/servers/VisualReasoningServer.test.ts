@@ -120,7 +120,7 @@ describe('VisualReasoningServer', () => {
       const input = {
         operation: 'transform' as const,
         diagramId: 'state-machine',
-        diagramType: 'stateDiagram' as const,
+        diagramType: 'state-diagram' as const,
         iteration: 2,
         nextOperationNeeded: true,
         transformationType: 'regroup' as const,
@@ -166,7 +166,7 @@ describe('VisualReasoningServer', () => {
 
       const result = server.process(input);
 
-      expect(result.diagramType).toBe('stateDiagram');
+      expect(result.diagramType).toBe('state-diagram');
       expect(result.operation).toBe('transform');
       expect(result.hasTransformationType).toBe(true);
       expect(result.transformationType).toBe('regroup');
@@ -178,7 +178,7 @@ describe('VisualReasoningServer', () => {
       const input = {
         operation: 'create' as const,
         diagramId: 'concept-hierarchy',
-        diagramType: 'conceptMap' as const,
+        diagramType: 'concept-map' as const,
         iteration: 1,
         nextOperationNeeded: true,
         elements: [
@@ -214,7 +214,7 @@ describe('VisualReasoningServer', () => {
 
       const result = server.process(input);
 
-      expect(result.diagramType).toBe('conceptMap');
+      expect(result.diagramType).toBe('concept-map');
       expect(result.elementCount).toBe(4);
       expect(result.elements?.[3].type).toBe('container');
       expect(result.elements?.[3].contains).toEqual(['supervised', 'unsupervised']);
@@ -224,7 +224,7 @@ describe('VisualReasoningServer', () => {
       const input = {
         operation: 'observe' as const,
         diagramId: 'decision-tree',
-        diagramType: 'treeDiagram' as const,
+        diagramType: 'tree-diagram' as const,
         iteration: 1,
         nextOperationNeeded: false,
         elements: [
@@ -259,7 +259,7 @@ describe('VisualReasoningServer', () => {
 
       const result = server.process(input);
 
-      expect(result.diagramType).toBe('treeDiagram');
+      expect(result.diagramType).toBe('tree-diagram');
       expect(result.operation).toBe('observe');
       expect(result.elementCount).toBe(4);
       expect(result.elements?.[3].type).toBe('annotation');
@@ -310,7 +310,7 @@ describe('VisualReasoningServer', () => {
     });
 
     it('should handle all diagram types', () => {
-      const diagramTypes = ['graph', 'flowchart', 'stateDiagram', 'conceptMap', 'treeDiagram', 'custom'] as const;
+      const diagramTypes = ['graph', 'flowchart', 'state-diagram', 'concept-map', 'tree-diagram', 'custom'] as const;
       
       diagramTypes.forEach((type, index) => {
         const input = {
@@ -490,7 +490,7 @@ describe('VisualReasoningServer', () => {
       const input = {
         operation: 'transform' as const,
         diagramId: 'size-adjustment',
-        diagramType: 'conceptMap' as const,
+        diagramType: 'concept-map' as const,
         iteration: 1,
         nextOperationNeeded: true,
         transformationType: 'resize' as const,
@@ -549,7 +549,7 @@ describe('VisualReasoningServer', () => {
       const input = {
         operation: 'transform' as const,
         diagramId: 'orientation-change',
-        diagramType: 'treeDiagram' as const,
+        diagramType: 'tree-diagram' as const,
         iteration: 1,
         nextOperationNeeded: true,
         transformationType: 'rotate' as const,
@@ -665,7 +665,7 @@ describe('VisualReasoningServer', () => {
       const input = {
         operation: 'observe' as const,
         diagramId: 'insight-focus',
-        diagramType: 'conceptMap' as const,
+        diagramType: 'concept-map' as const,
         iteration: 2,
         nextOperationNeeded: false,
         insight: 'Concept relationships reveal hidden dependencies'
@@ -683,7 +683,7 @@ describe('VisualReasoningServer', () => {
       const input = {
         operation: 'observe' as const,
         diagramId: 'hypothesis-focus',
-        diagramType: 'stateDiagram' as const,
+        diagramType: 'state-diagram' as const,
         iteration: 1,
         nextOperationNeeded: true,
         hypothesis: 'Adding intermediate states would improve user experience'

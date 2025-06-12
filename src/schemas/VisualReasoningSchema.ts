@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Visual Reasoning Schema
+ * 
+ * Defines the structure for diagram-based thinking and visual problem solving.
+ * Includes spatial relationships, visual patterns, cognitive load analysis,
+ * and diagram effectiveness assessment for comprehensive visual reasoning.
+ */
+
 // Enhanced Visual Reasoning Schema with complex structural information
 export const SpatialRelationshipSchema = z.object({
   type: z.enum(["adjacent", "overlapping", "contained", "above", "below", "left", "right", "diagonal", "connected", "disconnected"]).describe("The type of spatial relationship."),
@@ -100,7 +108,7 @@ export const VisualReasoningSchema = z.object({
   // Core operation and context
   operation: z.enum(["create", "update", "delete", "transform", "observe", "analyze", "compare", "synthesize"]).describe("The operation to be performed on the visual elements."),
   diagramId: z.string().describe("A unique identifier for the diagram."),
-  diagramType: z.enum(["graph", "flowchart", "stateDiagram", "conceptMap", "treeDiagram", "networkDiagram", "mindMap", "organizationChart", "custom"]).describe("The type of diagram being reasoned about."),
+  diagramType: z.enum(["graph", "flowchart", "state-diagram", "concept-map", "tree-diagram", "network-diagram", "mind-map", "organization-chart", "custom"]).describe("The type of diagram being reasoned about."),
   
   // Enhanced visual elements
   elements: z.array(VisualElementSchema).optional().describe("The visual elements being operated on or analyzed."),
@@ -139,8 +147,8 @@ export const VisualReasoningSchema = z.object({
 // Type exports for TypeScript
 export type VisualReasoningData = z.infer<typeof VisualReasoningSchema>;
 export type VisualElementData = z.infer<typeof VisualElementSchema>;
-export type SpatialRelationship = z.infer<typeof SpatialRelationshipSchema>;
-export type VisualPattern = z.infer<typeof VisualPatternSchema>;
-export type CognitiveLoad = z.infer<typeof CognitiveLoadSchema>;
-export type ReasoningStep = z.infer<typeof ReasoningStepSchema>;
-export type DiagramAnalysis = z.infer<typeof DiagramAnalysisSchema>;
+export type SpatialRelationshipData = z.infer<typeof SpatialRelationshipSchema>;
+export type VisualPatternData = z.infer<typeof VisualPatternSchema>;
+export type CognitiveLoadData = z.infer<typeof CognitiveLoadSchema>;
+export type ReasoningStepData = z.infer<typeof ReasoningStepSchema>;
+export type DiagramAnalysisData = z.infer<typeof DiagramAnalysisSchema>;

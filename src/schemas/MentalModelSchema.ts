@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-// Mental Model Schema
+/**
+ * Mental Model Schema
+ * 
+ * Defines the structure for applying mental models to problem analysis.
+ * Mental models are frameworks for understanding and analyzing complex problems
+ * by applying established thinking patterns and methodologies.
+ */
 export const MentalModelSchema = z.object({
   modelName: z.string().min(1).describe("The name of the mental model being used (e.g., 'Second-Order Thinking', 'First Principles'). This helps categorize the analysis."),
   problem: z.string().min(1).describe("A clear, specific, and bounded description of the problem being analyzed. A good problem statement is crucial for effective model application. For example, 'How can we reduce user friction in our onboarding flow?' is better than 'Make the app better'."),

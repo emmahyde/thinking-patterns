@@ -1,19 +1,29 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
-import { ProblemDecompositionSchema, ProblemDecomposition, Task } from '../schemas/index.js';
+import { ProblemDecompositionSchema, ProblemDecompositionData, Task } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
 
-export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposition, any> {
+/**
+ * Problem Decomposition Server using thinking-patterns tools approach
+ * Extends BaseToolServer for standardized validation and error handling
+ */
+export class ProblemDecompositionServer extends BaseToolServer<ProblemDecompositionData, any> {
   constructor() {
     super(ProblemDecompositionSchema);
   }
 
-  protected handle(validInput: ProblemDecomposition): any {
+  protected handle(validInput: ProblemDecompositionData): any {
     return this.process(validInput);
   }
 
-  public process(validInput: ProblemDecomposition): any {
+  /**
+   * Standardized process method for problem decomposition
+   * @param validInput - Validated problem decomposition data
+   * @returns Processed problem decomposition result
+   */
+  public process(validInput: ProblemDecompositionData): any {
     const formattedOutput = this.formatOutput(validInput);
 
+    // Log formatted output to console (suppress during tests)
     if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
       console.error(formattedOutput);
     }
@@ -34,7 +44,7 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
     };
   }
 
-  private formatOutput(data: ProblemDecomposition): string {
+  private formatOutput(data: ProblemDecompositionData): string {
     const sections: Record<string, string | string[]> = {
       'Problem': data.problem,
     };

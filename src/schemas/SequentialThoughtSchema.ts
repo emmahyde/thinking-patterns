@@ -1,6 +1,14 @@
 import { z } from 'zod';
 import { ToolRecommendationSchema, ToolUsageHistorySchema } from './ToolSchemas.js';
 
+/**
+ * Sequential Thought Schema
+ * 
+ * Defines the structure for step-by-step sequential thinking and problem-solving.
+ * Includes tool recommendations, step tracking, complexity assessment,
+ * and adaptive reasoning processes for systematic analysis.
+ */
+
 // Schema for StepRecommendation
 export const StepRecommendationSchema = z.object({
   stepDescription: z.string().describe("A clear and concise description of the step to be taken."),
@@ -13,7 +21,7 @@ export const StepRecommendationSchema = z.object({
 export const CurrentStepSchema = StepRecommendationSchema.extend({
   stepNumber: z.number().optional().describe("The sequential number of the current step."),
   estimatedDuration: z.string().optional().describe("An estimation of how long this step might take."),
-  complexityLevel: z.enum(['low', 'medium', 'high']).optional().describe("The assessed complexity level of this step."),
+  complexityLevel: z.enum(["low", "medium", "high"]).optional().describe("The assessed complexity level of this step."),
 });
 
 // Schema for ThoughtData (main schema)
@@ -35,5 +43,5 @@ export const SequentialThoughtSchema = z.object({
 
 // Type inference for TypeScript
 export type StepRecommendationData = z.infer<typeof StepRecommendationSchema>;
-export type CurrentStep = z.infer<typeof CurrentStepSchema>;
-export type SequentialThought = z.infer<typeof SequentialThoughtSchema>;
+export type CurrentStepData = z.infer<typeof CurrentStepSchema>;
+export type SequentialThoughtData = z.infer<typeof SequentialThoughtSchema>;

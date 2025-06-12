@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import {
   VisualReasoningSchema,
   VisualElementSchema,
@@ -281,7 +280,7 @@ describe('VisualReasoningSchema', () => {
       const validData = {
         operation: 'analyze' as const,
         diagramId: 'complex-diagram',
-        diagramType: 'conceptMap' as const,
+        diagramType: 'concept-map' as const,
         elements: [
           {
             id: 'concept1',
@@ -360,7 +359,7 @@ describe('VisualReasoningSchema', () => {
     });
 
     it('should validate different diagram types', () => {
-      const diagramTypes = ['graph', 'flowchart', 'stateDiagram', 'conceptMap', 'treeDiagram', 'networkDiagram', 'mindMap', 'organizationChart', 'custom'] as const;
+      const diagramTypes = ['graph', 'flowchart', 'state-diagram', 'concept-map', 'tree-diagram', 'network-diagram', 'mind-map', 'organization-chart', 'custom'] as const;
       
       diagramTypes.forEach(diagramType => {
         const validData = {

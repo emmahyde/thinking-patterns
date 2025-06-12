@@ -1,5 +1,5 @@
 /**
- * Tests for ThoughtSchema and related schemas
+ * Tests for SequentialThoughtSchema
  * Tests Zod validation, type inference, and edge cases
  */
 
@@ -7,14 +7,15 @@ import {
   SequentialThoughtSchema,
   StepRecommendationSchema,
   CurrentStepSchema,
-  type SequentialThought,
-  type CurrentStep
+  type SequentialThoughtData,
+  type StepRecommendationData,
+  type CurrentStepData
 } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   ToolRecommendationSchema,
   ToolUsageHistorySchema,
   ToolContextSchema,
-  type ToolRecommendation
+  type ToolRecommendationData
 } from '../../src/schemas/ToolSchemas.js';
 import {
   validSequentialThought,
@@ -224,7 +225,7 @@ describe('ThoughtSchema', () => {
 
   describe('type inference', () => {
     it('should infer correct TypeScript types', () => {
-      const validData: SequentialThought = {
+      const validData: SequentialThoughtData = {
         thought: "Type test",
         thoughtNumber: 1,
         totalThoughts: 3,

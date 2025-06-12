@@ -1,4 +1,7 @@
-import { describe, it, expect } from 'vitest';
+/**
+ * Tests for DomainModelingServer
+ * Tests structured domain modeling and reporting of entities, relationships, rules, and metrics
+ */
 import { DomainModelingServer } from '../../src/servers/DomainModelingServer.js';
 import { DomainModelingData } from '../../src/schemas/index.js';
 
@@ -9,7 +12,7 @@ describe('DomainModelingServer', () => {
     server = new DomainModelingServer();
   });
 
-  describe('run method', () => {
+  describe('process', () => {
     it('should correctly format a domain model with axioms and rules', () => {
       const validInput: DomainModelingData = {
         domainName: 'E-commerce Platform',
@@ -48,14 +51,15 @@ describe('DomainModelingServer', () => {
         nextStageNeeded: false,
       };
 
-      const response = server.run(validInput);
-      const output = response.content[0].text;
+      const result = server.process(validInput);
 
-      expect(response.isError).toBeFalsy();
-      expect(output).toMatch(/Axioms \(Core Truths\)/);
-      expect(output).toMatch(/Stock Cannot Be Negative/);
-      expect(output).toMatch(/Business Rules/);
-      expect(output).toMatch(/IF order\.total > 50 THEN shipping\.cost = 0/);
+      expect(result.status).toBe('success');
+      expect(result.domainName).toBe('E-commerce Platform');
+      expect(result.entityCount).toBe(2);
+      expect(result.relationshipCount).toBe(1);
+      expect(result.domainRuleCount).toBe(2);
+      expect(result.modelComplexity).toBe('LOW');
+      expect(result.paradigm).toBe('domain-driven');
     });
 
     it('should handle a model with no rules or relationships', () => {
@@ -73,14 +77,39 @@ describe('DomainModelingServer', () => {
         nextStageNeeded: true,
       };
 
-      const response = server.run(simpleInput);
-      const output = response.content[0].text;
+      const result = server.process(simpleInput);
       
-      expect(output).toMatch(/Domain:[\s\S]*?Simple Blog \(object-oriented\)/);
-      expect(output).toMatch(/Post: \[id, title, content\]/);
-      expect(output).not.toMatch(/Axioms/);
-      expect(output).not.toMatch(/Business Rules/);
-      expect(output).not.toMatch(/Relationships/);
+      expect(result.status).toBe('success');
+      expect(result.domainName).toBe('Simple Blog');
+      expect(result.entityCount).toBe(1);
+      expect(result.relationshipCount).toBe(0);
+      expect(result.domainRuleCount).toBe(0);
+      expect(result.modelComplexity).toBe('LOW');
+      expect(result.paradigm).toBe('object-oriented');
+    });
+  });
+
+  describe('edge cases and error handling', () => {
+    it('should handle null input', () => {
+      expect(() => server.process(null as any)).toThrow();
+    });
+
+    it('should handle undefined input', () => {
+      expect(() => server.process(undefined as any)).toThrow();
+    });
+
+    it('should handle empty object input', () => {
+      const result = server.process({} as any);
+      expect(result.status).toBe('error');
+    });
+
+    it('should handle invalid field types', () => {
+      const invalidInput = {
+        domainName: 123,
+        entities: 'not-array',
+      } as unknown as DomainModelingData;
+
+      expect(() => server.process(invalidInput)).toThrow();
     });
   });
 });

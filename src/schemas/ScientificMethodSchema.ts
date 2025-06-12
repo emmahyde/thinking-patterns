@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Scientific Method Schema
+ * 
+ * Defines the structure for formal hypothesis testing and experimentation
+ * following the scientific method. Includes hypothesis formulation, experimental
+ * design, prediction testing, and systematic analysis of results.
+ */
+
 // Scientific Method Schema
 export const VariableSchema = z.object({
   name: z.string().describe("The name of the variable (e.g., 'user conversion rate', 'website latency')."),

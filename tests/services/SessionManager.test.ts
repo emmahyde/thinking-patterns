@@ -3,7 +3,6 @@
  * Tests session lifecycle management, state persistence, and cleanup
  */
 
-import { jest } from 'vitest';
 import { InMemorySessionManager, sessionManager } from '../../src/services/SessionManager.js';
 import { createMockSessionData, createMockTimers, resetAllMocks } from '../helpers/mockFactories.js';
 

@@ -3,7 +3,7 @@ import { ScientificMethodSchema, ScientificMethodData } from '../schemas/index.j
 import { boxed } from '../utils/index.js';
 
 /**
- * Scientific Method Server using clear-thought tools approach
+ * Scientific Method Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class ScientificMethodServer extends BaseToolServer<ScientificMethodData, any> {

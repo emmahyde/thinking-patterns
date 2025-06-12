@@ -1,10 +1,10 @@
-import { ToolRecommendation, ToolContext } from '../schemas/ToolSchemas.js';
-import { CurrentStep } from '../schemas/SequentialThoughtSchema.js';
+import { ToolRecommendationData, ToolContextData } from '../schemas/ToolSchemas.js';
+import { CurrentStepData } from '../schemas/SequentialThoughtSchema.js';
 
 export class ToolRecommendationEngine {
   private toolDescriptions: Record<string, string> = {
     'mental_model': 'Structured thinking frameworks like first principles, opportunity cost analysis, and systematic problem decomposition',
-    'debugging_approach': 'Systematic debugging methods including binary search, divide and conquer, and cause elimination',
+    'debugging_approxach': 'Systematic debugging methods including binary search, divide and conquer, and cause elimination',
     'stochastic_algorithm': 'Probabilistic decision-making tools including MDPs, Monte Carlo methods, and Bayesian optimization',
     'collaborative_reasoning': 'Multi-perspective problem solving with diverse viewpoints and stakeholder analysis',
     'decision_framework': 'Structured decision analysis with criteria evaluation and outcome modeling',
@@ -26,9 +26,9 @@ export class ToolRecommendationEngine {
     thought: string,
     thoughtNumber: number,
     totalThoughts: number,
-    context: ToolContext
-  ): ToolRecommendation[] {
-    const recommendations: ToolRecommendation[] = [];
+    context: ToolContextData
+  ): ToolRecommendationData[] {
+    const recommendations: ToolRecommendationData[] = [];
     const thoughtContent = thought.toLowerCase();
 
     // Analyze thought content for keywords and context
@@ -64,8 +64,8 @@ export class ToolRecommendationEngine {
     thought: string,
     thoughtNumber: number,
     totalThoughts: number,
-    context: ToolContext
-  ): CurrentStep {
+    context: ToolContextData
+  ): CurrentStepData {
     const recommendations = this.generateRecommendations(thought, thoughtNumber, totalThoughts, context);
     const analysisResults = this.analyzeThoughtContent(thought.toLowerCase());
 
@@ -151,9 +151,9 @@ export class ToolRecommendationEngine {
     thoughtNumber: number,
     totalThoughts: number,
     analysis: any
-  ): ToolRecommendation[] {
+  ): ToolRecommendationData[] {
     const stage = this.determineThinkingStage(thoughtNumber, totalThoughts);
-    const recommendations: ToolRecommendation[] = [];
+    const recommendations: ToolRecommendationData[] = [];
 
     switch (stage) {
       case 'initial':
@@ -215,9 +215,9 @@ export class ToolRecommendationEngine {
   private getDomainSpecificRecommendations(
     domain: string,
     analysis: any
-  ): ToolRecommendation[] {
+  ): ToolRecommendationData[] {
     const domainTools = this.problemDomainMappings[domain] || [];
-    const recommendations: ToolRecommendation[] = [];
+    const recommendations: ToolRecommendationData[] = [];
 
     domainTools.forEach((tool, index) => {
       let confidence = 0.6 - (index * 0.1); // Decrease confidence for lower priority tools
@@ -240,11 +240,11 @@ export class ToolRecommendationEngine {
   }
 
   private combineRecommendations(
-    stageRecs: ToolRecommendation[],
-    domainRecs: ToolRecommendation[],
+    stageRecs: ToolRecommendationData[],
+    domainRecs: ToolRecommendationData[],
     availableTools: string[]
-  ): ToolRecommendation[] {
-    const combined = new Map<string, ToolRecommendation>();
+  ): ToolRecommendationData[] {
+    const combined = new Map<string, ToolRecommendationData>();
 
     // Add stage-based recommendations
     stageRecs.forEach(rec => {

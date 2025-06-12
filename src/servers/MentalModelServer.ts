@@ -3,7 +3,7 @@ import { MentalModelSchema, MentalModelData } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
 
 /**
- * Mental Model Server using clear-thought tools approach
+ * Mental Model Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class MentalModelServer extends BaseToolServer<MentalModelData, any> {

@@ -2,11 +2,11 @@
  * Test fixtures and sample data for testing
  */
 
-import { SequentialThought } from '../../src/schemas/SequentialThoughtSchema.js';
+import { SequentialThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
 
 // Sample thought data for testing
 // Sample thought data for testing
-export const validSequentialThought: SequentialThought = {
+export const validSequentialThought: SequentialThoughtData = {
   thought: "This is a test thought for validation",
   thoughtNumber: 1,
   totalThoughts: 5,
@@ -18,7 +18,7 @@ export const validSequentialThought: SequentialThought = {
   needsMoreThoughts: false,
 };
 
-export const validSequentialThoughtWithOptionals: SequentialThought = {
+export const validSequentialThoughtWithOptionals: SequentialThoughtData = {
   thought: "This is a revised thought that branches from previous thinking",
   thoughtNumber: 3,
   totalThoughts: 5,
@@ -30,7 +30,7 @@ export const validSequentialThoughtWithOptionals: SequentialThought = {
   needsMoreThoughts: true,
 };
 
-export const finalThoughtData: SequentialThought = {
+export const finalThoughtData: SequentialThoughtData = {
   thought: "This is the final thought in the sequence",
   thoughtNumber: 5,
   totalThoughts: 5,

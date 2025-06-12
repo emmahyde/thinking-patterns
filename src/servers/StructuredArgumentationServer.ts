@@ -3,7 +3,7 @@ import { StructuredArgumentationSchema, StructuredArgumentationData } from '../s
 import { boxed } from '../utils/index.js';
 
 /**
- * Structured Argumentation Server using clear-thought tools approach
+ * Structured Argumentation Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class StructuredArgumentationServer extends BaseToolServer<StructuredArgumentationData, any> {

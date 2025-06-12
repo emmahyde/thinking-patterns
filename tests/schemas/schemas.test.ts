@@ -8,18 +8,18 @@ import {
   SequentialThoughtSchema,
   StepRecommendationSchema,
   CurrentStepSchema,
-  type SequentialThought,
+  type SequentialThoughtData,
   type StepRecommendationData,
-  type CurrentStep,
+  type CurrentStepData
 } from '../../src/schemas/SequentialThoughtSchema.js';
 
 import {
   ToolRecommendationSchema,
   ToolUsageHistorySchema,
   ToolContextSchema,
-  type ToolRecommendation,
-  type ToolUsageHistory,
-  type ToolContext
+  type ToolRecommendationData,
+  type ToolUsageHistoryData,
+  type ToolContextData
 } from '../../src/schemas/ToolSchemas.js';
 
 import {
@@ -34,7 +34,7 @@ describe('Schema Integration Tests', () => {
   describe('cross-schema validation', () => {
     it('should validate complete thought workflow with all schemas', () => {
       // Create a complete workflow that uses all schemas
-      const toolRecommendations: ToolRecommendation[] = [
+      const toolRecommendations: ToolRecommendationData[] = [
         ToolRecommendationSchema.parse({
           toolName: "sequential_thinking",
           confidence: 0.9,
@@ -50,7 +50,7 @@ describe('Schema Integration Tests', () => {
         })
       ];
 
-      const currentStep: CurrentStep = CurrentStepSchema.parse({
+      const currentStep: CurrentStepData = CurrentStepSchema.parse({
         stepDescription: "Analyze the problem systematically",
         recommendedTools: toolRecommendations,
         expectedOutcome: "Clear understanding of the problem",
@@ -69,7 +69,7 @@ describe('Schema Integration Tests', () => {
         })
       ];
 
-      const toolHistory: ToolUsageHistory[] = [
+      const toolHistory: ToolUsageHistoryData[] = [
         ToolUsageHistorySchema.parse({
           toolName: "mental_model",
           usedAt: "2024-01-01T10:00:00Z",
@@ -82,7 +82,7 @@ describe('Schema Integration Tests', () => {
         })
       ];
 
-      const thoughtData: SequentialThought = SequentialThoughtSchema.parse({
+      const thoughtData: SequentialThoughtData = SequentialThoughtSchema.parse({
         thought: "Based on the mental model analysis, I need to break this down systematically",
         thoughtNumber: 2,
         totalThoughts: 5,
@@ -116,7 +116,7 @@ describe('Schema Integration Tests', () => {
     });
 
     it('should validate tool context integration with other schemas', () => {
-      const context: ToolContext = ToolContextSchema.parse({
+      const context: ToolContextData = ToolContextSchema.parse({
         availableTools: ["sequential_thinking", "mental_model", "debugging", "stochastic"],
         userPreferences: {
           style: "detailed",
@@ -132,14 +132,14 @@ describe('Schema Integration Tests', () => {
       });
 
       // Create thought data that references tools from the context
-                const thoughtWithContext: SequentialThought = SequentialThoughtSchema.parse({
+                const thoughtWithContext: SequentialThoughtData = SequentialThoughtSchema.parse({
         thought: "Using the available tools from context to approach this problem",
         thoughtNumber: 1,
         totalThoughts: 3,
         nextThoughtNeeded: true,
         currentStep: {
           stepDescription: "Select appropriate tools based on context",
-          recommendedTools: context.availableTools.slice(0, 2).map(toolName => ({
+          recommendedTools: context.availableTools.slice(0, 2).map((toolName: string) => ({
             toolName: toolName,
             confidence: 0.8,
             rationale: `Tool ${toolName} is available in context`,

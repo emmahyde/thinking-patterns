@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Collaborative Reasoning Schema
+ * 
+ * Defines the structure for multi-perspective collaborative problem solving
+ * with diverse personas and structured contributions. Supports systematic
+ * group reasoning processes with consensus building and disagreement resolution.
+ */
+
 // Collaborative Reasoning Schema
 export const PersonaSchema = z.object({
   id: z.string().describe("A unique identifier for the persona."),

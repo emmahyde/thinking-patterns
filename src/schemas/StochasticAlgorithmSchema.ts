@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-// Stochastic Algorithm Schema
+/**
+ * Stochastic Algorithm Schema
+ * 
+ * Defines the structure for probabilistic algorithms used in decision-making
+ * under uncertainty, including Monte Carlo methods, simulated annealing,
+ * and other stochastic optimization techniques.
+ */
 export const StochasticAlgorithmSchema = z.object({
   algorithm: z.string().min(1).describe("The name of the stochastic algorithm to be used (e.g., 'Monte Carlo Tree Search', 'Simulated Annealing')."),
   problem: z.string().min(1).describe("A formal description of the problem to be solved, including the state space, actions, and objective function if applicable."),

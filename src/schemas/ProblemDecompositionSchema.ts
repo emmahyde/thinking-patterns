@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Problem Decomposition Schema
+ * 
+ * Defines the structure for systematic problem breakdown and task decomposition.
+ * Includes hierarchical task structures, resource requirements, risk assessment,
+ * stakeholder management, and progress tracking capabilities.
+ */
+
 // Enhanced Task Schema with complex structural information
 export const ResourceRequirementSchema = z.object({
   type: z.enum(["human", "financial", "technical", "infrastructure", "external"]).describe("The type of resource required."),
@@ -138,10 +146,10 @@ export const ProblemDecompositionSchema = z.object({
 });
 
 // Type exports for TypeScript
-export type ProblemDecomposition = z.infer<typeof ProblemDecompositionSchema>;
-export type ResourceRequirement = z.infer<typeof ResourceRequirementSchema>;
-export type Risk = z.infer<typeof RiskSchema>;
-export type Stakeholder = z.infer<typeof StakeholderSchema>;
-export type AcceptanceCriteria = z.infer<typeof AcceptanceCriteriaSchema>;
-export type ProgressTracking = z.infer<typeof ProgressTrackingSchema>;
-export type DecompositionMetrics = z.infer<typeof DecompositionMetricsSchema>; 
+export type ProblemDecompositionData = z.infer<typeof ProblemDecompositionSchema>;
+export type ResourceRequirementData = z.infer<typeof ResourceRequirementSchema>;
+export type RiskData = z.infer<typeof RiskSchema>;
+export type StakeholderData = z.infer<typeof StakeholderSchema>;
+export type AcceptanceCriteriaData = z.infer<typeof AcceptanceCriteriaSchema>;
+export type ProgressTrackingData = z.infer<typeof ProgressTrackingSchema>;
+export type DecompositionMetricsData = z.infer<typeof DecompositionMetricsSchema>; 

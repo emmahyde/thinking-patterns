@@ -1,6 +1,14 @@
 import { z } from 'zod';
 import { ToolUsageHistorySchema } from './ToolSchemas.js';
 
+/**
+ * Metacognitive Monitoring Schema
+ * 
+ * Defines the structure for self-assessment of knowledge and reasoning quality.
+ * Supports metacognitive awareness, knowledge assessment, claim validation,
+ * and reasoning quality monitoring for improved decision-making.
+ */
+
 // Metacognitive Monitoring Schema
 export const KnowledgeAssessmentSchema = z.object({
   domain: z.string().describe("The specific domain or topic being assessed."),

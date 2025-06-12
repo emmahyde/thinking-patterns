@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Domain Modeling Schema
+ * 
+ * Defines the structure for domain-driven design and modeling processes.
+ * Includes entities, relationships, domain rules, bounded contexts,
+ * and validation frameworks for comprehensive domain analysis.
+ */
+
 // Domain Modeling Schema
 export const EntitySchema = z.object({
   id: z.string().optional().describe("A unique identifier for the entity."),

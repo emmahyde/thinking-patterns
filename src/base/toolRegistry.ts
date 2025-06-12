@@ -9,10 +9,15 @@ import {
   MetacognitiveMonitoringSchema,
   ScientificMethodSchema,
   StructuredArgumentationSchema,
-  VisualReasoningSchema
+  VisualReasoningSchema,
+  DomainModelingSchema,
+  ProblemDecompositionSchema,
+  CriticalThinkingSchema,
+  RecursiveThinkingSchema,
+  TemporalThinkingSchema
 } from '../schemas/index.js';
 
-// Import all the clear-thought tool servers
+// Import all the thinking-patterns tool servers
 import { SequentialThinkingServer } from '../servers/SequentialThinkingServer.js';
 import { MentalModelServer } from '../servers/MentalModelServer.js';
 import { DebuggingApproachServer } from '../servers/DebuggingApproachServer.js';
@@ -23,9 +28,14 @@ import { MetacognitiveMonitoringServer } from '../servers/MetacognitiveMonitorin
 import { ScientificMethodServer } from '../servers/ScientificMethodServer.js';
 import { StructuredArgumentationServer } from '../servers/StructuredArgumentationServer.js';
 import { VisualReasoningServer } from '../servers/VisualReasoningServer.js';
+import { DomainModelingServer } from '../servers/DomainModelingServer.js';
+import { ProblemDecompositionServer } from '../servers/ProblemDecompositionServer.js';
+import { CriticalThinkingServer } from '../servers/CriticalThinkingServer.js';
+import { RecursiveThinkingServer } from '../servers/RecursiveThinkingServer.js';
+import { TemporalThinkingServer } from '../servers/TemporalThinkingServer.js';
 
 /**
- * Initialize and register all available clear-thought tools
+ * Initialize and register all available thinking-patterns tools
  */
 export function initializeToolRegistry(): void {
   // Register Sequential Thinking tool
@@ -106,6 +116,46 @@ export function initializeToolRegistry(): void {
     schema: VisualReasoningSchema,
     server: new VisualReasoningServer(),
     description: "Diagram-based thinking and problem solving with visual elements and transformations."
+  });
+
+  // Register Domain Modeling tool
+  ToolRegistry.register({
+    name: "domain_modeling",
+    schema: DomainModelingSchema,
+    server: new DomainModelingServer(),
+    description: "Creating and refining conceptual models of a domain, including entities, relationships, and rules."
+  });
+
+  // Register Problem Decomposition tool
+  ToolRegistry.register({
+    name: "problem_decomposition",
+    schema: ProblemDecompositionSchema,
+    server: new ProblemDecompositionServer(),
+    description: "Breaking down complex problems into manageable sub-problems and tasks."
+  });
+
+  // Register Critical Thinking tool
+  ToolRegistry.register({
+    name: "critical_thinking",
+    schema: CriticalThinkingSchema,
+    server: new CriticalThinkingServer(),
+    description: "Systematic evaluation of arguments, assumptions, and potential issues to improve reasoning quality."
+  });
+
+  // Register Recursive Thinking tool
+  ToolRegistry.register({
+    name: "recursive_thinking",
+    schema: RecursiveThinkingSchema,
+    server: new RecursiveThinkingServer(),
+    description: "Applying recursive strategies to solve problems with base and recursive cases, including optimizations."
+  });
+
+  // Register Temporal Thinking tool
+  ToolRegistry.register({
+    name: "temporal_thinking",
+    schema: TemporalThinkingSchema,
+    server: new TemporalThinkingServer(),
+    description: "Modeling systems and reasoning across time using states, events, and transitions."
   });
 }
 

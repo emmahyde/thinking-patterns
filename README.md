@@ -247,7 +247,7 @@ MIT License - see LICENSE for details.
 
 ## Acknowledgments
 
-- Based on [the clear-thought server](https://github.com/waldzellai/waldzell-mcp), which is based on the Model Context Protocol (MCP) by Anthropic
+- Based on [the thinking-patterns server](https://github.com/waldzellai/waldzell-mcp), which is based on the Model Context Protocol (MCP) by Anthropic
 - Combines functionality from Clear Thought and Stochastic Thinking MCP servers
 - Mental Models framework inspired by [James Clear's comprehensive guide to mental models](https://jamesclear.com/mental-models)
 - Stochastic algorithms based on classic works in reinforcement learning and decision theory

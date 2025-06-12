@@ -3,7 +3,7 @@ import { DecisionFrameworkSchema, DecisionFrameworkData } from '../schemas/index
 import { boxed } from '../utils/index.js';
 
 /**
- * Decision Framework Server using clear-thought tools approach
+ * Decision Framework Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class DecisionFrameworkServer extends BaseToolServer<DecisionFrameworkData, any> {

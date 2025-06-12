@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { RecursiveThinkingSchema } from '../../src/schemas/RecursiveThinkingSchema.js';
 
 describe('RecursiveThinkingSchema', () => {

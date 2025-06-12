@@ -3,7 +3,6 @@
  * Tests custom error types, error serialization, and error handling patterns
  */
 
-import { jest } from 'vitest';
 import {
   ValidationError,
   StateError,

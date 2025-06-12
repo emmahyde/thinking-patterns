@@ -2,9 +2,8 @@
  * Mock factories for generating test data and mocking dependencies
  */
 
-import { vi } from 'vitest';
-import { SequentialThought as SequentialThoughtData, CurrentStep } from '../../src/schemas/SequentialThoughtSchema.js';
-import { ToolRecommendation } from '../../src/schemas/ToolSchemas.js';
+import { SequentialThoughtData, CurrentStepData } from '../../src/schemas/SequentialThoughtSchema.js';
+import { ToolRecommendationData } from '../../src/schemas/ToolSchemas.js';
 import { BaseToolServer } from '../../src/base/BaseToolServer.js';
 
 // Mock factory for creating SequentialThoughtData with customizable fields
@@ -26,7 +25,7 @@ export const createMockThoughtData = (overrides: Partial<SequentialThoughtData> 
 });
 
 // Mock factory for ToolRecommendation
-export const createMockToolRecommendation = (overrides: Partial<ToolRecommendation> = {}): ToolRecommendation => ({
+export const createMockToolRecommendation = (overrides: Partial<ToolRecommendationData> = {}): ToolRecommendationData => ({
   toolName: "sequential_thinking",
   confidence: 0.8,
   rationale: "Mock rationale for testing",
@@ -36,7 +35,7 @@ export const createMockToolRecommendation = (overrides: Partial<ToolRecommendati
 });
 
 // Mock factory for CurrentStep
-export const createMockCurrentStep = (overrides: Partial<CurrentStep> = {}): CurrentStep => ({
+export const createMockCurrentStep = (overrides: Partial<CurrentStepData> = {}): CurrentStepData => ({
   stepDescription: "Mock step description",
   recommendedTools: [createMockToolRecommendation()],
   expectedOutcome: "Mock expected outcome",
@@ -216,7 +215,7 @@ export const generateLargeThoughtHistory = (count: number = 100): SequentialThou
   );
 };
 
-export const generateLargeToolRecommendations = (count: number = 50): ToolRecommendation[] => {
+export const generateLargeToolRecommendations = (count: number = 50): ToolRecommendationData[] => {
   const tools = ["sequential_thinking", "mental_model", "debugging", "stochastic", "collaborative"];
 
   return Array.from({ length: count }, (_, i) =>

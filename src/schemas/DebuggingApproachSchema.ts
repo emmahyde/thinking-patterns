@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Debugging Approach Schema
+ * 
+ * Defines the structure for systematic debugging methodologies and
+ * troubleshooting approaches. Includes AI-optimized debugging methods,
+ * evidence collection, hypothesis testing, and resolution tracking.
+ */
+
 // Enhanced Debugging Approach Schema with AI-optimized methods and complex structural information
 export const DebuggingMethodSchema = z.object({
   name: z.enum([
@@ -149,9 +157,9 @@ export const DebuggingApproachSchema = z.object({
 
 // Type exports for TypeScript
 export type DebuggingApproachData = z.infer<typeof DebuggingApproachSchema>;
-export type DebuggingMethod = z.infer<typeof DebuggingMethodSchema>;
-export type Evidence = z.infer<typeof EvidenceSchema>;
-export type DebuggingHypothesis = z.infer<typeof DebuggingHypothesisSchema>;
-export type DebuggingStep = z.infer<typeof DebuggingStepSchema>;
-export type IssueClassification = z.infer<typeof IssueClassificationSchema>;
-export type AIAnalysis = z.infer<typeof AIAnalysisSchema>;
+export type DebuggingMethodData = z.infer<typeof DebuggingMethodSchema>;
+export type EvidenceData = z.infer<typeof EvidenceSchema>;
+export type DebuggingHypothesisData = z.infer<typeof DebuggingHypothesisSchema>;
+export type DebuggingStepData = z.infer<typeof DebuggingStepSchema>;
+export type IssueClassificationData = z.infer<typeof IssueClassificationSchema>;
+export type AIAnalysisData = z.infer<typeof AIAnalysisSchema>;

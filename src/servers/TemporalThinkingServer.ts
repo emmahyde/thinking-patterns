@@ -1,19 +1,29 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
-import { TemporalThinkingSchema, TemporalThinking } from '../schemas/index.js';
+import { TemporalThinkingSchema, TemporalThinkingData } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
 
-export class TemporalThinkingServer extends BaseToolServer<TemporalThinking, any> {
+/**
+ * Temporal Thinking Server using thinking-patterns tools approach
+ * Extends BaseToolServer for standardized validation and error handling
+ */
+export class TemporalThinkingServer extends BaseToolServer<TemporalThinkingData, any> {
   constructor() {
     super(TemporalThinkingSchema);
   }
 
-  protected handle(validInput: TemporalThinking): any {
+  protected handle(validInput: TemporalThinkingData): any {
     return this.process(validInput);
   }
 
-  public process(validInput: TemporalThinking): any {
+  /**
+   * Standardized process method for temporal thinking
+   * @param validInput - Validated temporal thinking data
+   * @returns Processed temporal thinking result
+   */
+  public process(validInput: TemporalThinkingData): any {
     const formattedOutput = this.formatOutput(validInput);
 
+    // Log formatted output to console (suppress during tests)
     if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
       console.error(formattedOutput);
     }
@@ -28,7 +38,7 @@ export class TemporalThinkingServer extends BaseToolServer<TemporalThinking, any
     };
   }
 
-  private formatOutput(data: TemporalThinking): string {
+  private formatOutput(data: TemporalThinkingData): string {
     const sections: Record<string, string | string[]> = {
       'Context': data.context,
       'Initial State': data.initialState,

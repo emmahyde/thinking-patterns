@@ -3,7 +3,7 @@ import { DomainModelingSchema, DomainModelingData, DomainRuleData } from '../sch
 import { boxed } from '../utils/index.js';
 
 /**
- * Domain Modeling Server using clear-thought tools approach
+ * Domain Modeling Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class DomainModelingServer extends BaseToolServer<DomainModelingData, any> {
@@ -12,43 +12,27 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
   }
 
   protected handle(validInput: DomainModelingData): any {
-    // The handle method now simply returns the validated data for the formatter.
-    return validInput;
+    return this.process(validInput);
   }
 
   /**
-   * Override run method to use custom formatting
+   * Standardized process method for domain modeling
+   * @param validInput - Validated domain modeling data
+   * @returns Processed domain modeling result
    */
-  public run(rawInput: unknown): { content: Array<{ type: string; text: string }>; isError?: boolean } {
-    try {
-      // Validate input using schema
-      const validatedInput = this.validate(rawInput);
+  public process(validInput: DomainModelingData): any {
+    // Format output using boxed utility
+    const formattedOutput = this.formatDomainModelingOutput(validInput);
 
-      // Process with concrete implementation
-      const result = this.handle(validatedInput);
-
-      // Use custom formatting
-      return {
-        content: this.formatResponse(result)
-      };
-    } catch (error) {
-      // Format error response
-      return {
-        content: this.formatError(error instanceof Error ? error : new Error(String(error))),
-        isError: true
-      };
+    // Log formatted output to console (suppress during tests)
+    if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
+      console.error(formattedOutput);
     }
-  }
-
-  /**
-   * Process domain modeling input and return analysis results
-   */
-  public process(input: DomainModelingData): any {
     try {
       // Calculate basic counts
-      const entityCount = input.entities.length;
-      const relationshipCount = input.relationships?.length || 0;
-      const domainRuleCount = input.domainRules?.length || 0;
+      const entityCount = validInput.entities.length;
+      const relationshipCount = validInput.relationships?.length || 0;
+      const domainRuleCount = validInput.domainRules?.length || 0;
 
       // Calculate model complexity
       const complexityScore = entityCount + (relationshipCount * 1.5) + (domainRuleCount * 2);
@@ -68,7 +52,7 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
       modelHealth += entityCount * 2;
       
       // Bonus for entities with good attribute count (>3)
-      const wellDefinedEntities = input.entities.filter(entity => entity.attributes.length > 3).length;
+      const wellDefinedEntities = validInput.entities.filter((entity: any) => entity.attributes.length > 3).length;
       modelHealth += wellDefinedEntities * 1.5;
       
       // Bonus for relationships
@@ -78,35 +62,35 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
       modelHealth += domainRuleCount * 2;
       
       // Bonus for boundaries
-      if (input.boundaries) {
+      if (validInput.boundaries) {
         modelHealth += 2;
       }
       
       // Bonus for validation scores
-      if (input.modelValidation) {
+      if (validInput.modelValidation) {
         const avgValidationScore = (
-          input.modelValidation.completeness + 
-          input.modelValidation.consistency + 
-          input.modelValidation.correctness
+          validInput.modelValidation.completeness + 
+          validInput.modelValidation.consistency + 
+          validInput.modelValidation.correctness
         ) / 3;
         modelHealth += avgValidationScore * 5; // Higher validation bonus
       }
 
       // Check for optional features
-      const hasBoundaries = !!input.boundaries;
-      const hasModelValidation = !!input.modelValidation;
-      const hasAssumptions = !!(input.assumptions && input.assumptions.length > 0);
-      const hasStakeholders = !!(input.stakeholders && input.stakeholders.length > 0);
-      const hasUseCases = !!(input.useCases && input.useCases.length > 0);
-      const hasModelingNotes = !!(input.modelingNotes && input.modelingNotes.length > 0);
+      const hasBoundaries = !!validInput.boundaries;
+      const hasModelValidation = !!validInput.modelValidation;
+      const hasAssumptions = !!(validInput.assumptions && validInput.assumptions.length > 0);
+      const hasStakeholders = !!(validInput.stakeholders && validInput.stakeholders.length > 0);
+      const hasUseCases = !!(validInput.useCases && validInput.useCases.length > 0);
+      const hasModelingNotes = !!(validInput.modelingNotes && validInput.modelingNotes.length > 0);
 
       return {
         status: 'success',
-        domainName: input.domainName,
-        description: input.description,
-        modelingId: input.modelingId,
-        iteration: input.iteration,
-        stage: input.stage,
+        domainName: validInput.domainName,
+        description: validInput.description,
+        modelingId: validInput.modelingId,
+        iteration: validInput.iteration,
+        stage: validInput.stage,
         entityCount,
         relationshipCount,
         domainRuleCount,
@@ -118,10 +102,10 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
         hasStakeholders,
         hasUseCases,
         hasModelingNotes,
-        abstractionLevel: input.abstractionLevel,
-        paradigm: input.paradigm,
-        nextStageNeeded: input.nextStageNeeded,
-        suggestedNextStage: input.suggestedNextStage,
+        abstractionLevel: validInput.abstractionLevel,
+        paradigm: validInput.paradigm,
+        nextStageNeeded: validInput.nextStageNeeded,
+        suggestedNextStage: validInput.suggestedNextStage,
         timestamp: new Date().toISOString()
       };
     } catch (error) {
@@ -133,10 +117,7 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
     }
   }
 
-  /**
-   * Format the response for display
-   */
-  protected formatResponse(data: DomainModelingData): Array<{ type: string; text: string }> {
+  private formatDomainModelingOutput(data: DomainModelingData): string {
     const sections: Record<string, string | string[]> = {
       'Domain': `${data.domainName} (${data.paradigm})`,
       'Stage': `${data.stage} (Iteration ${data.iteration})`,
@@ -179,7 +160,6 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
       sections['Boundaries'] = `Context: ${data.boundaries.name}. Includes: ${data.boundaries.includedEntities.join(', ')}.`;
     }
 
-    const formattedText = boxed('🏛️ Domain Modeling', sections);
-    return [{ type: 'text', text: formattedText }];
+    return boxed('🏛️ Domain Modeling', sections);
   }
 } 

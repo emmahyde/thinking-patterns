@@ -3,7 +3,7 @@ import { CollaborativeReasoningSchema, CollaborativeReasoningData } from '../sch
 import { boxed } from '../utils/index.js';
 
 /**
- * Collaborative Reasoning Server using clear-thought tools approach
+ * Collaborative Reasoning Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
  */
 export class CollaborativeReasoningServer extends BaseToolServer<CollaborativeReasoningData, any> {

@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Decision Framework Schema
+ * 
+ * Defines the structure for structured decision analysis and rational choice
+ * frameworks. Supports multi-criteria analysis, expected utility calculations,
+ * and systematic evaluation of decision options.
+ */
+
 // Decision Framework Schema
 export const DecisionOptionSchema = z.object({
   id: z.string().optional().describe("A unique identifier for the decision option."),

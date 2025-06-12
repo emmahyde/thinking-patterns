@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-// Structured Argumentation Schema
+/**
+ * Structured Argumentation Schema
+ * 
+ * Defines the structure for dialectical reasoning and argument analysis.
+ * Supports formal debate structures including thesis, antithesis, synthesis,
+ * objections, and rebuttals for systematic logical reasoning.
+ */
 export const StructuredArgumentationSchema = z.object({
   claim: z.string().describe("The central claim or assertion being made."),
   premises: z.array(z.string()).describe("A list of reasons or evidence supporting the claim."),

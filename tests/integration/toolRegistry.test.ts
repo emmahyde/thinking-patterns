@@ -4,8 +4,8 @@
  */
 
 import { ToolRegistry, BaseToolServer, ToolRegistryEntry } from '../../src/base/BaseToolServer.js';
-import type { SequentialThought as SequentialThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
-import { SequentialThoughtSchema, type SequentialThought } from '../../src/schemas/SequentialThoughtSchema.js';
+import type { SequentialThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
+import { SequentialThoughtSchema } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
   createMockThoughtData,
   createMockMcpRequest,

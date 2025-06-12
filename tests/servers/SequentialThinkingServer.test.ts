@@ -3,7 +3,6 @@
  * Tests validation logic, error handling, and MCP integration
  */
 
-import { jest } from 'vitest';
 import { SequentialThinkingServer } from '../../src/servers/SequentialThinkingServer.js';
 import {
   createMockThoughtData,

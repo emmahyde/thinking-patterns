@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+/**
+ * Tool Schemas
+ * 
+ * Defines the structure for tool recommendations, usage tracking, and context
+ * management. Supports systematic tool selection, confidence assessment,
+ * and usage history for enhanced decision-making processes.
+ */
+
 // Schema for ToolRecommendation
 export const ToolRecommendationSchema = z.object({
   toolName: z.string().describe("The name of the recommended tool."),
@@ -25,6 +33,6 @@ export const ToolContextSchema = z.object({
 });
 
 // Type inference for TypeScript
-export type ToolRecommendation = z.infer<typeof ToolRecommendationSchema>;
-export type ToolUsageHistory = z.infer<typeof ToolUsageHistorySchema>;
-export type ToolContext = z.infer<typeof ToolContextSchema>;
+export type ToolRecommendationData = z.infer<typeof ToolRecommendationSchema>;
+export type ToolUsageHistoryData = z.infer<typeof ToolUsageHistorySchema>;
+export type ToolContextData = z.infer<typeof ToolContextSchema>;
