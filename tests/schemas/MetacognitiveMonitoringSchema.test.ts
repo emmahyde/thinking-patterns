@@ -366,7 +366,7 @@ describe('MetacognitiveMonitoringSchema', () => {
           overallConfidence: 1.5, // invalid range
           uncertaintyAreas: "not-array" // invalid type
         });
-        fail('Should have thrown validation error');
+        expect.fail('Should have thrown validation error');
       } catch (error: any) {
         expect(error.errors).toBeDefined();
         expect(error.errors.length).toBeGreaterThan(0);

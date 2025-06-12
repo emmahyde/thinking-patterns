@@ -387,7 +387,7 @@ describe('StructuredArgumentationSchema', () => {
           argumentType: "invalid-type",
           confidence: 1.5
         });
-        fail('Should have thrown validation error');
+        expect.fail('Should have thrown validation error');
       } catch (error: any) {
         expect(error.errors).toBeDefined();
         expect(error.errors.length).toBeGreaterThan(0);

@@ -3,7 +3,7 @@
  * Tests recommendation algorithms, confidence scoring, and tool suggestion logic
  */
 
-import { jest } from '@jest/globals';
+import { jest } from 'vitest';
 import { ToolRecommendationEngine } from '../../src/services/ToolRecommendationEngine.js';
 import {
   createMockToolRecommendation,

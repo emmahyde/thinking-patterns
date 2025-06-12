@@ -124,7 +124,7 @@ describe('BaseToolServer', () => {
 
       try {
         testServer['validate'](invalidInput);
-        fail('Should have thrown validation error');
+        expect.fail('Should have thrown validation error');
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
         expect((error as Error).message).toContain('Validation failed');

@@ -30,22 +30,15 @@ export class VisualReasoningServer extends BaseToolServer<VisualReasoningData, a
     }
 
     return {
-      diagramId: validInput.diagramId,
-      diagramType: validInput.diagramType,
-      operation: validInput.operation,
-      iteration: validInput.iteration,
-      nextOperationNeeded: validInput.nextOperationNeeded,
-      elements: validInput.elements,
-      transformationType: validInput.transformationType,
-      observation: validInput.observation,
-      insight: validInput.insight,
-      hypothesis: validInput.hypothesis,
+      ...validInput,
       status: 'success',
       elementCount: validInput.elements?.length ?? 0,
       hasObservation: !!validInput.observation,
       hasInsight: !!validInput.insight,
       hasHypothesis: !!validInput.hypothesis,
       hasTransformationType: !!validInput.transformationType,
+      hasDiagramAnalysis: !!validInput.diagramAnalysis,
+      reasoningStepCount: validInput.reasoningChain?.length ?? 0,
       timestamp: new Date().toISOString(),
     };
   }
@@ -58,10 +51,7 @@ export class VisualReasoningServer extends BaseToolServer<VisualReasoningData, a
       'Iteration': data.iteration.toString()
     };
 
-    // Transformation type
-    if (data.transformationType) {
-      sections['Transformation'] = data.transformationType.toUpperCase();
-    }
+    if (data.purpose) sections['Purpose'] = data.purpose;
 
     // Elements
     if (data.elements && data.elements.length > 0) {
@@ -73,21 +63,31 @@ export class VisualReasoningServer extends BaseToolServer<VisualReasoningData, a
         if (element.type === 'edge' && element.source && element.target) {
           elementDesc += ` [${element.source} → ${element.target}]`;
         }
-        if (element.contains && element.contains.length > 0) {
-          elementDesc += ` contains: ${element.contains.join(', ')}`;
-        }
         return elementDesc;
       });
     }
 
-    // Observation
-    if (data.observation) {
-      sections['Observation'] = data.observation;
+    // Reasoning Chain
+    if (data.reasoningChain && data.reasoningChain.length > 0) {
+      sections['Reasoning Chain'] = data.reasoningChain.map(step =>
+        `• Step ${step.stepNumber} (${step.type}): ${step.description} (Confidence: ${(step.confidence * 100).toFixed(0)}%)`
+      );
     }
 
-    // Insight
-    if (data.insight) {
-      sections['Insight'] = data.insight;
+    // Diagram Analysis
+    if (data.diagramAnalysis) {
+      const analysis = data.diagramAnalysis;
+      const analysisDetails = [];
+      if(analysis.structure) analysisDetails.push(`Structure: ${analysis.structure.type}`);
+      if(analysis.patterns && analysis.patterns.length > 0) analysisDetails.push(`Patterns Found: ${analysis.patterns.length}`);
+      if(analysis.cognitiveLoad) analysisDetails.push(`Cognitive Load: ${analysis.cognitiveLoad.complexity}`);
+      if(analysis.effectiveness) analysisDetails.push(`Clarity: ${(analysis.effectiveness.clarity * 100).toFixed(0)}%`);
+      sections['Diagram Analysis'] = analysisDetails.map(d => `• ${d}`);
+    }
+
+    // Recommendations
+    if (data.recommendations && data.recommendations.length > 0) {
+      sections['Recommendations'] = data.recommendations.map(r => `• ${r}`);
     }
 
     // Hypothesis

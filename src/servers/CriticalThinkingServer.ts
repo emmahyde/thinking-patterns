@@ -19,13 +19,13 @@ export class CriticalThinkingServer extends BaseToolServer<CriticalThinking, any
     }
 
     return {
-      subject: validInput.subject,
-      potentialIssues: validInput.potentialIssues,
-      edgeCases: validInput.edgeCases,
-      invalidAssumptions: validInput.invalidAssumptions,
-      alternativeApproaches: validInput.alternativeApproaches,
+      ...validInput,
       status: 'success',
       timestamp: new Date().toISOString(),
+      issueCount: validInput.potentialIssues.length,
+      edgeCaseCount: validInput.edgeCases.length,
+      assumptionCount: validInput.invalidAssumptions.length,
+      alternativeCount: validInput.alternativeApproaches.length,
     };
   }
 
@@ -34,17 +34,33 @@ export class CriticalThinkingServer extends BaseToolServer<CriticalThinking, any
       'Subject': data.subject,
     };
 
+    if (data.analysisId) sections['Analysis ID'] = data.analysisId;
+    if (data.context) sections['Context'] = data.context;
+    if (data.objectives && data.objectives.length > 0) {
+      sections['Objectives'] = data.objectives.map(item => `• ${item}`);
+    }
+
     if (data.potentialIssues && data.potentialIssues.length > 0) {
-      sections['Potential Issues'] = data.potentialIssues.map(item => `• ${item}`);
+      sections['Potential Issues'] = data.potentialIssues.map(item => `• ${item.description} (Severity: ${item.severity}, Category: ${item.category})`);
     }
     if (data.edgeCases && data.edgeCases.length > 0) {
-      sections['Edge Cases'] = data.edgeCases.map(item => `• ${item}`);
+      sections['Edge Cases'] = data.edgeCases.map(item => `• ${item.scenario} (Impact: ${item.businessImpact}, Testability: ${item.testability})`);
     }
     if (data.invalidAssumptions && data.invalidAssumptions.length > 0) {
-      sections['Invalid Assumptions'] = data.invalidAssumptions.map(item => `• ${item}`);
+      sections['Invalid Assumptions'] = data.invalidAssumptions.map(item => `• ${item.statement} (Validity: ${item.validity})`);
     }
     if (data.alternativeApproaches && data.alternativeApproaches.length > 0) {
-      sections['Alternative Approaches'] = data.alternativeApproaches.map(item => `• ${item}`);
+      sections['Alternative Approaches'] = data.alternativeApproaches.map(item => `• ${item.name} (Feasibility: ${(item.feasibility * 100).toFixed(0)}%)`);
+    }
+    
+    if (data.overallAssessment) sections['Overall Assessment'] = data.overallAssessment;
+    
+    if (data.prioritizedRecommendations && data.prioritizedRecommendations.length > 0) {
+      sections['Recommendations'] = data.prioritizedRecommendations.map(item => `• ${item}`);
+    }
+    
+    if (data.nextSteps && data.nextSteps.length > 0) {
+      sections['Next Steps'] = data.nextSteps.map(item => `• ${item}`);
     }
 
     return boxed('🤔 Critical Thinking', sections);

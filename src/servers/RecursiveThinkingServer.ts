@@ -23,7 +23,7 @@ export class RecursiveThinkingServer extends BaseToolServer<RecursiveThinking, a
       baseCases: validInput.baseCases,
       recursiveCases: validInput.recursiveCases,
       terminationConditions: validInput.terminationConditions,
-      iterativeAlternative: validInput.iterativeAlternative,
+      iterativeAlternatives: validInput.iterativeAlternatives,
       status: 'success',
       timestamp: new Date().toISOString(),
     };
@@ -35,16 +35,16 @@ export class RecursiveThinkingServer extends BaseToolServer<RecursiveThinking, a
     };
 
     if (data.baseCases && data.baseCases.length > 0) {
-      sections['Base Cases'] = data.baseCases.map(item => `• ${item}`);
+      sections['Base Cases'] = data.baseCases.map(item => `• ${item.condition}: ${item.solution}`);
     }
     if (data.recursiveCases && data.recursiveCases.length > 0) {
-      sections['Recursive Cases'] = data.recursiveCases.map(item => `• ${item}`);
+      sections['Recursive Cases'] = data.recursiveCases.map(item => `• ${item.condition}: ${item.decomposition}`);
     }
     if (data.terminationConditions && data.terminationConditions.length > 0) {
       sections['Termination Conditions'] = data.terminationConditions.map(item => `• ${item}`);
     }
-    if (data.iterativeAlternative) {
-      sections['Iterative Alternative'] = data.iterativeAlternative;
+    if (data.iterativeAlternatives && data.iterativeAlternatives.length > 0) {
+      sections['Iterative Alternatives'] = data.iterativeAlternatives.map(alt => `• ${alt.approach}: ${alt.description}`);
     }
 
     return boxed('🔄 Recursive Thinking', sections);

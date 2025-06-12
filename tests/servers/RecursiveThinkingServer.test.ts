@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { RecursiveThinkingServer } from '../../src/servers/RecursiveThinkingServer.js';
 import { RecursiveThinking } from '../../src/schemas/index.js';
 
@@ -13,8 +13,15 @@ describe('RecursiveThinkingServer', () => {
     it('should successfully process a valid input', () => {
       const validInput: RecursiveThinking = {
         problem: 'Test Problem',
-        baseCases: ['Base Case 1'],
-        recursiveCases: ['Recursive Step'],
+        baseCases: [{
+          condition: 'Base Case 1',
+          solution: 'Direct solution for base case'
+        }],
+        recursiveCases: [{
+          condition: 'Recursive condition',
+          decomposition: 'Recursive Step',
+          recombination: 'Combine subproblem solutions'
+        }],
         terminationConditions: ['Termination Condition 1']
       };
 

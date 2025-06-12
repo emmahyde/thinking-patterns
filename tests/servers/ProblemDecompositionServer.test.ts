@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { ProblemDecompositionServer } from '../../src/servers/ProblemDecompositionServer.js';
 import { ProblemDecomposition } from '../../src/schemas/index.js';
 

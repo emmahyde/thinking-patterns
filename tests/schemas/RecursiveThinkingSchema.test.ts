@@ -1,12 +1,19 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { RecursiveThinkingSchema } from '../../src/schemas/RecursiveThinkingSchema.js';
 
 describe('RecursiveThinkingSchema', () => {
   it('should validate a correct object', () => {
     const data = {
       problem: 'Test Problem',
-      baseCases: ['Base Case 1'],
-      recursiveCases: ['Recursive Step'],
+      baseCases: [{
+        condition: 'n <= 1',
+        solution: 'return n'
+      }],
+      recursiveCases: [{
+        condition: 'n > 1',
+        decomposition: 'break into smaller subproblems',
+        recombination: 'combine results'
+      }],
       terminationConditions: ['Termination Condition 1']
     };
     const result = RecursiveThinkingSchema.safeParse(data);

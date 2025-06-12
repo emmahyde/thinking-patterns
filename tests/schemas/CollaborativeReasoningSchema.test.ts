@@ -496,7 +496,7 @@ describe('CollaborativeReasoningSchema', () => {
           personas: "not-array", // invalid type
           stage: "invalid-stage"
         });
-        fail('Should have thrown validation error');
+        expect.fail('Should have thrown validation error');
       } catch (error: any) {
         expect(error.errors).toBeDefined();
         expect(error.errors.length).toBeGreaterThan(0);

@@ -2,26 +2,26 @@ import { z } from 'zod';
 
 // Schema for ToolRecommendation
 export const ToolRecommendationSchema = z.object({
-  toolName: z.string(),
-  confidence: z.number().min(0).max(1), // 0.0-1.0
-  rationale: z.string(),
-  priority: z.number(),
-  alternativeTools: z.array(z.string()).optional(),
+  toolName: z.string().describe("The name of the recommended tool."),
+  confidence: z.number().min(0).max(1).describe("A confidence score (0-1) in the recommendation."),
+  rationale: z.string().describe("The rationale for recommending this tool."),
+  priority: z.number().describe("The priority of this tool recommendation."),
+  alternativeTools: z.array(z.string()).optional().describe("A list of alternative tools that could be used."),
 });
 
 // Schema for tool usage history entry
 export const ToolUsageHistorySchema = z.object({
-  toolName: z.string(),
-  usedAt: z.string(),
-  effectivenessScore: z.number().optional(),
+  toolName: z.string().describe("The name of the tool that was used."),
+  usedAt: z.string().describe("The timestamp at which the tool was used."),
+  effectivenessScore: z.number().optional().describe("A score indicating the effectiveness of the tool."),
 });
 
 // Schema for ToolContext
 export const ToolContextSchema = z.object({
-  availableTools: z.array(z.string()),
-  userPreferences: z.record(z.any()).optional(),
-  sessionHistory: z.array(z.string()).optional(),
-  problemDomain: z.string().optional(),
+  availableTools: z.array(z.string()).describe("A list of available tools."),
+  userPreferences: z.record(z.any()).optional().describe("A record of user preferences."),
+  sessionHistory: z.array(z.string()).optional().describe("A history of the current session."),
+  problemDomain: z.string().optional().describe("The domain of the problem being solved."),
 });
 
 // Type inference for TypeScript

@@ -1,29 +1,26 @@
 /**
- * Jest test setup file
+ * Vitest test setup file
  * Configures global test environment settings
  */
-import { jest } from '@jest/globals';
+import { vi, afterEach, afterAll, expect } from 'vitest';
 
 // Mock console methods to avoid noise in test output
 global.console = {
   ...console,
-  log: jest.fn(),
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
+  log: vi.fn(),
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
 };
 
-// Set test timeout
-jest.setTimeout(10000);
-
 // Mock process.exit to prevent tests from actually exiting
-const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
+const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
   throw new Error('process.exit() was called in test');
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterAll(() => {
@@ -31,12 +28,14 @@ afterAll(() => {
 });
 
 // Global test utilities
-declare global {
-  namespace jest {
-    interface Matchers<R> {
-      toBeValidThoughtData(): R;
-      toHaveValidBoxFormat(): R;
-    }
+declare module 'vitest' {
+  interface Assertion<T = any> {
+    toBeValidThoughtData(): T;
+    toHaveValidBoxFormat(): T;
+  }
+  interface AsymmetricMatchersContaining {
+    toBeValidThoughtData(): any;
+    toHaveValidBoxFormat(): any;
   }
 }
 

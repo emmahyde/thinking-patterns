@@ -29,6 +29,9 @@ export class DebuggingApproachServer extends BaseToolServer<DebuggingApproachDat
       console.error(formattedOutput);
     }
 
+    // Handle both string array and DebuggingStep object array formats
+    const stepCount = validInput.steps ? validInput.steps.length : 0;
+
     return {
       approachName: validInput.approachName,
       issue: validInput.issue,
@@ -36,10 +39,10 @@ export class DebuggingApproachServer extends BaseToolServer<DebuggingApproachDat
       findings: validInput.findings,
       resolution: validInput.resolution,
       status: 'success',
-      hasSteps: (validInput.steps?.length ?? 0) > 0,
+      hasSteps: stepCount > 0,
       hasFindings: !!validInput.findings,
       hasResolution: !!validInput.resolution,
-      stepCount: validInput.steps?.length ?? 0,
+      stepCount: stepCount,
       timestamp: new Date().toISOString(),
     };
   }
@@ -51,7 +54,16 @@ export class DebuggingApproachServer extends BaseToolServer<DebuggingApproachDat
     };
 
     if (data.steps && data.steps.length > 0) {
-      sections['Steps'] = data.steps.map(step => `• ${step}`);
+      // Handle both string array and DebuggingStep object array formats
+      const stepStrings = data.steps.map(step => {
+        if (typeof step === 'string') {
+          return `• ${step}`;
+        } else {
+          // DebuggingStep object format
+          return `• ${step.action}`;
+        }
+      });
+      sections['Steps'] = stepStrings;
     }
 
     if (data.findings) {

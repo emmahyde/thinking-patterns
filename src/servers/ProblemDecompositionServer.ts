@@ -25,11 +25,12 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
     })(validInput.decomposition);
 
     return {
-      problem: validInput.problem,
+      ...validInput,
       taskCount,
-      decomposition: validInput.decomposition,
       status: 'success',
       timestamp: new Date().toISOString(),
+      hasMetrics: !!validInput.metrics,
+      objectiveCount: validInput.objectives?.length ?? 0,
     };
   }
 
@@ -38,11 +39,21 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
       'Problem': data.problem,
     };
 
+    if (data.decompositionId) sections['Decomposition ID'] = data.decompositionId;
+    if (data.methodology) sections['Methodology'] = data.methodology;
+
     const formatTasks = (tasks: Task[], indent = 0): string[] => {
       let result: string[] = [];
       for (const task of tasks) {
         const prefix = '  '.repeat(indent) + '• ';
-        result.push(`${prefix}${task.description}`);
+        const details = [];
+        if (task.priority) details.push(`P: ${task.priority}`);
+        if (task.progress?.status) details.push(task.progress.status);
+        if (task.effortEstimate) details.push(`E: ${task.effortEstimate}`);
+        const detailsString = details.length > 0 ? ` (${details.join(', ')})` : '';
+        
+        result.push(`${prefix}${task.description}${detailsString}`);
+        
         if (task.subTasks) {
           result = result.concat(formatTasks(task.subTasks, indent + 1));
         }
@@ -52,6 +63,15 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
 
     if (data.decomposition && data.decomposition.length > 0) {
       sections['Decomposition'] = formatTasks(data.decomposition);
+    }
+
+    if (data.metrics) {
+      const metrics = [];
+      metrics.push(`Total Tasks: ${data.metrics.totalTasks}`);
+      metrics.push(`Max Depth: ${data.metrics.maxDepth}`);
+      if (data.metrics.estimatedTotalEffort) metrics.push(`Total Effort: ${data.metrics.estimatedTotalEffort}`);
+      if (data.metrics.riskScore) metrics.push(`Risk Score: ${(data.metrics.riskScore * 100).toFixed(0)}%`);
+      sections['Metrics'] = metrics.map(m => `• ${m}`);
     }
 
     return boxed('🧩 Problem Decomposition', sections);

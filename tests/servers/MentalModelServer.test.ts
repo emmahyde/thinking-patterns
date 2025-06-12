@@ -8,29 +8,41 @@ describe('MentalModelServer', () => {
   });
 
   describe('processModel', () => {
-    it('should process valid mental model data correctly', () => {
+    it('should process valid mental model data and return enriched analysis', () => {
       const input = {
         modelName: 'First Principles Thinking',
-        problem: 'How to reduce customer churn in a SaaS business',
+        problem: 'How to reduce customer churn in a SaaS business to improve revenue',
         steps: [
-          'Break down the problem to fundamental truths',
-          'Identify core reasons customers leave',
-          'Analyze value proposition alignment',
-          'Design targeted retention strategies'
+          'Break down the problem to fundamental truths about customer needs and value',
+          'Identify the core, unchangeable reasons why customers are leaving the service',
+          'Analyze the alignment between our value proposition and these core customer needs',
+          'Design and propose targeted retention strategies based on first principles'
         ],
-        reasoning: 'By understanding the fundamental drivers of customer behavior, we can address root causes rather than symptoms',
-        conclusion: 'Focus on improving onboarding experience and demonstrating clear value within the first 30 days'
+        reasoning: 'By understanding the fundamental drivers of customer behavior, we can address the root causes of churn rather than just treating the symptoms with superficial fixes.',
+        conclusion: 'The primary focus should be on improving the new user onboarding experience and demonstrating clear, undeniable value within the first 30 days of service.'
       };
 
       const result = server.processModel(input);
 
       expect(result.isError).toBeFalsy();
       expect(result.data).toBeDefined();
-      expect(result.data?.modelName).toBe('First Principles Thinking');
-      expect(result.data?.problem).toBe('How to reduce customer churn in a SaaS business');
-      expect(result.data?.steps).toHaveLength(4);
-      expect(result.data?.reasoning).toBe('By understanding the fundamental drivers of customer behavior, we can address root causes rather than symptoms');
-      expect(result.data?.conclusion).toBe('Focus on improving onboarding experience and demonstrating clear value within the first 30 days');
+
+      const parsedContent = JSON.parse(result.content[0].text);
+      
+      expect(parsedContent.modelName).toBe('First Principles Thinking');
+      expect(parsedContent.problem).toBe('How to reduce customer churn in a SaaS business to improve revenue');
+      
+      // Test the new analysis structure
+      expect(parsedContent.analysis).toBeDefined();
+      expect(parsedContent.analysis.status).toBe('success');
+      expect(parsedContent.analysis.complexity).toBe('medium');
+      expect(parsedContent.analysis.suggestions).toBeInstanceOf(Array);
+      expect(parsedContent.analysis.keywords).toContain('customer');
+
+      // Test the summary structure
+      expect(parsedContent.summary).toBeDefined();
+      expect(parsedContent.summary.stepCount).toBe(4);
+      expect(parsedContent.summary.hasConclusion).toBe(true);
     });
 
     it('should handle complex multi-step analysis', () => {
@@ -60,15 +72,13 @@ describe('MentalModelServer', () => {
     it('should handle validation errors for missing modelName', () => {
       const input = {
         problem: 'Test problem',
-        steps: ['Step 1'],
-        reasoning: 'Test reasoning',
-        conclusion: 'Test conclusion'
       };
 
       const result = server.processModel(input);
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain('modelName: Required');
+      const errorContent = JSON.parse(result.content[0].text);
+      expect(errorContent.error).toContain('modelName: Required');
     });
 
     it('should handle validation errors for missing problem', () => {
@@ -82,7 +92,8 @@ describe('MentalModelServer', () => {
       const result = server.processModel(input);
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain('problem: Required');
+      const errorContent = JSON.parse(result.content[0].text);
+      expect(errorContent.error).toContain('problem: Required');
     });
 
     it('should handle validation errors for invalid steps', () => {
@@ -97,7 +108,8 @@ describe('MentalModelServer', () => {
       const result = server.processModel(input);
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain('steps: Expected array, received string');
+      const errorContent = JSON.parse(result.content[0].text);
+      expect(errorContent.error).toContain('steps: Expected array, received string');
     });
 
     it('should handle validation errors for non-string steps', () => {
@@ -112,7 +124,8 @@ describe('MentalModelServer', () => {
       const result = server.processModel(input);
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain('steps.1: Expected string, received number');
+      const errorContent = JSON.parse(result.content[0].text);
+      expect(errorContent.error).toContain('steps.1: Expected string, received number');
     });
 
     it('should handle missing reasoning (optional field)', () => {
@@ -192,11 +205,11 @@ describe('MentalModelServer', () => {
       const parsedContent = JSON.parse(result.content[0].text);
       expect(parsedContent.modelName).toBe('Test Model');
       expect(parsedContent.problem).toBe('Test problem');
-      expect(parsedContent.status).toBe('success');
-      expect(parsedContent.hasSteps).toBe(true);
-      expect(parsedContent.hasConclusion).toBe(true);
-      expect(parsedContent.stepCount).toBe(2);
-      expect(parsedContent.timestamp).toBeDefined();
+      expect(parsedContent.analysis.status).toBe('success');
+      expect(parsedContent.summary.hasSteps).toBe(true);
+      expect(parsedContent.summary.hasConclusion).toBe(true);
+      expect(parsedContent.summary.stepCount).toBe(2);
+      expect(parsedContent.analysis.timestamp).toBeDefined();
 
       // Check that the input data is available in the data field
       expect(result.data?.modelName).toBe('Test Model');
@@ -204,6 +217,29 @@ describe('MentalModelServer', () => {
       expect(result.data?.steps).toEqual(['Step 1', 'Step 2']);
       expect(result.data?.reasoning).toBe('Test reasoning');
       expect(result.data?.conclusion).toBe('Test conclusion');
+    });
+
+    it('should suggest improvements for a sparse model', () => {
+      const input = {
+        modelName: 'Shallow Analysis',
+        problem: 'A small problem.',
+        steps: ['One step'],
+        reasoning: 'Quick thought.',
+        conclusion: 'Done.'
+      };
+
+      const result = server.processModel(input);
+      const parsedContent = JSON.parse(result.content[0].text);
+
+      expect(result.isError).toBeFalsy();
+      expect(parsedContent.analysis.suggestions).toEqual(
+        expect.arrayContaining([
+          "Consider adding more detail to the reasoning or conclusion for a more complete analysis.",
+          "Breaking the problem down into more steps could provide deeper insight.",
+          "Ensure the conclusion logically follows from the reasoning and steps."
+        ])
+      );
+      expect(parsedContent.analysis.complexity).toBe('low');
     });
   });
 

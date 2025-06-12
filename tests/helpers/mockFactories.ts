@@ -2,8 +2,7 @@
  * Mock factories for generating test data and mocking dependencies
  */
 
-import { jest } from '@jest/globals';
-import { mockDeep, MockProxy } from 'jest-mock-extended';
+import { vi } from 'vitest';
 import { SequentialThought as SequentialThoughtData, CurrentStep } from '../../src/schemas/SequentialThoughtSchema.js';
 import { ToolRecommendation } from '../../src/schemas/ToolSchemas.js';
 import { BaseToolServer } from '../../src/base/BaseToolServer.js';
@@ -85,54 +84,53 @@ export const createMockSessionData = (overrides: any = {}) => ({
 });
 
 // Mock BaseToolServer class
-export const createMockBaseToolServer = <TIn, TOut>(): MockProxy<BaseToolServer<TIn, TOut>> => {
-  const mock = mockDeep<BaseToolServer<TIn, TOut>>();
+export const createMockBaseToolServer = <TIn, TOut>(): Partial<BaseToolServer<TIn, TOut>> => {
+  const mock = {
+    run: vi.fn().mockReturnValue({
+      content: [{ type: "text", text: "Mock server response" }],
+      isError: false,
+    })
+  };
 
-  // Setup default mock behavior
-  mock.run.mockReturnValue({
-    content: [{ type: "text", text: "Mock server response" }],
-    isError: false,
-  });
-
-  return mock;
+  return mock as Partial<BaseToolServer<TIn, TOut>>;
 };
 
 // Mock console methods for testing output
 export const createMockConsole = () => ({
-  log: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
+  log: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  info: vi.fn(),
+  debug: vi.fn(),
 });
 
 // Mock file system operations
 export const createMockFs = () => ({
-  readFile: jest.fn(),
-  writeFile: jest.fn(),
-  exists: jest.fn(),
-  mkdir: jest.fn(),
+  readFile: vi.fn(),
+  writeFile: vi.fn(),
+  exists: vi.fn(),
+  mkdir: vi.fn(),
 });
 
 // Mock network/HTTP operations
 export const createMockHttp = () => ({
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-  delete: jest.fn(),
-  request: jest.fn(),
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  delete: vi.fn(),
+  request: vi.fn(),
 });
 
 // Mock timer functions for testing async behavior
 export const createMockTimers = () => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
 
   return {
-    advanceTimersByTime: jest.advanceTimersByTime,
-    runOnlyPendingTimers: jest.runOnlyPendingTimers,
-    runAllTimers: jest.runAllTimers,
-    clearAllTimers: jest.clearAllTimers,
-    restoreTimers: () => jest.useRealTimers(),
+    advanceTimersByTime: vi.advanceTimersByTime,
+    runOnlyPendingTimers: vi.runOnlyPendingTimers,
+    runAllTimers: vi.runAllTimers,
+    clearAllTimers: vi.clearAllTimers,
+    restoreTimers: () => vi.useRealTimers(),
   };
 };
 
@@ -160,8 +158,8 @@ export const createMockTimeoutError = (message: string = "Mock timeout error") =
 // Helper to create a mock implementation of any function
 export const createMockFunction = <T extends (...args: any[]) => any>(
   implementation?: T
-): jest.MockedFunction<T> => {
-  const mockFn = jest.fn() as unknown as jest.MockedFunction<T>;
+): any => {
+  const mockFn = vi.fn();
   if (implementation) {
     mockFn.mockImplementation(implementation);
   }
@@ -173,19 +171,19 @@ export const createMethodSpy = <T extends object, K extends keyof T>(
   object: T,
   method: K
 ): any => {
-  return jest.spyOn(object as any, method as any);
+  return vi.spyOn(object as any, method as any);
 };
 
 // Helper to create a mock class instance
-export const createMockInstance = <T>(constructor: new (...args: any[]) => T): MockProxy<T> => {
-  return mockDeep<T>();
+export const createMockInstance = <T>(constructor: new (...args: any[]) => T): Partial<T> => {
+  return {} as Partial<T>;
 };
 
 // Helper to reset all mocks
 export const resetAllMocks = () => {
-  jest.clearAllMocks();
-  jest.resetAllMocks();
-  jest.restoreAllMocks();
+  vi.clearAllMocks();
+  vi.resetAllMocks();
+  vi.restoreAllMocks();
 };
 
 // Helper to wait for async operations in tests

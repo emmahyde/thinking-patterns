@@ -195,7 +195,7 @@ describe('MentalModelSchema', () => {
           steps: "not an array",
           reasoning: null
         });
-        fail('Should have thrown validation error');
+        expect.fail('Should have thrown validation error');
       } catch (error: any) {
         expect(error.errors).toBeDefined();
         expect(error.errors.length).toBeGreaterThan(0);

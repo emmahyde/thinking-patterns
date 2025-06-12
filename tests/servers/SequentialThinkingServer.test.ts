@@ -3,7 +3,7 @@
  * Tests validation logic, error handling, and MCP integration
  */
 
-import { jest } from '@jest/globals';
+import { jest } from 'vitest';
 import { SequentialThinkingServer } from '../../src/servers/SequentialThinkingServer.js';
 import {
   createMockThoughtData,
@@ -275,7 +275,7 @@ describe('SequentialThinkingServer', () => {
 
   describe('console output', () => {
     it('should log formatted output to console.error when not in test environment', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Temporarily remove test environment indicators
       const originalNodeEnv = process.env.NODE_ENV;
@@ -302,7 +302,7 @@ describe('SequentialThinkingServer', () => {
     });
 
     it('should not log to console.error during tests', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       const validInput = createMockThoughtData({
         thought: "Test thought for console output",

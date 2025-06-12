@@ -3,7 +3,7 @@
  * Tests session lifecycle management, state persistence, and cleanup
  */
 
-import { jest } from '@jest/globals';
+import { jest } from 'vitest';
 import { InMemorySessionManager, sessionManager } from '../../src/services/SessionManager.js';
 import { createMockSessionData, createMockTimers, resetAllMocks } from '../helpers/mockFactories.js';
 
@@ -355,11 +355,11 @@ describe('InMemorySessionManager', () => {
 
   describe('cleanupExpiredSessions', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('should remove sessions older than timeout', () => {
@@ -367,7 +367,7 @@ describe('InMemorySessionManager', () => {
       manager.createSession(sessionId);
 
       // Fast-forward time beyond session timeout (1 hour)
-      jest.advanceTimersByTime(61 * 60 * 1000);
+      vi.advanceTimersByTime(61 * 60 * 1000);
 
       manager.cleanupExpiredSessions();
 
@@ -380,7 +380,7 @@ describe('InMemorySessionManager', () => {
       manager.createSession(sessionId);
 
       // Fast-forward time but still within timeout (59 minutes)
-      jest.advanceTimersByTime(59 * 60 * 1000);
+      vi.advanceTimersByTime(59 * 60 * 1000);
 
       manager.cleanupExpiredSessions();
 
@@ -393,13 +393,13 @@ describe('InMemorySessionManager', () => {
       manager.createSession(sessionId);
 
       // Fast-forward time close to timeout
-      jest.advanceTimersByTime(59 * 60 * 1000);
+      vi.advanceTimersByTime(59 * 60 * 1000);
 
       // Access the session to update lastAccessedAt
       manager.getSession(sessionId);
 
       // Fast-forward more time
-      jest.advanceTimersByTime(30 * 60 * 1000);
+      vi.advanceTimersByTime(30 * 60 * 1000);
 
       manager.cleanupExpiredSessions();
 
@@ -411,7 +411,7 @@ describe('InMemorySessionManager', () => {
       manager.createSession('old-session-2');
 
       // Fast-forward past timeout
-      jest.advanceTimersByTime(61 * 60 * 1000);
+      vi.advanceTimersByTime(61 * 60 * 1000);
 
       manager.createSession('new-session');
 
@@ -437,7 +437,7 @@ describe('InMemorySessionManager', () => {
     });
 
     it('should clear cleanup interval', () => {
-      const intervalSpy = jest.spyOn(global, 'clearInterval');
+      const intervalSpy = vi.spyOn(global, 'clearInterval');
 
       manager.destroy();
 
@@ -525,25 +525,25 @@ describe('InMemorySessionManager', () => {
 
   describe('automatic cleanup interval', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('should run cleanup automatically every 15 minutes', () => {
       // Create a new manager with fake timers already in effect
       const testManager = new InMemorySessionManager();
-      const cleanupSpy = jest.spyOn(testManager, 'cleanupExpiredSessions');
+      const cleanupSpy = vi.spyOn(testManager, 'cleanupExpiredSessions');
 
       // Fast-forward to 15 minutes
-      jest.advanceTimersByTime(15 * 60 * 1000);
+      vi.advanceTimersByTime(15 * 60 * 1000);
 
       expect(cleanupSpy).toHaveBeenCalledTimes(1);
 
       // Fast-forward another 15 minutes
-      jest.advanceTimersByTime(15 * 60 * 1000);
+      vi.advanceTimersByTime(15 * 60 * 1000);
 
       expect(cleanupSpy).toHaveBeenCalledTimes(2);
 
