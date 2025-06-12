@@ -41,7 +41,6 @@ export class DebuggingApproachServer extends BaseToolServer<DebuggingApproachDat
       hasResolution: !!validInput.resolution,
       stepCount: validInput.steps?.length ?? 0,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

@@ -47,7 +47,6 @@ export class VisualReasoningServer extends BaseToolServer<VisualReasoningData, a
       hasHypothesis: !!validInput.hypothesis,
       hasTransformationType: !!validInput.transformationType,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

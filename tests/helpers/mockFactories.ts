@@ -4,7 +4,8 @@
 
 import { jest } from '@jest/globals';
 import { mockDeep, MockProxy } from 'jest-mock-extended';
-import { SequentialThoughtData as SequentialThoughtData, CurrentStep, ToolRecommendation } from '../../src/interfaces/SequentialThoughtInterfaces.js';
+import { SequentialThought as SequentialThoughtData, CurrentStep } from '../../src/schemas/SequentialThoughtSchema.js';
+import { ToolRecommendation } from '../../src/schemas/ToolSchemas.js';
 import { BaseToolServer } from '../../src/base/BaseToolServer.js';
 
 // Mock factory for creating SequentialThoughtData with customizable fields

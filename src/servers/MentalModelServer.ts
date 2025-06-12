@@ -41,7 +41,6 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
       hasConclusion: !!validInput.conclusion,
       stepCount: validInput.steps?.length ?? 0,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

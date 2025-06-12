@@ -55,7 +55,6 @@ export class CollaborativeReasoningServer extends BaseToolServer<CollaborativeRe
       hasFinalRecommendation: !!validInput.finalRecommendation,
       hasSuggestedContributionTypes: !!validInput.suggestedContributionTypes && validInput.suggestedContributionTypes.length > 0,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

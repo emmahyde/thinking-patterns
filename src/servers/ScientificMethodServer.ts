@@ -48,7 +48,6 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
       hasAnalysis: !!validInput.analysis,
       hasConclusion: !!validInput.conclusion,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

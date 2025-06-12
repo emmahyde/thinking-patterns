@@ -48,7 +48,6 @@ describe('SequentialThinkingServer', () => {
       expect(result).toHaveProperty('hasCurrentStep', false);
       expect(result).toHaveProperty('stage');
       expect(result).toHaveProperty('timestamp');
-      expect(result).toHaveProperty('framework', 'clear-thought-tools');
     });
 
     it('should include current step information when provided', () => {
@@ -152,7 +151,6 @@ describe('SequentialThinkingServer', () => {
       expect(result).toHaveProperty('totalThoughts', 3);
       expect(result).toHaveProperty('nextThoughtNeeded', true);
       expect(result).toHaveProperty('status', 'success');
-      expect(result).toHaveProperty('framework', 'clear-thought-tools');
     });
 
     it('should return error response for invalid input', () => {

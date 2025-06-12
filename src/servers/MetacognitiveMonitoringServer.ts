@@ -55,7 +55,6 @@ export class MetacognitiveMonitoringServer extends BaseToolServer<MetacognitiveM
       hasRemainingSteps: !!validInput.remainingSteps && validInput.remainingSteps.length > 0,
       hasToolUsageHistory: !!validInput.toolUsageHistory && validInput.toolUsageHistory.length > 0,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

@@ -50,7 +50,6 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThought, 
       hasToolUsageHistory: !!validInput.toolUsageHistory && validInput.toolUsageHistory.length > 0,
       stage: this.determineStage(validInput.thoughtNumber, validInput.totalThoughts),
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

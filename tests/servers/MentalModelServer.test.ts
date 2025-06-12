@@ -196,7 +196,6 @@ describe('MentalModelServer', () => {
       expect(parsedContent.hasSteps).toBe(true);
       expect(parsedContent.hasConclusion).toBe(true);
       expect(parsedContent.stepCount).toBe(2);
-      expect(parsedContent.framework).toBe('clear-thought-tools');
       expect(parsedContent.timestamp).toBeDefined();
 
       // Check that the input data is available in the data field

@@ -403,7 +403,6 @@ describe('ScientificMethodServer', () => {
       expect(parsedContent.nextStageNeeded).toBe(true);
       expect(parsedContent.hasHypothesis).toBe(true);
       expect(parsedContent.status).toBe('success');
-      expect(parsedContent.framework).toBe('clear-thought-tools');
 
       // Check that the input data is available in the data field
       expect(result.data?.hypothesis?.statement).toBe('Test hypothesis');

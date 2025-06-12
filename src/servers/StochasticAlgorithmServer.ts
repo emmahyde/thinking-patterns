@@ -42,7 +42,6 @@ export class StochasticAlgorithmServer extends BaseToolServer<StochasticAlgorith
       hasResult: !!result,
       parameterCount: Object.keys(validInput.parameters || {}).length,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

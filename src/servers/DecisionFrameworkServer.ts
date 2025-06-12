@@ -66,7 +66,6 @@ export class DecisionFrameworkServer extends BaseToolServer<DecisionFrameworkDat
       hasRecommendation: !!validInput.recommendation,
       hasSuggestedNextStage: !!validInput.suggestedNextStage,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 

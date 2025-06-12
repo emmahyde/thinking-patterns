@@ -53,7 +53,6 @@ export class StructuredArgumentationServer extends BaseToolServer<StructuredArgu
       weaknessCount: validInput.weaknesses?.length ?? 0,
       hasSuggestedNextTypes: !!validInput.suggestedNextTypes && validInput.suggestedNextTypes.length > 0,
       timestamp: new Date().toISOString(),
-      framework: 'clear-thought-tools'
     };
   }
 
