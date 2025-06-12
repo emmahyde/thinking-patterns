@@ -3,6 +3,9 @@
  * Configures global test environment settings
  */
 
+// Import SessionManager for cleanup
+import { sessionManager } from '../../src/services/SessionManager.js';
+
 // Mock console methods to avoid noise in test output
 global.console = {
   ...console,
@@ -23,6 +26,8 @@ afterEach(() => {
 });
 
 afterAll(() => {
+  // Clean up SessionManager to prevent hanging processes
+  sessionManager.destroy();
   mockExit.mockRestore();
 });
 

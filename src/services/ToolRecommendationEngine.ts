@@ -4,7 +4,7 @@ import { CurrentStepData } from '../schemas/SequentialThoughtSchema.js';
 export class ToolRecommendationEngine {
   private toolDescriptions: Record<string, string> = {
     'mental_model': 'Structured thinking frameworks like first principles, opportunity cost analysis, and systematic problem decomposition',
-    'debugging_approxach': 'Systematic debugging methods including binary search, divide and conquer, and cause elimination',
+    'debugging_approach': 'Systematic debugging methods including binary search, divide and conquer, and cause elimination',
     'stochastic_algorithm': 'Probabilistic decision-making tools including MDPs, Monte Carlo methods, and Bayesian optimization',
     'collaborative_reasoning': 'Multi-perspective problem solving with diverse viewpoints and stakeholder analysis',
     'decision_framework': 'Structured decision analysis with criteria evaluation and outcome modeling',
