@@ -10,3 +10,8 @@ export * from './MetacognitiveMonitoringSchema.js';
 export * from './ScientificMethodSchema.js';
 export * from './StructuredArgumentationSchema.js';
 export * from './VisualReasoningSchema.js';
+export * from './DomainModelingSchema.js';
+export * from './ProblemDecompositionSchema.js';
+export * from './CriticalThinkingSchema.js';
+export * from './RecursiveThinkingSchema.js';
+export * from './TemporalThinkingSchema.js';

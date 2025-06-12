@@ -284,8 +284,8 @@ describe('StochasticAlgorithmSchema', () => {
       };
 
       const result = StochasticAlgorithmSchema.parse(validData);
-      expect(result.parameters?.level1?.level2?.level3?.value).toBe("deeply nested");
-      expect(result.parameters?.configurations?.model?.type).toBe("neural_network");
+      expect((result.parameters as any)?.level1?.level2?.level3?.value).toBe("deeply nested");
+      expect((result.parameters as any)?.configurations?.model?.type).toBe("neural_network");
     });
 
     it('should handle empty parameters object', () => {
@@ -388,7 +388,7 @@ describe('StochasticAlgorithmSchema', () => {
       const result = StochasticAlgorithmSchema.parse(rlData);
       expect(result.algorithm).toBe("Q-Learning");
       expect(result.parameters?.episodes).toBe(1000);
-      expect(result.parameters?.stateDiscretization?.cartPosition).toBe(20);
+      expect((result.parameters as any)?.stateDiscretization?.cartPosition).toBe(20);
     });
 
     it('should validate MCMC sampling', () => {
@@ -411,7 +411,7 @@ describe('StochasticAlgorithmSchema', () => {
       const result = StochasticAlgorithmSchema.parse(mcmcData);
       expect(result.algorithm).toContain("Metropolis-Hastings");
       expect(result.parameters?.iterations).toBe(50000);
-      expect(result.parameters?.priors?.beta?.type).toBe("normal");
+      expect((result.parameters as any)?.priors?.beta?.type).toBe("normal");
     });
   });
 }); 

@@ -351,7 +351,7 @@ describe('MetacognitiveMonitoringServer', () => {
       const result = server.process(input);
 
       expect(result.claimCount).toBe(4);
-      expect(result.claims?.map(c => c.status)).toEqual(['fact', 'speculation', 'inference', 'uncertain']);
+      expect(result.claims?.map((c: { status: any; }) => c.status)).toEqual(['fact', 'speculation', 'inference', 'uncertain']);
       expect(result.claims?.[0].confidenceScore).toBe(0.95);
       expect(result.claims?.[3].confidenceScore).toBe(0.1);
     });
