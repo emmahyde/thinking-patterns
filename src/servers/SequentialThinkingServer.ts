@@ -1,26 +1,93 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
 import { SequentialThoughtSchema, SequentialThoughtData } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
+import { SessionManager, SequentialThinkingSessionData } from '../services/SessionManager.js';
+import { RedisStorageAdapter } from '../services/RedisStorageAdapter.js';
+import { Redis } from 'ioredis';
 
 /**
  * Sequential Thinking Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
+ * Includes Redis session management for persistent state across interactions
  */
 export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtData, any> {
+  private sessionManager: SessionManager | null = null;
+
   constructor() {
     super(SequentialThoughtSchema);
+    this.initializeSessionManager();
   }
 
-  protected handle(validInput: SequentialThoughtData): any {
-    return this.process(validInput);
+  private initializeSessionManager(): void {
+    try {
+      // Check if Redis connection is available
+      const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+      const redis = new Redis(redisUrl);
+      const redisAdapter = new RedisStorageAdapter(redis);
+      this.sessionManager = new SessionManager(redisAdapter);
+    } catch (error) {
+      console.warn('Redis not available, session persistence disabled:', error);
+      this.sessionManager = null;
+    }
+  }
+
+  protected async handle(validInput: SequentialThoughtData): Promise<any> {
+    return await this.process(validInput);
   }
 
   /**
-   * Standardized process method for sequential thinking
+   * Standardized process method for sequential thinking with Redis session persistence
    * @param validInput - Validated thought data
    * @returns Processed thought result
    */
-  public process(validInput: SequentialThoughtData): any {
+  public async process(validInput: SequentialThoughtData): Promise<any> {
+    // Handle session management if available
+    let sessionData: SequentialThinkingSessionData | null = null;
+    let sessionId: string | undefined;
+    
+    // Extract or generate session ID
+    if (validInput.sessionId) {
+      sessionId = validInput.sessionId;
+    } else if (validInput.thoughtNumber > 1) {
+      // For subsequent thoughts, try to find existing session
+      sessionId = this.generateSessionId(validInput);
+    } else {
+      // For first thought, create new session
+      sessionId = this.generateSessionId(validInput);
+    }
+
+    if (this.sessionManager && sessionId) {
+      try {
+        // Try to get existing session
+        sessionData = await this.sessionManager.getSequentialThinkingSession(sessionId);
+        
+        if (!sessionData && validInput.thoughtNumber === 1) {
+          // Create new session for first thought
+          await this.sessionManager.createSession(sessionId, 'sequential_thinking');
+          sessionData = await this.sessionManager.getSequentialThinkingSession(sessionId);
+        }
+        
+        if (sessionData) {
+          // Update session with current thought
+          sessionData.thoughtHistory.push(validInput);
+          sessionData.currentThought = validInput;
+          
+          // Handle branching
+          if (validInput.branchId && validInput.branchFromThought) {
+            if (!sessionData.branches[validInput.branchId]) {
+              sessionData.branches[validInput.branchId] = [];
+            }
+            sessionData.branches[validInput.branchId].push(validInput);
+          }
+          
+          // Save updated session
+          await this.sessionManager.updateSequentialThinkingSession(sessionId, sessionData);
+        }
+      } catch (error) {
+        console.warn('Session management error:', error);
+      }
+    }
+
     // Format output using boxed utility
     const formattedOutput = this.formatThoughtOutput(validInput);
 
@@ -29,7 +96,7 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtDa
       console.error(formattedOutput);
     }
 
-    return {
+    const result = {
       thoughtNumber: validInput.thoughtNumber,
       totalThoughts: validInput.totalThoughts,
       nextThoughtNeeded: validInput.nextThoughtNeeded,
@@ -50,13 +117,152 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtDa
       hasToolUsageHistory: !!validInput.toolUsageHistory && validInput.toolUsageHistory.length > 0,
       stage: this.determineStage(validInput.thoughtNumber, validInput.totalThoughts),
       timestamp: new Date().toISOString(),
+      sessionId: sessionId, // Include session ID in response
+      sessionPersisted: !!sessionData, // Indicate if session was persisted
     };
+
+    // Include session context if available
+    if (sessionData) {
+      (result as any).sessionContext = {
+        thoughtCount: sessionData.thoughtHistory.length,
+        totalThoughtsInSession: sessionData.thoughtHistory.length,
+        hasBranches: Object.keys(sessionData.branches).length > 0,
+        branches: Object.keys(sessionData.branches),
+        sessionCreated: sessionData.createdAt,
+        lastAccessed: sessionData.lastAccessedAt
+      };
+    }
+
+    return result;
   }
 
-  // Backward compatibility method for existing tests
-  public processThought(input: unknown): { content: Array<{ type: string; text: string }>; isError?: boolean } {
-    return this.run(input);
+  /**
+   * Generate a session ID for sequential thinking based on input characteristics
+   * This helps group related thoughts together when sessionId is not provided
+   */
+  private generateSessionId(input: SequentialThoughtData): string {
+    // Use a combination of thought content hash and timestamp for session grouping
+    const contentHash = this.hashString(input.thought.substring(0, 50));
+    const datePrefix = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    return `seq_thinking_${datePrefix}_${contentHash}`;
   }
+
+  /**
+   * Backward compatibility method for tests
+   */
+  public processThought(input: unknown): { content: Array<{ type: string; text: string }>; data?: any; isError?: boolean } {
+    try {
+      const validatedInput = this.validate(input);
+      const result = {
+        thoughtNumber: validatedInput.thoughtNumber,
+        totalThoughts: validatedInput.totalThoughts,
+        nextThoughtNeeded: validatedInput.nextThoughtNeeded,
+        thought: validatedInput.thought,
+        isRevision: validatedInput.isRevision || false,
+        revisesThought: validatedInput.revisesThought,
+        branchFromThought: validatedInput.branchFromThought,
+        branchId: validatedInput.branchId,
+        needsMoreThoughts: validatedInput.needsMoreThoughts,
+        currentStep: validatedInput.currentStep,
+        previousSteps: validatedInput.previousSteps,
+        remainingSteps: validatedInput.remainingSteps,
+        toolUsageHistory: validatedInput.toolUsageHistory,
+        status: 'success',
+        hasCurrentStep: !!validatedInput.currentStep,
+        hasPreviousSteps: !!validatedInput.previousSteps && validatedInput.previousSteps.length > 0,
+        hasRemainingSteps: !!validatedInput.remainingSteps && validatedInput.remainingSteps.length > 0,
+        hasToolUsageHistory: !!validatedInput.toolUsageHistory && validatedInput.toolUsageHistory.length > 0,
+        stage: this.determineStage(validatedInput.thoughtNumber, validatedInput.totalThoughts),
+        timestamp: new Date().toISOString(),
+        sessionPersisted: false
+      };
+
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }],
+        data: validatedInput
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            error: error instanceof Error ? error.message : String(error),
+            status: 'failed',
+            timestamp: new Date().toISOString()
+          }, null, 2)
+        }],
+        isError: true
+      };
+    }
+  }
+
+  /**
+   * Simple hash function for generating consistent session IDs
+   */
+  private hashString(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash).toString(36);
+  }
+
+  /**
+   * Retrieve session history for a given session ID
+   */
+  public async getSessionHistory(sessionId: string): Promise<SequentialThoughtData[]> {
+    if (!this.sessionManager) {
+      return [];
+    }
+
+    try {
+      const sessionData = await this.sessionManager.getSequentialThinkingSession(sessionId);
+      return sessionData ? sessionData.thoughtHistory : [];
+    } catch (error) {
+      console.warn('Error retrieving session history:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Retrieve all branches for a session
+   */
+  public async getSessionBranches(sessionId: string): Promise<Record<string, SequentialThoughtData[]>> {
+    if (!this.sessionManager) {
+      return {};
+    }
+
+    try {
+      const sessionData = await this.sessionManager.getSequentialThinkingSession(sessionId);
+      return sessionData ? sessionData.branches : {};
+    } catch (error) {
+      console.warn('Error retrieving session branches:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Clear a specific session
+   */
+  public async clearSession(sessionId: string): Promise<boolean> {
+    if (!this.sessionManager) {
+      return false;
+    }
+
+    try {
+      await this.sessionManager.clearSession(sessionId);
+      return true;
+    } catch (error) {
+      console.warn('Error clearing session:', error);
+      return false;
+    }
+  }
+
 
   private formatThoughtOutput(data: SequentialThoughtData): string {
     const sections: Record<string, string | string[]> = {

@@ -14,9 +14,10 @@ describe('ProblemDecompositionServer', () => {
   });
 
   describe('process', () => {
-    it('should process valid problem decomposition data correctly', () => {
+    it('should process valid problem decomposition data correctly', async () => {
       const validInput: ProblemDecompositionData = {
         problem: 'Build a scalable e-commerce platform',
+        decompositionId: 'test-123',
         methodology: 'work-breakdown-structure',
         decomposition: [
           {
@@ -61,7 +62,7 @@ describe('ProblemDecompositionServer', () => {
         }
       };
 
-      const result = server.process(validInput);
+      const result = await server.process(validInput);
 
       expect(result.problem).toBe('Build a scalable e-commerce platform');
       expect(result.methodology).toBe('work-breakdown-structure');
@@ -72,9 +73,10 @@ describe('ProblemDecompositionServer', () => {
       expect(result.timestamp).toBeDefined();
     });
 
-    it('should handle minimal problem decomposition data', () => {
+    it('should handle minimal problem decomposition data', async () => {
       const minimalInput: ProblemDecompositionData = {
         problem: 'Simple task breakdown',
+        decompositionId: 'test-123',
         decomposition: [
           {
             id: 'task-1',
@@ -83,7 +85,7 @@ describe('ProblemDecompositionServer', () => {
         ]
       };
 
-      const result = server.process(minimalInput);
+      const result = await server.process(minimalInput);
 
       expect(result.problem).toBe('Simple task breakdown');
       expect(result.decomposition).toHaveLength(1);
@@ -91,9 +93,10 @@ describe('ProblemDecompositionServer', () => {
       expect(result.status).toBe('success');
     });
 
-    it('should handle hierarchical task structures', () => {
+    it('should handle hierarchical task structures', async () => {
       const input: ProblemDecompositionData = {
         problem: 'Complex project with subtasks',
+        decompositionId: 'test-123',
         decomposition: [
           {
             id: 'main-task',
@@ -128,7 +131,7 @@ describe('ProblemDecompositionServer', () => {
         }
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
 
       expect(result.decomposition).toHaveLength(1);
       expect(result.decomposition[0].subTasks).toHaveLength(2);
@@ -152,9 +155,10 @@ describe('ProblemDecompositionServer', () => {
       expect(result.content[0].text).toContain('Validation failed');
     });
 
-    it('should return properly formatted output', () => {
+    it('should return properly formatted output', async () => {
       const input: ProblemDecompositionData = {
         problem: 'Test problem',
+        decompositionId: 'test-123',
         decomposition: [
           {
             id: 'test-task',
@@ -163,7 +167,7 @@ describe('ProblemDecompositionServer', () => {
         ]
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
 
       expect(result).toHaveProperty('problem');
       expect(result).toHaveProperty('decomposition');
@@ -174,41 +178,43 @@ describe('ProblemDecompositionServer', () => {
   });
 
   describe('edge cases and error handling', () => {
-    it('should handle null input', () => {
-      expect(() => server.process(null as any)).toThrow();
+    it('should handle null input', async () => {
+      await expect(server.process(null as any)).rejects.toThrow();
     });
 
-    it('should handle undefined input', () => {
-      expect(() => server.process(undefined as any)).toThrow();
+    it('should handle undefined input', async () => {
+      await expect(server.process(undefined as any)).rejects.toThrow();
     });
 
-    it('should handle empty object input', () => {
-      expect(() => server.process({} as any)).toThrow();
+    it('should handle empty object input', async () => {
+      await expect(server.process({} as any)).rejects.toThrow();
     });
 
-    it('should handle invalid field types', () => {
+    it('should handle invalid field types', async () => {
       const invalidInput = {
         problem: 123, // Should be string
         decomposition: 'not-array' // Should be array
       };
 
-      expect(() => server.process(invalidInput as any)).toThrow();
+      await expect(server.process(invalidInput as any)).rejects.toThrow();
     });
 
-    it('should handle empty decomposition array', () => {
+    it('should handle empty decomposition array', async () => {
       const input: ProblemDecompositionData = {
         problem: 'Problem with no tasks',
+        decompositionId: 'test-123',
         decomposition: []
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
       expect(result.decomposition).toHaveLength(0);
       expect(result.status).toBe('success');
     });
 
-    it('should handle complex dependency chains', () => {
+    it('should handle complex dependency chains', async () => {
       const input: ProblemDecompositionData = {
         problem: 'Complex dependency project',
+        decompositionId: 'test-123',
         decomposition: [
           {
             id: 'task-a',
@@ -243,14 +249,14 @@ describe('ProblemDecompositionServer', () => {
         }
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
       expect(result.decomposition).toHaveLength(3);
       expect(result.decomposition[2].dependencies).toContain('task-a');
       expect(result.decomposition[2].dependencies).toContain('task-b');
       expect(result.status).toBe('success');
     });
 
-    it('should handle large numbers of tasks', () => {
+    it('should handle large numbers of tasks', async () => {
       const manyTasks = Array.from({ length: 50 }, (_, i) => ({
         id: `task-${i}`,
         description: `Task ${i} description`,
@@ -261,6 +267,7 @@ describe('ProblemDecompositionServer', () => {
 
       const input: ProblemDecompositionData = {
         problem: 'Large project with many tasks',
+        decompositionId: 'test-123',
         decomposition: manyTasks,
         metrics: {
           totalTasks: 50,
@@ -273,14 +280,15 @@ describe('ProblemDecompositionServer', () => {
         }
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
       expect(result.decomposition).toHaveLength(50);
       expect(result.metrics?.totalTasks).toBe(50);
     });
 
-    it('should handle tasks with resource requirements and risks', () => {
+    it('should handle tasks with resource requirements and risks', async () => {
       const input: ProblemDecompositionData = {
         problem: 'Project with resource and risk management',
+        decompositionId: 'test-123',
         decomposition: [
           {
             id: 'risky-task',
@@ -308,7 +316,7 @@ describe('ProblemDecompositionServer', () => {
         ]
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
       expect(result.decomposition[0].resourceRequirements).toHaveLength(1);
       expect(result.decomposition[0].risks).toHaveLength(1);
       expect(result.decomposition[0].risks?.[0].probability).toBe(0.7);

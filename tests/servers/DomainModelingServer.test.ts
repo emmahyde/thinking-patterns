@@ -13,7 +13,7 @@ describe('DomainModelingServer', () => {
   });
 
   describe('process', () => {
-    it('should correctly format a domain model with axioms and rules', () => {
+    it('should correctly format a domain model with axioms and rules', async () => {
       const validInput: DomainModelingData = {
         domainName: 'E-commerce Platform',
         description: 'A platform for online sales.',
@@ -51,7 +51,7 @@ describe('DomainModelingServer', () => {
         nextStageNeeded: false,
       };
 
-      const result = server.process(validInput);
+      const result = await server.process(validInput);
 
       expect(result.status).toBe('success');
       expect(result.domainName).toBe('E-commerce Platform');
@@ -62,7 +62,7 @@ describe('DomainModelingServer', () => {
       expect(result.paradigm).toBe('domain-driven');
     });
 
-    it('should handle a model with no rules or relationships', () => {
+    it('should handle a model with no rules or relationships', async () => {
       const simpleInput: DomainModelingData = {
         domainName: 'Simple Blog',
         description: 'A basic blog.',
@@ -77,7 +77,7 @@ describe('DomainModelingServer', () => {
         nextStageNeeded: true,
       };
 
-      const result = server.process(simpleInput);
+      const result = await server.process(simpleInput);
       
       expect(result.status).toBe('success');
       expect(result.domainName).toBe('Simple Blog');
@@ -90,26 +90,25 @@ describe('DomainModelingServer', () => {
   });
 
   describe('edge cases and error handling', () => {
-    it('should handle null input', () => {
-      expect(() => server.process(null as any)).toThrow();
+    it('should handle null input', async () => {
+      await expect(server.process(null as any)).rejects.toThrow();
     });
 
-    it('should handle undefined input', () => {
-      expect(() => server.process(undefined as any)).toThrow();
+    it('should handle undefined input', async () => {
+      await expect(server.process(undefined as any)).rejects.toThrow();
     });
 
-    it('should handle empty object input', () => {
-      const result = server.process({} as any);
-      expect(result.status).toBe('error');
+    it('should handle empty object input', async () => {
+      await expect(server.process({} as any)).rejects.toThrow();
     });
 
-    it('should handle invalid field types', () => {
+    it('should handle invalid field types', async () => {
       const invalidInput = {
         domainName: 123,
         entities: 'not-array',
       } as unknown as DomainModelingData;
 
-      expect(() => server.process(invalidInput)).toThrow();
+      await expect(server.process(invalidInput)).rejects.toThrow();
     });
   });
 });

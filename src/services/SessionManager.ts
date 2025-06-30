@@ -1,10 +1,55 @@
-interface SessionData {
-  thoughtHistory: ThoughtData[];
-  branches: Record<string, ThoughtData[]>;
+import { IStorageService } from './IStorageService.js';
+import { SequentialThoughtData, CollaborativeReasoningData, ScientificMethodData, ProblemDecompositionData } from '../schemas/index.js';
+
+// Generic session data wrapper
+interface BaseSessionData {
+  toolType: string;
   createdAt: Date;
   lastAccessedAt: Date;
+  metadata?: Record<string, any>;
 }
 
+// Specific tool session data interfaces
+interface SequentialThinkingSessionData extends BaseSessionData {
+  toolType: 'sequential_thinking';
+  thoughtHistory: SequentialThoughtData[];
+  branches: Record<string, SequentialThoughtData[]>;
+  currentThought?: SequentialThoughtData;
+}
+
+interface CollaborativeReasoningSessionData extends BaseSessionData {
+  toolType: 'collaborative_reasoning';
+  sessionData: CollaborativeReasoningData;
+  contributionHistory: any[];
+  stageProgress: Record<string, boolean>;
+}
+
+interface ScientificMethodSessionData extends BaseSessionData {
+  toolType: 'scientific_method';
+  inquiryData: ScientificMethodData;
+  stageHistory: Array<{ stage: string; timestamp: Date; data: any }>;
+  hypothesesHistory: any[];
+}
+
+interface DomainModelingSessionData extends BaseSessionData {
+  toolType: 'domain_modeling';
+  modelData: any;
+  iterationHistory: any[];
+  validationResults: any[];
+}
+
+interface ProblemDecompositionSessionData extends BaseSessionData {
+  toolType: 'problem_decomposition';
+  decompositionData: ProblemDecompositionData;
+  revisionHistory: Array<{ revision: number; timestamp: Date; data: ProblemDecompositionData; changes: any }>;
+  progressUpdates: Array<{ timestamp: Date; taskId: string; oldStatus: string; newStatus: string; notes?: string }>;
+  metricsHistory: Array<{ timestamp: Date; metrics: any }>;
+}
+
+// Union type for all supported session data
+type SessionData = SequentialThinkingSessionData | CollaborativeReasoningSessionData | ScientificMethodSessionData | DomainModelingSessionData | ProblemDecompositionSessionData;
+
+// Legacy interface for backward compatibility
 interface ThoughtData {
   thought: string;
   thoughtNumber: number;
@@ -17,138 +62,311 @@ interface ThoughtData {
   nextThoughtNeeded: boolean;
 }
 
-export interface SessionManager {
-  createSession(sessionId: string): void;
-  getSession(sessionId: string): SessionData | null;
-  clearSession(sessionId: string): void;
-  cleanupExpiredSessions(): void;
-  addThought(sessionId: string, thought: ThoughtData): void;
-  addBranch(sessionId: string, branchId: string, thought: ThoughtData): void;
-  getThoughtHistory(sessionId: string): ThoughtData[];
-  getBranches(sessionId: string): Record<string, ThoughtData[]>;
+/**
+ * Defines the contract for session management.
+ * All operations are asynchronous and return Promises.
+ */
+export interface ISessionManager {
+  // Generic session management
+  createSession(sessionId: string, toolType?: string): Promise<void>;
+  getSession(sessionId: string): Promise<SessionData | null>;
+  clearSession(sessionId: string): Promise<void>;
+  updateSession(sessionId: string, updateData: Partial<SessionData>): Promise<void>;
+  
+  // Sequential thinking specific methods (legacy compatibility)
+  addThought(sessionId: string, thought: ThoughtData): Promise<void>;
+  addBranch(sessionId: string, branchId: string, thought: ThoughtData): Promise<void>;
+  getThoughtHistory(sessionId: string): Promise<ThoughtData[]>;
+  getBranches(sessionId: string): Promise<Record<string, ThoughtData[]>>;
+  
+  // Tool-specific session management
+  getSequentialThinkingSession(sessionId: string): Promise<SequentialThinkingSessionData | null>;
+  updateSequentialThinkingSession(sessionId: string, data: Partial<SequentialThinkingSessionData>): Promise<void>;
+  
+  getCollaborativeReasoningSession(sessionId: string): Promise<CollaborativeReasoningSessionData | null>;
+  updateCollaborativeReasoningSession(sessionId: string, data: Partial<CollaborativeReasoningSessionData>): Promise<void>;
+  
+  getScientificMethodSession(sessionId: string): Promise<ScientificMethodSessionData | null>;
+  updateScientificMethodSession(sessionId: string, data: Partial<ScientificMethodSessionData>): Promise<void>;
+  
+  getDomainModelingSession(sessionId: string): Promise<DomainModelingSessionData | null>;
+  updateDomainModelingSession(sessionId: string, data: Partial<DomainModelingSessionData>): Promise<void>;
+  
+  getProblemDecompositionSession(sessionId: string): Promise<ProblemDecompositionSessionData | null>;
+  updateProblemDecompositionSession(sessionId: string, data: Partial<ProblemDecompositionSessionData>): Promise<void>;
 }
 
-export class InMemorySessionManager implements SessionManager {
-  private sessions: Map<string, SessionData> = new Map();
-  private readonly SESSION_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
-  private cleanupInterval: NodeJS.Timeout;
+/**
+ * Manages user sessions using a persistent storage backend.
+ * This implementation is stateless and relies on an injected IStorageService.
+ * Supports multiple tool types with tool-specific session data structures.
+ */
+export class SessionManager implements ISessionManager {
+  private storage: IStorageService;
+  private readonly sessionTTL: number; // Session TTL in seconds
 
-  constructor() {
-    // Run cleanup every 15 minutes
-    this.cleanupInterval = setInterval(() => {
-      this.cleanupExpiredSessions();
-    }, 15 * 60 * 1000);
+  /**
+   * @param storageService The storage service to be used for persistence.
+   * @param sessionTTL The time-to-live for sessions in seconds. Defaults to 4 hours.
+   */
+  constructor(storageService: IStorageService, sessionTTL: number = 14400) {
+    this.storage = storageService;
+    this.sessionTTL = sessionTTL;
   }
 
-  createSession(sessionId: string): void {
+  private getSessionKey(sessionId: string): string {
+    return `session:${sessionId}`;
+  }
+
+  /**
+   * Recursively convert date strings back to Date objects in session data
+   */
+  private reviveDates(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    if (typeof obj === 'string') {
+      // Try to parse as date if it looks like an ISO date string
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(obj)) {
+        return new Date(obj);
+      }
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.reviveDates(item));
+    }
+
+    if (typeof obj === 'object') {
+      const result: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        result[key] = this.reviveDates(value);
+      }
+      return result;
+    }
+
+    return obj;
+  }
+
+  async createSession(sessionId: string, toolType: string = 'sequential_thinking'): Promise<void> {
     const now = new Date();
-    this.sessions.set(sessionId, {
-      thoughtHistory: [],
-      branches: {},
-      createdAt: now,
-      lastAccessedAt: now,
-    });
+    let newSession: SessionData;
+    
+    switch (toolType) {
+      case 'sequential_thinking':
+        newSession = {
+          toolType: 'sequential_thinking',
+          thoughtHistory: [],
+          branches: {},
+          createdAt: now,
+          lastAccessedAt: now,
+        } as SequentialThinkingSessionData;
+        break;
+        
+      case 'collaborative_reasoning':
+        newSession = {
+          toolType: 'collaborative_reasoning',
+          sessionData: {} as CollaborativeReasoningData,
+          contributionHistory: [],
+          stageProgress: {},
+          createdAt: now,
+          lastAccessedAt: now,
+        } as CollaborativeReasoningSessionData;
+        break;
+        
+      case 'scientific_method':
+        newSession = {
+          toolType: 'scientific_method',
+          inquiryData: {} as ScientificMethodData,
+          stageHistory: [],
+          hypothesesHistory: [],
+          createdAt: now,
+          lastAccessedAt: now,
+        } as ScientificMethodSessionData;
+        break;
+        
+      case 'domain_modeling':
+        newSession = {
+          toolType: 'domain_modeling',
+          modelData: {},
+          iterationHistory: [],
+          validationResults: [],
+          createdAt: now,
+          lastAccessedAt: now,
+        } as DomainModelingSessionData;
+        break;
+        
+      case 'problem_decomposition':
+        newSession = {
+          toolType: 'problem_decomposition',
+          decompositionData: {} as ProblemDecompositionData,
+          revisionHistory: [],
+          progressUpdates: [],
+          metricsHistory: [],
+          createdAt: now,
+          lastAccessedAt: now,
+        } as ProblemDecompositionSessionData;
+        break;
+        
+      default:
+        throw new Error(`Unsupported tool type: ${toolType}`);
+    }
+    
+    await this.storage.set(this.getSessionKey(sessionId), newSession, this.sessionTTL);
   }
 
-  getSession(sessionId: string): SessionData | null {
-    const session = this.sessions.get(sessionId);
+  async getSession(sessionId: string): Promise<SessionData | null> {
+    const sessionKey = this.getSessionKey(sessionId);
+    const session = await this.storage.get<SessionData>(sessionKey);
+
     if (session) {
-      session.lastAccessedAt = new Date();
-      return session;
+      // Convert all date strings back to Date objects recursively
+      const revivedSession = this.reviveDates(session) as SessionData;
+      revivedSession.lastAccessedAt = new Date();
+      await this.storage.set(sessionKey, revivedSession, this.sessionTTL);
+      return revivedSession;
     }
     return null;
   }
-
-  clearSession(sessionId: string): void {
-    this.sessions.delete(sessionId);
-  }
-
-  cleanupExpiredSessions(): void {
-    const now = new Date();
-    const expiredSessions: string[] = [];
-
-    for (const [sessionId, session] of this.sessions.entries()) {
-      const timeSinceLastAccess = now.getTime() - session.lastAccessedAt.getTime();
-      if (timeSinceLastAccess > this.SESSION_TIMEOUT_MS) {
-        expiredSessions.push(sessionId);
-      }
-    }
-
-    for (const sessionId of expiredSessions) {
-      this.sessions.delete(sessionId);
-      // Log cleanup to console (suppress during tests)
-      if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
-        console.log(`Cleaned up expired session: ${sessionId}`);
-      }
-    }
-
-    if (expiredSessions.length > 0) {
-      // Log cleanup summary to console (suppress during tests)
-      if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
-        console.log(`Cleaned up ${expiredSessions.length} expired sessions`);
-      }
+  
+  async updateSession(sessionId: string, updateData: Partial<SessionData>): Promise<void> {
+    const session = await this.getSession(sessionId);
+    if (session) {
+      const updatedSession = { ...session, ...updateData, lastAccessedAt: new Date() };
+      await this.storage.set(this.getSessionKey(sessionId), updatedSession, this.sessionTTL);
     }
   }
 
-  addThought(sessionId: string, thought: ThoughtData): void {
-    let session = this.getSession(sessionId);
+  async clearSession(sessionId: string): Promise<void> {
+    await this.storage.delete(this.getSessionKey(sessionId));
+  }
+
+  async addThought(sessionId: string, thought: ThoughtData): Promise<void> {
+    let session = await this.getSession(sessionId);
     if (!session) {
-      this.createSession(sessionId);
-      session = this.getSession(sessionId)!;
+      await this.createSession(sessionId, 'sequential_thinking');
+      session = await this.getSession(sessionId);
     }
-    session.thoughtHistory.push(thought);
+
+    if (session && session.toolType === 'sequential_thinking') {
+      const sequentialSession = session as SequentialThinkingSessionData;
+      sequentialSession.thoughtHistory.push(thought as SequentialThoughtData);
+      await this.storage.set(this.getSessionKey(sessionId), sequentialSession, this.sessionTTL);
+    }
   }
 
-  addBranch(sessionId: string, branchId: string, thought: ThoughtData): void {
-    let session = this.getSession(sessionId);
+  async addBranch(sessionId: string, branchId: string, thought: ThoughtData): Promise<void> {
+    let session = await this.getSession(sessionId);
     if (!session) {
-      this.createSession(sessionId);
-      session = this.getSession(sessionId)!;
+      await this.createSession(sessionId, 'sequential_thinking');
+      session = await this.getSession(sessionId);
     }
 
-    if (!session.branches[branchId]) {
-      session.branches[branchId] = [];
+    if (session && session.toolType === 'sequential_thinking') {
+      const sequentialSession = session as SequentialThinkingSessionData;
+      if (!sequentialSession.branches[branchId]) {
+        sequentialSession.branches[branchId] = [];
+      }
+      sequentialSession.branches[branchId].push(thought as SequentialThoughtData);
+      await this.storage.set(this.getSessionKey(sessionId), sequentialSession, this.sessionTTL);
     }
-    session.branches[branchId].push(thought);
   }
 
-  getThoughtHistory(sessionId: string): ThoughtData[] {
-    const session = this.getSession(sessionId);
-    return session ? [...session.thoughtHistory] : [];
-  }
-
-  getBranches(sessionId: string): Record<string, ThoughtData[]> {
-    const session = this.getSession(sessionId);
-    return session ? session.branches : {};
-  }
-
-  destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
+  async getThoughtHistory(sessionId: string): Promise<ThoughtData[]> {
+    const session = await this.getSession(sessionId);
+    if (session && session.toolType === 'sequential_thinking') {
+      const sequentialSession = session as SequentialThinkingSessionData;
+      return [...sequentialSession.thoughtHistory] as ThoughtData[];
     }
-    this.sessions.clear();
+    return [];
   }
 
-  // Utility methods for monitoring
-  getSessionCount(): number {
-    return this.sessions.size;
-  }
-
-  getSessionInfo(): Array<{ sessionId: string, thoughtCount: number, branchCount: number, lastAccessed: Date }> {
-    const sessionInfo: Array<{ sessionId: string, thoughtCount: number, branchCount: number, lastAccessed: Date }> = [];
-
-    for (const [sessionId, session] of this.sessions.entries()) {
-      sessionInfo.push({
-        sessionId,
-        thoughtCount: session.thoughtHistory.length,
-        branchCount: Object.keys(session.branches).length,
-        lastAccessed: session.lastAccessedAt,
-      });
+  async getBranches(sessionId: string): Promise<Record<string, ThoughtData[]>> {
+    const session = await this.getSession(sessionId);
+    if (session && session.toolType === 'sequential_thinking') {
+      const sequentialSession = session as SequentialThinkingSessionData;
+      return { ...sequentialSession.branches } as Record<string, ThoughtData[]>;
     }
-
-    return sessionInfo;
+    return {};
+  }
+  
+  // Tool-specific session management methods
+  
+  async getSequentialThinkingSession(sessionId: string): Promise<SequentialThinkingSessionData | null> {
+    const session = await this.getSession(sessionId);
+    return (session && session.toolType === 'sequential_thinking') ? session as SequentialThinkingSessionData : null;
+  }
+  
+  async updateSequentialThinkingSession(sessionId: string, data: Partial<SequentialThinkingSessionData>): Promise<void> {
+    await this.updateSession(sessionId, data);
+  }
+  
+  async getCollaborativeReasoningSession(sessionId: string): Promise<CollaborativeReasoningSessionData | null> {
+    const session = await this.getSession(sessionId);
+    return (session && session.toolType === 'collaborative_reasoning') ? session as CollaborativeReasoningSessionData : null;
+  }
+  
+  async updateCollaborativeReasoningSession(sessionId: string, data: Partial<CollaborativeReasoningSessionData>): Promise<void> {
+    await this.updateSession(sessionId, data);
+  }
+  
+  async getScientificMethodSession(sessionId: string): Promise<ScientificMethodSessionData | null> {
+    const session = await this.getSession(sessionId);
+    return (session && session.toolType === 'scientific_method') ? session as ScientificMethodSessionData : null;
+  }
+  
+  async updateScientificMethodSession(sessionId: string, data: Partial<ScientificMethodSessionData>): Promise<void> {
+    await this.updateSession(sessionId, data);
+  }
+  
+  async getDomainModelingSession(sessionId: string): Promise<DomainModelingSessionData | null> {
+    const session = await this.getSession(sessionId);
+    return (session && session.toolType === 'domain_modeling') ? session as DomainModelingSessionData : null;
+  }
+  
+  async updateDomainModelingSession(sessionId: string, data: Partial<DomainModelingSessionData>): Promise<void> {
+    await this.updateSession(sessionId, data);
+  }
+  
+  async getProblemDecompositionSession(sessionId: string): Promise<ProblemDecompositionSessionData | null> {
+    const session = await this.getSession(sessionId);
+    return (session && session.toolType === 'problem_decomposition') ? session as ProblemDecompositionSessionData : null;
+  }
+  
+  async updateProblemDecompositionSession(sessionId: string, data: Partial<ProblemDecompositionSessionData>): Promise<void> {
+    await this.updateSession(sessionId, data);
+  }
+  
+  // Utility methods
+  
+  async getSessionMetadata(sessionId: string): Promise<{ toolType: string; createdAt: Date; lastAccessedAt: Date; metadata?: Record<string, any> } | null> {
+    const session = await this.getSession(sessionId);
+    if (session) {
+      return {
+        toolType: session.toolType,
+        createdAt: session.createdAt,
+        lastAccessedAt: session.lastAccessedAt,
+        metadata: session.metadata
+      };
+    }
+    return null;
+  }
+  
+  async listActiveSessions(): Promise<string[]> {
+    // This would require implementing a session index in Redis
+    // For now, returning empty array as it requires additional Redis operations
+    return [];
   }
 }
 
-// Export a singleton instance
-export const sessionManager = new InMemorySessionManager();
+// Export session data types for use by tool servers
+export type {
+  SessionData,
+  SequentialThinkingSessionData,
+  CollaborativeReasoningSessionData,
+  ScientificMethodSessionData,
+  DomainModelingSessionData,
+  ProblemDecompositionSessionData,
+  ThoughtData
+};

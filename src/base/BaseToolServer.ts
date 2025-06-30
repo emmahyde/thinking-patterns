@@ -246,8 +246,8 @@ export abstract class BaseToolServer<TIn, TOut> {
       // Validate input using schema
       const validatedInput = this.validate(rawInput);
 
-      // Process with concrete implementation
-      const result = this.handle(validatedInput);
+      // Process with concrete implementation (use sync version if available)
+      const result = (this as any).handleSync ? (this as any).handleSync(validatedInput) : this.handle(validatedInput);
 
       // Format successful response
       return {

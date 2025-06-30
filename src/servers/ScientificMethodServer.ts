@@ -1,35 +1,45 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
 import { ScientificMethodSchema, ScientificMethodData } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
+import { SessionManager, ScientificMethodSessionData } from '../services/SessionManager.js';
+import { RedisStorageAdapter } from '../services/RedisStorageAdapter.js';
+import { Redis } from 'ioredis';
 
 /**
  * Scientific Method Server using thinking-patterns tools approach
  * Extends BaseToolServer for standardized validation and error handling
+ * Includes Redis session management for persistent scientific inquiries
  */
 export class ScientificMethodServer extends BaseToolServer<ScientificMethodData, any> {
+  private sessionManager: SessionManager | null = null;
+
   constructor() {
     super(ScientificMethodSchema);
+    this.initializeSessionManager();
   }
 
-  protected handle(validInput: ScientificMethodData): any {
-    return this.process(validInput);
+  private initializeSessionManager(): void {
+    try {
+      // Check if Redis connection is available
+      const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+      const redis = new Redis(redisUrl);
+      const redisAdapter = new RedisStorageAdapter(redis);
+      this.sessionManager = new SessionManager(redisAdapter);
+    } catch (error) {
+      console.warn('Redis not available, session persistence disabled:', error);
+      this.sessionManager = null;
+    }
+  }
+
+  protected async handle(validInput: ScientificMethodData): Promise<any> {
+    return await this.process(validInput);
   }
 
   /**
-   * Standardized process method for scientific method
-   * @param validInput - Validated scientific method data
-   * @returns Processed scientific method result
+   * Synchronous handle method for backward compatibility with run()
    */
-  public process(validInput: ScientificMethodData): any {
-    // Format output using boxed utility
-    const formattedOutput = this.formatScientificOutput(validInput);
-
-    // Log formatted output to console (suppress during tests)
-    if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
-      console.error(formattedOutput);
-    }
-
-    return {
+  protected handleSync(validInput: ScientificMethodData): any {
+    const result = {
       inquiryId: validInput.inquiryId,
       stage: validInput.stage,
       iteration: validInput.iteration,
@@ -48,7 +58,124 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
       hasAnalysis: !!validInput.analysis,
       hasConclusion: !!validInput.conclusion,
       timestamp: new Date().toISOString(),
+      sessionPersisted: false,
     };
+
+    return result;
+  }
+
+  /**
+   * Standardized process method for scientific method with Redis session persistence
+   * @param validInput - Validated scientific method data
+   * @returns Processed scientific method result
+   */
+  public async process(validInput: ScientificMethodData): Promise<any> {
+    // Handle session management if available
+    let sessionData: ScientificMethodSessionData | null = null;
+    const inquiryId = validInput.inquiryId;
+
+    if (this.sessionManager && inquiryId) {
+      try {
+        // Try to get existing session
+        sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
+        
+        if (!sessionData) {
+          // Create new session
+          await this.sessionManager.createSession(inquiryId, 'scientific_method');
+          sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
+        }
+        
+        if (sessionData) {
+          // Update session with current data
+          sessionData.inquiryData = validInput;
+          
+          // Add to stage history
+          sessionData.stageHistory.push({
+            stage: validInput.stage,
+            timestamp: new Date(),
+            data: {
+              iteration: validInput.iteration,
+              observation: validInput.observation,
+              question: validInput.question,
+              analysis: validInput.analysis,
+              conclusion: validInput.conclusion
+            }
+          });
+          
+          // Track hypothesis evolution
+          if (validInput.hypothesis) {
+            const existingHypothesis = sessionData.hypothesesHistory.find(
+              h => h.hypothesisId === validInput.hypothesis!.hypothesisId
+            );
+            if (!existingHypothesis) {
+              sessionData.hypothesesHistory.push({
+                ...validInput.hypothesis,
+                timestamp: new Date(),
+                iteration: validInput.iteration,
+                stage: validInput.stage
+              });
+            }
+          }
+          
+          // Save updated session
+          await this.sessionManager.updateScientificMethodSession(inquiryId, sessionData);
+        }
+      } catch (error) {
+        console.warn('Session management error:', error);
+      }
+    }
+    // Format output using boxed utility
+    const formattedOutput = this.formatScientificOutput(validInput);
+
+    // Log formatted output to console (suppress during tests)
+    if (process.env.NODE_ENV !== 'test' && process.env.JEST_WORKER_ID === undefined) {
+      console.error(formattedOutput);
+    }
+
+    const result = {
+      inquiryId: validInput.inquiryId,
+      stage: validInput.stage,
+      iteration: validInput.iteration,
+      nextStageNeeded: validInput.nextStageNeeded,
+      observation: validInput.observation,
+      question: validInput.question,
+      hypothesis: validInput.hypothesis,
+      experiment: validInput.experiment,
+      analysis: validInput.analysis,
+      conclusion: validInput.conclusion,
+      status: 'success',
+      hasObservation: !!validInput.observation,
+      hasQuestion: !!validInput.question,
+      hasHypothesis: !!validInput.hypothesis,
+      hasExperiment: !!validInput.experiment,
+      hasAnalysis: !!validInput.analysis,
+      hasConclusion: !!validInput.conclusion,
+      timestamp: new Date().toISOString(),
+      sessionPersisted: !!sessionData, // Indicate if session was persisted
+    };
+
+    // Include session context if available
+    if (sessionData) {
+      (result as any).sessionContext = {
+        stageCount: sessionData.stageHistory.length,
+        totalStages: sessionData.stageHistory.length,
+        stageSequence: sessionData.stageHistory.map(s => s.stage),
+        hypothesesTracked: sessionData.hypothesesHistory.length,
+        currentIteration: validInput.iteration,
+        sessionCreated: sessionData.createdAt,
+        lastAccessed: sessionData.lastAccessedAt,
+        inquiryProgress: {
+          hasObservation: !!sessionData.inquiryData.observation,
+          hasQuestion: !!sessionData.inquiryData.question,
+          hasHypothesis: !!sessionData.inquiryData.hypothesis,
+          hasExperiment: !!sessionData.inquiryData.experiment,
+          hasAnalysis: !!sessionData.inquiryData.analysis,
+          hasConclusion: !!sessionData.inquiryData.conclusion
+        }
+      };
+    }
+
+    return result;
   }
 
   // Backward compatibility method for tests
@@ -171,5 +298,131 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
     }
 
     return boxed('🔬 Scientific Method', sections);
+  }
+
+  /**
+   * Retrieve stage history for a given inquiry ID
+   */
+  public async getStageHistory(inquiryId: string): Promise<Array<{ stage: string; timestamp: Date; data: any }>> {
+    if (!this.sessionManager) {
+      return [];
+    }
+
+    try {
+      const sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
+      return sessionData ? sessionData.stageHistory : [];
+    } catch (error) {
+      console.warn('Error retrieving stage history:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Retrieve hypothesis history for a given inquiry ID
+   */
+  public async getHypothesesHistory(inquiryId: string): Promise<any[]> {
+    if (!this.sessionManager) {
+      return [];
+    }
+
+    try {
+      const sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
+      return sessionData ? sessionData.hypothesesHistory : [];
+    } catch (error) {
+      console.warn('Error retrieving hypotheses history:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Retrieve current inquiry data
+   */
+  public async getInquiryData(inquiryId: string): Promise<ScientificMethodData | null> {
+    if (!this.sessionManager) {
+      return null;
+    }
+
+    try {
+      const sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
+      return sessionData ? sessionData.inquiryData : null;
+    } catch (error) {
+      console.warn('Error retrieving inquiry data:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear a specific inquiry session
+   */
+  public async clearInquiry(inquiryId: string): Promise<boolean> {
+    if (!this.sessionManager) {
+      return false;
+    }
+
+    try {
+      await this.sessionManager.clearSession(inquiryId);
+      return true;
+    } catch (error) {
+      console.warn('Error clearing inquiry:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Add a hypothesis to an existing inquiry
+   */
+  public async addHypothesis(inquiryId: string, hypothesis: any): Promise<boolean> {
+    if (!this.sessionManager) {
+      return false;
+    }
+
+    try {
+      const sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
+      if (sessionData) {
+        sessionData.hypothesesHistory.push({
+          ...hypothesis,
+          timestamp: new Date()
+        });
+        await this.sessionManager.updateScientificMethodSession(inquiryId, sessionData);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.warn('Error adding hypothesis:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get inquiry progress summary
+   */
+  public async getInquiryProgress(inquiryId: string): Promise<any> {
+    if (!this.sessionManager) {
+      return null;
+    }
+
+    try {
+      const sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
+      if (sessionData) {
+        return {
+          stages: sessionData.stageHistory.map(s => s.stage),
+          currentStage: sessionData.inquiryData.stage,
+          iteration: sessionData.inquiryData.iteration,
+          hypothesesCount: sessionData.hypothesesHistory.length,
+          completionStatus: {
+            hasObservation: !!sessionData.inquiryData.observation,
+            hasQuestion: !!sessionData.inquiryData.question,
+            hasHypothesis: !!sessionData.inquiryData.hypothesis,
+            hasExperiment: !!sessionData.inquiryData.experiment,
+            hasAnalysis: !!sessionData.inquiryData.analysis,
+            hasConclusion: !!sessionData.inquiryData.conclusion
+          }
+        };
+      }
+      return null;
+    } catch (error) {
+      console.warn('Error getting inquiry progress:', error);
+      return null;
+    }
   }
 }

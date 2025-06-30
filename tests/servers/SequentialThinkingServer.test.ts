@@ -28,7 +28,7 @@ describe('SequentialThinkingServer', () => {
   });
 
   describe('process', () => {
-    it('should process valid thought data successfully', () => {
+    it('should process valid thought data successfully', async () => {
       const validInput = createMockThoughtData({
         thought: "I need to analyze this problem systematically",
         thoughtNumber: 1,
@@ -36,7 +36,7 @@ describe('SequentialThinkingServer', () => {
         nextThoughtNeeded: true
       });
 
-      const result = server.process(validInput);
+      const result = await server.process(validInput);
 
       expect(result).toHaveProperty('thoughtNumber', 1);
       expect(result).toHaveProperty('totalThoughts', 3);
@@ -49,7 +49,7 @@ describe('SequentialThinkingServer', () => {
       expect(result).toHaveProperty('timestamp');
     });
 
-    it('should include current step information when provided', () => {
+    it('should include current step information when provided', async () => {
       const currentStep = createMockCurrentStep();
       const validInput = createMockThoughtData({
         thought: "Test thought with current step",
@@ -59,14 +59,14 @@ describe('SequentialThinkingServer', () => {
         currentStep: currentStep
       });
 
-      const result = server.process(validInput);
+      const result = await server.process(validInput);
 
       expect(result.hasCurrentStep).toBe(true);
       expect(result.thoughtNumber).toBe(2);
       expect(result.totalThoughts).toBe(4);
     });
 
-    it('should handle revision data correctly', () => {
+    it('should handle revision data correctly', async () => {
       const validInput = createMockThoughtData({
         thought: "This is a revision",
         thoughtNumber: 3,
@@ -76,13 +76,13 @@ describe('SequentialThinkingServer', () => {
         revisesThought: 2
       });
 
-      const result = server.process(validInput);
+      const result = await server.process(validInput);
 
       expect(result.isRevision).toBe(true);
       expect(result.status).toBe('success');
     });
 
-    it('should handle branch data correctly', () => {
+    it('should handle branch data correctly', async () => {
       const validInput = createMockThoughtData({
         thought: "This is a branch",
         thoughtNumber: 3,
@@ -92,20 +92,20 @@ describe('SequentialThinkingServer', () => {
         branchId: "branch-1"
       });
 
-      const result = server.process(validInput);
+      const result = await server.process(validInput);
 
       expect(result.branchId).toBe("branch-1");
       expect(result.status).toBe('success');
     });
 
-    it('should determine correct stage for different thought positions', () => {
+    it('should determine correct stage for different thought positions', async () => {
       // Test initial stage
       const initialInput = createMockThoughtData({
         thoughtNumber: 1,
         totalThoughts: 10,
         nextThoughtNeeded: true
       });
-      const initialResult = server.process(initialInput);
+      const initialResult = await server.process(initialInput);
       expect(initialResult.stage).toBe('initial');
 
       // Test middle stage
@@ -114,7 +114,7 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 10,
         nextThoughtNeeded: true
       });
-      const middleResult = server.process(middleInput);
+      const middleResult = await server.process(middleInput);
       expect(middleResult.stage).toBe('middle');
 
       // Test final stage
@@ -123,13 +123,13 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 10,
         nextThoughtNeeded: false
       });
-      const finalResult = server.process(finalInput);
+      const finalResult = await server.process(finalInput);
       expect(finalResult.stage).toBe('final');
     });
   });
 
   describe('processThought (backward compatibility)', () => {
-    it('should process valid thought successfully via run method', () => {
+    it('should process valid thought successfully via run method', async () => {
       const validInput = {
         thought: "I need to analyze this problem systematically",
         thoughtNumber: 1,
@@ -214,7 +214,7 @@ describe('SequentialThinkingServer', () => {
   });
 
   describe('determineStage (private method behavior verification)', () => {
-    it('should return correct stages based on progress', () => {
+    it('should return correct stages based on progress', async () => {
       // Test through process method which calls determineStage internally
 
       // Single thought should be final
@@ -223,7 +223,7 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 1,
         nextThoughtNeeded: false
       });
-      const singleResult = server.process(singleInput);
+      const singleResult = await server.process(singleInput);
       expect(singleResult.stage).toBe('final');
 
       // First of many should be initial
@@ -232,7 +232,7 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 10,
         nextThoughtNeeded: true
       });
-      const firstResult = server.process(firstInput);
+      const firstResult = await server.process(firstInput);
       expect(firstResult.stage).toBe('initial');
 
       // Last should be final
@@ -241,7 +241,7 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 10,
         nextThoughtNeeded: false
       });
-      const lastResult = server.process(lastInput);
+      const lastResult = await server.process(lastInput);
       expect(lastResult.stage).toBe('final');
 
       // Two-thought sequence
@@ -250,7 +250,7 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 2,
         nextThoughtNeeded: true
       });
-      const firstOfTwoResult = server.process(firstOfTwoInput);
+      const firstOfTwoResult = await server.process(firstOfTwoInput);
       expect(firstOfTwoResult.stage).toBe('initial');
 
       const secondOfTwoInput = createMockThoughtData({
@@ -258,7 +258,7 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 2,
         nextThoughtNeeded: false
       });
-      const secondOfTwoResult = server.process(secondOfTwoInput);
+      const secondOfTwoResult = await server.process(secondOfTwoInput);
       expect(secondOfTwoResult.stage).toBe('final');
 
       // Three-thought sequence (middle)
@@ -267,19 +267,19 @@ describe('SequentialThinkingServer', () => {
         totalThoughts: 3,
         nextThoughtNeeded: true
       });
-      const middleOfThreeResult = server.process(middleOfThreeInput);
+      const middleOfThreeResult = await server.process(middleOfThreeInput);
       expect(middleOfThreeResult.stage).toBe('middle');
     });
   });
 
   describe('console output', () => {
-    it('should log formatted output to console.error when not in test environment', () => {
+    it('should log formatted output to console.error when not in test environment', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Temporarily remove test environment indicators
       const originalNodeEnv = process.env.NODE_ENV;
       const originalJestWorker = process.env.JEST_WORKER_ID;
-      delete process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
       delete process.env.JEST_WORKER_ID;
 
       const validInput = createMockThoughtData({
@@ -289,18 +289,18 @@ describe('SequentialThinkingServer', () => {
         nextThoughtNeeded: true
       });
 
-      server.process(validInput);
+      await server.process(validInput);
 
       expect(consoleSpy).toHaveBeenCalledTimes(1);
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('💭 Sequential Thinking'));
 
       // Restore environment
-      if (originalNodeEnv !== undefined) process.env.NODE_ENV = originalNodeEnv;
+      process.env.NODE_ENV = originalNodeEnv;
       if (originalJestWorker !== undefined) process.env.JEST_WORKER_ID = originalJestWorker;
       consoleSpy.mockRestore();
     });
 
-    it('should not log to console.error during tests', () => {
+    it('should not log to console.error during tests', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       const validInput = createMockThoughtData({
@@ -310,7 +310,7 @@ describe('SequentialThinkingServer', () => {
         nextThoughtNeeded: true
       });
 
-      server.process(validInput);
+      await server.process(validInput);
 
       expect(consoleSpy).toHaveBeenCalledTimes(0);
 
@@ -319,7 +319,7 @@ describe('SequentialThinkingServer', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle complex thought data with all optional fields', () => {
+    it('should handle complex thought data with all optional fields', async () => {
       const complexInput = createMockThoughtData({
         thought: "Complex thought with all fields",
         thoughtNumber: 3,
@@ -341,7 +341,7 @@ describe('SequentialThinkingServer', () => {
         ]
       });
 
-      const result = server.process(complexInput);
+      const result = await server.process(complexInput);
 
       expect(result.status).toBe('success');
       expect(result.isRevision).toBe(true);

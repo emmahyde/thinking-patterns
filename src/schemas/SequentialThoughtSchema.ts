@@ -39,6 +39,7 @@ export const SequentialThoughtSchema = z.object({
   previousSteps: z.array(StepRecommendationSchema).optional().describe("A record of the steps that have already been completed."),
   remainingSteps: z.array(z.string()).optional().describe("A high-level list of the steps that are yet to be taken."),
   toolUsageHistory: z.array(ToolUsageHistorySchema).optional().describe("A log of the tools that have been used so far, along with their effectiveness."),
+  sessionId: z.string().optional().describe("Optional session identifier for maintaining state across multiple thoughts."),
 });
 
 // Type inference for TypeScript

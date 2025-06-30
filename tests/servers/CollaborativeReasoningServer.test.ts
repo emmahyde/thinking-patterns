@@ -8,7 +8,7 @@ describe('CollaborativeReasoningServer', () => {
   });
 
   describe('process', () => {
-    it('should process valid collaborative reasoning data correctly', () => {
+    it('should process valid collaborative reasoning data correctly', async () => {
       const input = {
         topic: 'Should we implement a remote-first work policy?',
         sessionId: 'collab-session-001',
@@ -40,7 +40,7 @@ describe('CollaborativeReasoningServer', () => {
         ]
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
 
       expect(result.status).toBe('success');
       expect(result.topic).toBe('Should we implement a remote-first work policy?');
@@ -54,7 +54,7 @@ describe('CollaborativeReasoningServer', () => {
       expect(result.timestamp).toBeDefined();
     });
 
-    it('should handle problem-definition stage correctly', () => {
+    it('should handle problem-definition stage correctly', async () => {
       const input = {
         topic: 'Improving team productivity',
         sessionId: 'collab-session-002',
@@ -79,7 +79,7 @@ describe('CollaborativeReasoningServer', () => {
         contributions: []
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
 
       expect(result.status).toBe('success');
       expect(result.stage).toBe('problem-definition');
@@ -88,7 +88,7 @@ describe('CollaborativeReasoningServer', () => {
       expect(result.hasFinalRecommendation).toBe(false);
     });
 
-    it('should handle multiple personas and contributions', () => {
+    it('should handle multiple personas and contributions', async () => {
       const input = {
         topic: 'Technology stack selection',
         sessionId: 'collab-session-003',
@@ -138,7 +138,7 @@ describe('CollaborativeReasoningServer', () => {
         ]
       };
 
-      const result = server.process(input);
+      const result = await server.process(input);
 
       expect(result.status).toBe('success');
       expect(result.stage).toBe('critique');
@@ -175,7 +175,7 @@ describe('CollaborativeReasoningServer', () => {
   });
 
   describe('output formatting', () => {
-    it('should return properly formatted JSON content', () => {
+    it('should return properly formatted JSON content', async () => {
       const input = {
         topic: 'Test topic',
         sessionId: 'test-session',

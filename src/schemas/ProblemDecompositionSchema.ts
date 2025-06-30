@@ -122,7 +122,7 @@ export const DecompositionMetricsSchema = z.object({
 
 export const ProblemDecompositionSchema = z.object({
   problem: z.string().describe("A clear and comprehensive description of the problem to be decomposed."),
-  decompositionId: z.string().optional().describe("A unique identifier for this decomposition."),
+  decompositionId: z.string().describe("A unique identifier for this decomposition session."),
   methodology: z.string().optional().describe("The methodology or approach used for decomposition (e.g., 'Work Breakdown Structure', 'Feature-driven')."),
   scope: z.string().optional().describe("The scope and boundaries of this problem decomposition."),
   objectives: z.array(z.string()).optional().describe("The main objectives to be achieved through this decomposition."),

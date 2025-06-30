@@ -4,6 +4,7 @@ describe('ProblemDecompositionSchema', () => {
   it('should validate a correct object', () => {
     const data = {
       problem: 'Test Problem',
+      decompositionId: 'test-123',
       decomposition: [{
         id: 'sub-1',
         description: 'Subproblem 1 description',
