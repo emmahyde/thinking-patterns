@@ -116,4 +116,109 @@ describe('TemporalThinkingServer', () => {
       expect(() => server.process({} as any)).toThrow();
     });
   });
-}); 
+
+  describe('testSequenceDiagram', () => {
+    it('should generate a sequence diagram', () => {
+      const server = new TemporalThinkingServer();
+
+      const input = {
+        context: "User authentication flow for a web application",
+        domain: "web authentication",
+        purpose: "Model the complete user login process",
+        initialState: "logged_out",
+        states: [
+          {
+            name: "logged_out",
+            description: "User is not authenticated"
+          },
+          {
+            name: "entering_credentials",
+            description: "User is filling login form"
+          },
+          {
+            name: "authenticating",
+            description: "System is validating credentials"
+          },
+          {
+            name: "logged_in",
+            description: "User is successfully authenticated"
+          },
+          {
+            name: "authentication_failed",
+            description: "Authentication failed, showing error"
+          }
+        ],
+        events: [
+          {
+            name: "click_login",
+            description: "User clicks the login button"
+          },
+          {
+            name: "submit_credentials",
+            description: "User submits username and password"
+          },
+          {
+            name: "credentials_valid",
+            description: "System validates credentials successfully"
+          },
+          {
+            name: "credentials_invalid",
+            description: "System rejects credentials"
+          },
+          {
+            name: "logout",
+            description: "User logs out"
+          }
+        ],
+        transitions: [
+          {
+            from: "logged_out",
+            to: "entering_credentials",
+            event: "click_login",
+            action: "show_login_form"
+          },
+          {
+            from: "entering_credentials",
+            to: "authenticating",
+            event: "submit_credentials",
+            action: "validate_credentials"
+          },
+          {
+            from: "authenticating",
+            to: "logged_in",
+            event: "credentials_valid",
+            action: "create_session"
+          },
+          {
+            from: "authenticating",
+            to: "authentication_failed",
+            event: "credentials_invalid",
+            action: "show_error"
+          },
+          {
+            from: "authentication_failed",
+            to: "entering_credentials",
+            event: "click_login",
+            action: "clear_error"
+          },
+          {
+            from: "logged_in",
+            to: "logged_out",
+            event: "logout",
+            action: "destroy_session"
+          }
+        ],
+        finalStates: ["logged_in"],
+        generateSequenceDiagram: true
+      };
+
+      const result = server.process(input);
+
+      expect(result.status).toBe('success');
+      expect(result.sequenceDiagram).toBeDefined();
+      expect(result.sequenceDiagram?.mermaidSyntax).toBeDefined();
+      expect(result.sequenceDiagram?.mermaidSyntax).toContain('sequenceDiagram');
+      expect(result.sequenceDiagram?.mermaidSyntax).toContain('actor');
+    });
+  });
+});

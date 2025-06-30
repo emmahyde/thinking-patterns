@@ -11,17 +11,19 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true, 
-    "typeRoots": ["node_modules"],
-    "types": ["vitest/globals"]
+    "isolatedModules": true,
+    "types": [
+      "vitest/globals",
+      "node"
+    ]
   },
   "include": [
     "src/**/*",
-    "tests/**/*",
-    "index.ts"
+    "index.ts",
+    "tests/**/*"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
   ]
 }

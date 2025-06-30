@@ -24,22 +24,22 @@ export interface MCPResponse {
 function zodToJsonSchema(zodSchema: z.ZodSchema): Record<string, unknown> {
   // Basic conversion for common Zod types
   // This is a simplified implementation - could be enhanced with a library like zod-to-json-schema
-  
+
   if (zodSchema instanceof z.ZodObject) {
     const shape = zodSchema._def.shape();
     const properties: Record<string, unknown> = {};
     const required: string[] = [];
-    
+
     for (const [key, fieldSchema] of Object.entries(shape)) {
       const field = fieldSchema as z.ZodSchema;
       properties[key] = getFieldSchema(field);
-      
+
       // Check if field is required (not optional)
       if (!field.isOptional()) {
         required.push(key);
       }
     }
-    
+
     return {
       type: "object",
       properties,
@@ -47,7 +47,7 @@ function zodToJsonSchema(zodSchema: z.ZodSchema): Record<string, unknown> {
       additionalProperties: false
     };
   }
-  
+
   // Fallback for non-object schemas
   return {
     type: "object",
@@ -62,7 +62,7 @@ function zodToJsonSchema(zodSchema: z.ZodSchema): Record<string, unknown> {
 function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
   // Extract description if available
   const description = field._def.description;
-  
+
   if (field instanceof z.ZodString) {
     const schema: Record<string, unknown> = { type: "string" };
     if (description) {
@@ -80,7 +80,7 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
     }
     return schema;
   }
-  
+
   if (field instanceof z.ZodNumber) {
     const schema: Record<string, unknown> = { type: "number" };
     if (description) {
@@ -101,7 +101,7 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
     }
     return schema;
   }
-  
+
   if (field instanceof z.ZodBoolean) {
     const schema: Record<string, unknown> = { type: "boolean" };
     if (description) {
@@ -109,7 +109,7 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
     }
     return schema;
   }
-  
+
   if (field instanceof z.ZodArray) {
     const schema: Record<string, unknown> = {
       type: "array",
@@ -120,7 +120,7 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
     }
     return schema;
   }
-  
+
   if (field instanceof z.ZodObject) {
     const schema = zodToJsonSchema(field);
     if (description) {
@@ -128,7 +128,7 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
     }
     return schema;
   }
-  
+
   if (field instanceof z.ZodOptional) {
     const innerSchema = getFieldSchema(field._def.innerType);
     // Preserve description from the optional wrapper if it exists
@@ -137,7 +137,7 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
     }
     return innerSchema;
   }
-  
+
   if (field instanceof z.ZodEnum) {
     const schema: Record<string, unknown> = {
       type: "string",
@@ -159,7 +159,20 @@ function getFieldSchema(field: z.ZodSchema): Record<string, unknown> {
     }
     return schema;
   }
-  
+
+  if (field instanceof z.ZodUnion) {
+    // Handle union types by taking the first option as primary schema
+    // This is a simplified approach - could be enhanced to use anyOf/oneOf
+    const options = field._def.options;
+    if (options && options.length > 0) {
+      const primarySchema = getFieldSchema(options[0]);
+      if (description) {
+        primarySchema.description = description;
+      }
+      return primarySchema;
+    }
+  }
+
   // Fallback for unknown types
   const schema: Record<string, unknown> = { type: "string" };
   if (description) {

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Temporal Thinking Schema
- * 
+ *
  * Defines the structure for temporal reasoning and state-based modeling.
  * Includes state machines, event handling, transition analysis, temporal
  * constraints, and validation frameworks for time-dependent systems.
@@ -110,23 +110,54 @@ export const ValidationResultsSchema = z.object({
   suggestions: z.array(z.string()).optional().describe("Suggestions for improving the model.")
 });
 
+// Sequence diagram generation schemas
+export const ActorSchema = z.object({
+  name: z.string().describe("Name of the actor/participant in the sequence."),
+  description: z.string().optional().describe("Description of the actor's role."),
+  type: z.enum(["user", "system", "service", "database", "external"]).optional().describe("Type of actor.")
+});
+
+export const SequenceStepSchema = z.object({
+  id: z.string().describe("Unique identifier for this sequence step."),
+  from: z.string().describe("Actor sending the message/action."),
+  to: z.string().describe("Actor receiving the message/action."),
+  message: z.string().describe("The message or action being performed."),
+  type: z.enum(["sync", "async", "return", "create", "destroy", "note"]).optional().describe("Type of sequence interaction."),
+  timestamp: z.string().optional().describe("When this interaction occurs."),
+  condition: z.string().optional().describe("Condition under which this interaction happens."),
+  duration: z.string().optional().describe("How long this interaction takes.")
+});
+
+export const SequenceDiagramSchema = z.object({
+  title: z.string().describe("Title of the sequence diagram."),
+  description: z.string().optional().describe("Description of what the sequence diagram shows."),
+  actors: z.array(ActorSchema).describe("Actors/participants in the sequence."),
+  steps: z.array(SequenceStepSchema).describe("Sequential steps in the interaction."),
+  notes: z.array(z.string()).optional().describe("Additional notes about the sequence."),
+  mermaidSyntax: z.string().optional().describe("Generated Mermaid sequence diagram syntax.")
+});
+
 export const TemporalThinkingSchema = z.object({
   context: z.string().describe("A comprehensive description of the system or process being modeled."),
   modelId: z.string().optional().describe("A unique identifier for this temporal model."),
   domain: z.string().optional().describe("The domain this model belongs to (e.g., 'business process', 'software system')."),
   purpose: z.string().optional().describe("The purpose or goal of creating this temporal model."),
-  
+
   // Core temporal structure
   initialState: z.string().describe("The name of the initial state of the system."),
   states: z.array(StateSchema).describe("A comprehensive list of all possible states in the system."),
   events: z.array(EventSchema).describe("A comprehensive list of all possible events that can occur."),
   transitions: z.array(TransitionSchema).describe("A comprehensive list of all possible transitions between states."),
   finalStates: z.array(z.string()).optional().describe("A list of states that are considered terminal or final."),
-  
+
+  // Sequence diagram generation
+  sequenceDiagram: SequenceDiagramSchema.optional().describe("Generated sequence diagram showing temporal interactions between actors."),
+  generateSequenceDiagram: z.boolean().optional().describe("Whether to automatically generate a sequence diagram from the temporal model."),
+
   // Analysis and validation
   analysis: TemporalAnalysisSchema.optional().describe("Analysis results of the temporal model."),
   validation: ValidationResultsSchema.optional().describe("Validation results of the temporal model."),
-  
+
   // Constraints and properties
   globalConstraints: z.array(z.string()).optional().describe("Global constraints that apply to the entire system."),
   timeConstraints: z.array(z.object({
@@ -134,7 +165,7 @@ export const TemporalThinkingSchema = z.object({
     type: z.enum(["deadline", "duration", "interval", "frequency"]).describe("Type of time constraint."),
     value: z.string().describe("Value of the constraint (e.g., '5 minutes', 'daily').")
   })).optional().describe("Time-based constraints on the system."),
-  
+
   // Simulation and testing
   scenarios: z.array(z.object({
     name: z.string().describe("Name of the scenario."),
@@ -143,7 +174,7 @@ export const TemporalThinkingSchema = z.object({
     expectedOutcome: z.string().optional().describe("Expected outcome of this scenario."),
     testSteps: z.array(z.string()).optional().describe("Steps to test this scenario.")
   })).optional().describe("Test scenarios for the temporal model."),
-  
+
   // Meta information
   complexity: z.enum(["low", "medium", "high", "very-high"]).optional().describe("Complexity level of the temporal model."),
   completeness: z.number().min(0).max(1).optional().describe("Completeness score of the model."),
@@ -161,4 +192,7 @@ export type StatePropertiesData = z.infer<typeof StatePropertiesSchema>;
 export type EventPropertiesData = z.infer<typeof EventPropertiesSchema>;
 export type TransitionPropertiesData = z.infer<typeof TransitionPropertiesSchema>;
 export type TemporalAnalysisData = z.infer<typeof TemporalAnalysisSchema>;
-export type ValidationResultsData = z.infer<typeof ValidationResultsSchema>; 
+export type ValidationResultsData = z.infer<typeof ValidationResultsSchema>;
+export type ActorData = z.infer<typeof ActorSchema>;
+export type SequenceStepData = z.infer<typeof SequenceStepSchema>;
+export type SequenceDiagramData = z.infer<typeof SequenceDiagramSchema>;

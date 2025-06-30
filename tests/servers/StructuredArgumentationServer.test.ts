@@ -239,7 +239,7 @@ describe('StructuredArgumentationServer', () => {
 
     it('should handle all argument types', () => {
       const argumentTypes = ['thesis', 'antithesis', 'synthesis', 'objection', 'rebuttal'] as const;
-      
+
       argumentTypes.forEach((type, index) => {
         const input = {
           claim: `Claim for ${type} argument`,
@@ -512,4 +512,4 @@ describe('StructuredArgumentationServer', () => {
       expect(result.hasConclusion).toBe(true);
     });
   });
-}); 
+});
