@@ -41,7 +41,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     // Use the registry for all tool processing
-    const result = processToolRequest(request.params.name, request.params.arguments);
+    const result = await processToolRequest(request.params.name, request.params.arguments);
     return result;
   } catch (error) {
     throw new McpError(
