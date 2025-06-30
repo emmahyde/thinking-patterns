@@ -3,46 +3,254 @@ description:
 globs:
 alwaysApply: true
 ---
+---
+description:
+globs:
+alwaysApply: true
+---
+## 1.0 Core Mandate
+
+Your primary function is to solve complex problems by applying structured thinking patterns via the Thinking Patterns MCP Server. You are a reasoning engine, not just a tool executor. Your goal is not to simply call tools, but to construct a coherent, defensible, and well-reasoned solution to the user's query.
+
+## 2.0 Guiding Principles
+
+### 2.1 Think Before Acting
+For any request without guidance on which tools to use, your first action should be to formulate a plan.
+You may `problem_decomposition` or `sequential_thinking` to structure your approach **before** executing other tools whenever beneficial.
+
+### 2.2 Iterate and Refine
+Thinking is a process, not a single action. Treat every tool output as a draft. Use subsequent tool calls to refine analyses, challenge your own assumptions (`critical_thinking` is a good way to do this), and build upon previous results. The `iteration` parameter in many tools exists for this reason.
+
+### 2.3 Maintain Context
+The MCP server tools are stateless. **You** are responsible for maintaining context. Persist and pass relevant identifiers (`sessionId`, `inquiryId`, `iteration`, `thoughtNumber`, etc.) between calls to build a coherent chain of thought.
+
 ## 3.0 Standard Operating Procedure (SOP)
 
-For any user request, follow this procedure:
+For any user request that doesn't specifically outlign the intended tool usage, follow this procedure:
 
 1.  **Deconstruct the Request**: Use `sequential_thinking` to break down the user's prompt into its core components and objectives. State your interpretation of the goal.
 2.  **Formulate a Plan**: Use `problem_decomposition` to create a step-by-step plan. Each step should map to a specific thinking-pattern tool. Present this high-level plan to the user.
-3.  **MANDATORY PRE-FLIGHT CHECK**: Before executing a complex tool call (any tool with nested objects), explicitly perform the `⚡ PRE-FLIGHT CHECKLIST` below. State your confidence in the call's validity. This is a cognitive forcing function to prevent assumption-based errors.
-4.  **Execute the Plan**: Execute the steps by calling the appropriate tools as defined in your plan.
-5.  **Synthesize Results**: Combine the outputs from various tools into a coherent narrative or solution. Do not simply present raw tool outputs.
-6.  **Self-Critique**: Before presenting the final answer, use `critical_thinking` on your **own** synthesized result. Identify potential flaws, invalid assumptions, or edge cases in your reasoning. Refine your answer based on this critique.
+3.  **Execute the Plan**: Execute the steps by calling the appropriate tools as defined in your plan.
+4.  **Synthesize Results**: Combine the outputs from various tools into a coherent narrative or solution. Do not simply present raw tool outputs.
+5.  **Self-Critique**: Before presenting the final answer, use `critical_thinking` on your **own** synthesized result. Identify potential flaws, invalid assumptions, or edge cases in your reasoning. Refine your answer based on this critique.
 
 ## 4.0 Tool-Specific Directives
-// ... existing code ...
+
+## 🎯 CRITICAL VALIDATION RULES
+- **ALL** required parameters MUST be present
+- **ENUM values** are case-sensitive and must match exactly
+- **Complex objects** need full structure, not just strings
+- **Arrays** must contain correct item types (objects vs strings)
+
+---
+
+## 📋 TOOLS QUICK REFERENCE
+
+**PRE-CALL CHECKLIST**
+1. ✅ ALL required parameters present?
+2. ✅ Enum values match EXACTLY (case-sensitive)?
+3. ✅ Objects use full structure (not just strings)?
+4. ✅ Arrays contain correct item types?
+5. ✅ Numbers are numbers, booleans are booleans?
+6. ✅ No undefined/null required values?
+
+### 1. **collaborative_reasoning**
+```
+REQUIRED: topic, personas, contributions, stage, activePersonaId, sessionId, iteration, nextContributionNeeded
+
+KEY ENUMS:
+- stage: [problem-definition, ideation, critique, integration, decision, reflection]
+- contribution.type: [observation, question, insight, concern, suggestion, challenge, synthesis]
+
+OBJECTS:
+- personas: [{id, name, expertise[], background, perspective, biases[], communication{style, tone}}]
+- contributions: [{personaId, content, type, confidence(0-1)}]
+```
+
+### 2. **critical_thinking**
+```
+REQUIRED: subject, potentialIssues, edgeCases, invalidAssumptions, alternativeApproaches
+
+KEY ENUMS:
+- severity: [low, medium, high, critical]
+- category: [logic, implementation, design, security, performance, usability, maintainability]
+- validity: [valid, questionable, invalid, unknown]
+- testability: [easy, moderate, difficult, untestable]
+
+OBJECTS:
+- potentialIssues: [{description, severity, category, likelihood(0-1)}]
+- edgeCases: [{scenario, conditions[], testability, businessImpact}]
+- invalidAssumptions: [{statement, validity}]
+- alternativeApproaches: [{name, description, advantages[], disadvantages[], complexity, feasibility(0-1)}]
+```
+
+### 3. **debugging_approach**
+```
+REQUIRED: approachName, issue
+
+KEY ENUMS:
+- method.name: ["Binary Search Debugging", "The 5 Whys", "Root Cause Analysis", "Log Analysis", etc.]
+- complexity: [low, medium, high, expert]
+```
+
+### 4. **decision_framework**
+```
+REQUIRED: decisionStatement, options, analysisType, stage, decisionId, iteration, nextStageNeeded
+
+KEY ENUMS:
+- analysisType: [expected-utility, multi-criteria, maximin, minimax-regret, satisficing]
+- stage: [problem-definition, options, criteria, evaluation, analysis, recommendation]
+
+OBJECTS:
+- options: [{name, description}] (id optional)
+```
+
+### 5. **domain_modeling**
+```
+REQUIRED: domainName, description, modelingId, iteration, stage, entities, abstractionLevel, paradigm, nextStageNeeded
+
+KEY ENUMS:
+- stage: [analysis, conceptual, logical, physical, validation, refinement]
+- abstractionLevel: [high, medium, low]
+- paradigm: [object-oriented, relational, functional, event-driven, service-oriented, domain-driven]
+
+OBJECTS:
+- entities: [{name, description, attributes[]}] (behaviors[], constraints[], invariants[] optional)
+```
+
+### 6. **mental_model**
+```
+REQUIRED: modelName, problem
+
+SIMPLE: Just name and problem description (steps[], reasoning, conclusion optional)
+```
+
+### 7. **metacognitive_monitoring**
+```
+REQUIRED: task, stage, overallConfidence, uncertaintyAreas, recommendedApproach, monitoringId, iteration, nextAssessmentNeeded
+
+KEY ENUMS:
+- stage: [knowledge-assessment, planning, execution, monitoring, evaluation, reflection]
+
+TYPES:
+- overallConfidence: number (0-1)
+- uncertaintyAreas: string[]
+```
+
+### 8. **problem_decomposition** ⚠️ HIGH ERROR RISK
+```
+REQUIRED: problem, decomposition
+
+CRITICAL TYPE ERROR:
+- decomposition: MUST be Task objects [{id, description}], NOT strings
+- subTasks: MUST be Task objects [{id, description}], NOT strings
+
+KEY ENUMS:
+- priority: [low, medium, high, critical]
+- complexity: [low, medium, high]
+
+CORRECT STRUCTURE:
+decomposition: [
+  {
+    id: "task-1",
+    description: "Main task",
+    subTasks: [
+      {id: "sub-1", description: "Subtask 1"},
+      {id: "sub-2", description: "Subtask 2"}
+    ],
+    priority: "high",
+    complexity: "medium"
+  }
+]
+```
+
+### 9. **recursive_thinking**
+```
+REQUIRED: problem, baseCases, recursiveCases, terminationConditions
+
+OBJECTS:
+- baseCases: [{condition, solution}] (id, complexity, examples[] optional)
+- recursiveCases: [{condition, decomposition, recombination}] (id, reductionFactor, examples[] optional)
+- terminationConditions: string[]
+```
+
+### 10. **scientific_method**
+```
+REQUIRED: stage, inquiryId, iteration, nextStageNeeded
+
+KEY ENUMS:
+- stage: [observation, question, hypothesis, experiment, analysis, conclusion, iteration]
+
+OPTIONAL: observation, question, analysis, conclusion (strings)
+```
+
+### 11. **sequential_thinking**
+```
+REQUIRED: thought, thoughtNumber, totalThoughts, nextThoughtNeeded
+
+TYPES:
+- thought: string (min_length: 1)
+- thoughtNumber: number (≥0)
+- totalThoughts: number (≥0)
+- nextThoughtNeeded: boolean
+
+OPTIONAL: isRevision, revisesThought, branchFromThought, branchId, needsMoreThoughts
+```
+
+### 12. **stochastic_algorithm**
+```
+REQUIRED: algorithm, problem
+
+SIMPLE: Just algorithm name and problem description (parameters{}, result optional)
+```
+
+### 13. **structured_argumentation**
+```
+REQUIRED: claim, premises, conclusion, argumentType, confidence, nextArgumentNeeded
+
+KEY ENUMS:
+- argumentType: [thesis, antithesis, synthesis, objection, rebuttal]
+
+TYPES:
+- premises: string[]
+- confidence: number (0-1)
+- nextArgumentNeeded: boolean
+```
+
+### 14. **temporal_thinking**
+```
+REQUIRED: context, initialState, states, events, transitions
+
+OBJECTS:
+- states: [{name}] (description, properties{}, invariants[], entryActions[], exitActions[] optional)
+- events: [{name}] (description, properties{}, preconditions[], parameters[], triggers[] optional)
+- transitions: [{from, to, event}] (guard, action, properties{}, sideEffects[], rollbackActions[] optional)
+```
+
+### 15. **visual_reasoning**
+```
+REQUIRED: operation, diagramId, diagramType, iteration, nextOperationNeeded
+
+KEY ENUMS:
+- operation: [create, update, delete, transform, observe, analyze, compare, synthesize]
+- diagramType: [graph, flowchart, state-diagram, concept-map, tree-diagram, network-diagram, mind-map, organization-chart, custom]
 - element.type: [node, edge, container, annotation, shape, text, image, connector]
 
 OBJECTS:
 - elements: [{id, type, properties{}}] (label, source, target, contains[], connectedTo[] optional)
 ```
 
-## ⚡ PRE-FLIGHT CHECKLIST
-**MANDATORY FOR ALL COMPLEX TOOL CALLS**
+## 5.0 Error Handling Protocol
 
-1.  ✅ **All Required Parameters?** Check every top-level required field.
-2.  ✅ **Correct Enums?** Verify case-sensitive enum values against the reference.
-3.  ✅ **Full Object Structure?** Ensure nested objects are fully formed and not just strings.
-4.  ✅ **Correct Array Types?** Check that arrays contain the correct item type (e.g., `string[]` vs. `object[]`).
-5.  ✅ **Accurate Primitives?** Numbers are numbers (`123`), not strings (`"123"`). Booleans are booleans (`true`), not strings (`"true"`).
-6.  ✅ **No `undefined`/`null`?** Confirm no required fields are null or undefined.
-7.  ⚠️ **DEEP NESTING VALIDATION?** For objects with multiple levels of nesting (e.g., `sequential_thinking.previousSteps`), manually trace the structure and required fields for at least two levels deep. **DO NOT ASSUME NESTED, NON-CRITICAL-PATH FIELDS ARE UNVALIDATED.**
+If a tool call fails, execute the following steps:
 
-## 5.0 Post-Mortem Error Protocol
-
-If a tool call fails, execution HALTS. The primary objective becomes understanding the failure to prevent recurrence.
-
-1.  **LOG THE FAILURE**: State the exact tool call and the full error message received.
-2.  **ROOT CAUSE ANALYSIS (RCA)**: Perform a self-assessment.
-    *   **IDENTIFY MISMATCH**: Compare the failed call against the `⚡ PRE-FLIGHT CHECKLIST`. Where did the process break down?
-    *   **STATE THE FLAW**: Explicitly state the incorrect assumption or oversight (e.g., "I assumed `previousSteps` was not validated" or "I misspelled the enum `problem-definition`").
-    *   **INVOKE METACOGNITION**: Use `metacognitive_monitoring` to formally analyze the reasoning error.
-3.  **CORRECT & RETRY**: Formulate the corrected tool call, explaining what was fixed.
-4.  **ESCALATE & REFINE**: If the error persists after **one** corrected attempt, do not try again.
-    *   Inform the user that the tool may be unavailable.
-    *   Propose an update to these rules (`MCP_AGENT_RULES.mdc`) to prevent this class of error in the future.
+1.  **HALT**: Do not immediately retry with the same parameters.
+2.  **ASSUME SCHEMA ERROR**: The most probable cause is a validation failure.
+3.  **CONSULT REFERENCE**: Meticulously check your failed tool call against the `LLM_TOOL_REFERENCE.md` document.
+4.  **IDENTIFY MISMATCH**: Find the specific discrepancy.
+    - Is a required parameter missing?
+    - Is an enum value misspelled or incorrect? (e.g., using `urgent` instead of `high`)
+    - Is the data type wrong? (e.g., a string `true` instead of a boolean `true`)
+    - Is a complex object structured incorrectly? (e.g., `problem_decomposition` error)
+5.  **CORRECT & RETRY**: Formulate the corrected tool call and execute it.
+6.  **ESCALATE**: If the error persists after two corrected attempts, inform the user that the tool may be temporarily unavailable. Present the data you have successfully gathered and suggest an alternative path forward. Do not loop indefinitely.
