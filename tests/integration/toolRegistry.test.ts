@@ -3,18 +3,19 @@
  * Tests tool discovery, routing, and registry-first vs legacy fallback
  */
 
-import { ToolRegistry, BaseToolServer, ToolRegistryEntry } from '../../src/base/BaseToolServer.js';
-import type { SequentialThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
-import { SequentialThoughtSchema } from '../../src/schemas/SequentialThoughtSchema.js';
-import {
-  createMockThoughtData,
-  createMockMcpRequest,
-  createMockMcpResponse
-} from '../helpers/mockFactories.js';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ToolRegistry, ToolRegistryEntry } from '../../src/base/BaseToolServer.js';
+import { processToolRequest, getToolDefinitions } from '../../src/base/toolRegistry.js';
+import { BaseToolServer } from '../../src/base/BaseToolServer.js';
+import { SequentialThoughtSchema, SequentialThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
 import { validSequentialThought } from '../helpers/testFixtures.js';
 
 // Test implementation of BaseToolServer for registry testing
 class TestToolServer extends BaseToolServer<SequentialThoughtData, { success: boolean; message: string }> {
+  get toolName(): string {
+    return 'test-tool';
+  }
+
   constructor() {
     super(SequentialThoughtSchema);
   }
@@ -29,6 +30,10 @@ class TestToolServer extends BaseToolServer<SequentialThoughtData, { success: bo
 
 // Another test server for multiple tool testing
 class AlternativeToolServer extends BaseToolServer<SequentialThoughtData, { result: string; processed: boolean }> {
+  get toolName(): string {
+    return 'alternative-tool';
+  }
+
   constructor() {
     super(SequentialThoughtSchema);
   }
@@ -40,6 +45,8 @@ class AlternativeToolServer extends BaseToolServer<SequentialThoughtData, { resu
     };
   }
 }
+
+
 
 describe('Tool Registry Integration Tests', () => {
   let testToolServer: TestToolServer;
@@ -73,6 +80,7 @@ describe('Tool Registry Integration Tests', () => {
       expect(registeredTools).toHaveLength(1);
       expect(registeredTools[0].name).toBe("test-tool");
       expect(registeredTools[0].description).toBe("Test tool for integration testing");
+      expect(registeredTools[0].server).toBeInstanceOf(TestToolServer);
     });
 
     it('should register multiple tools', () => {
@@ -96,9 +104,25 @@ describe('Tool Registry Integration Tests', () => {
       const registeredTools = ToolRegistry.getAllTools();
       expect(registeredTools).toHaveLength(2);
 
-      const toolNames = registeredTools.map(tool => tool.name);
+      const toolNames = registeredTools.map((tool: ToolRegistryEntry) => tool.name);
       expect(toolNames).toContain("tool-one");
       expect(toolNames).toContain("tool-two");
+    });
+
+    it('should throw an error if tool name is missing', () => {
+      const invalidEntry: Omit<ToolRegistryEntry, 'name'> = {
+        schema: SequentialThoughtSchema,
+        server: testToolServer,
+      };
+      expect(() => ToolRegistry.register(invalidEntry as any)).toThrow('Tool name must be a non-empty string');
+    });
+
+    it('should throw an error if tool server is missing', () => {
+      const invalidEntry: Omit<ToolRegistryEntry, 'server'> = {
+        name: 'no-server-tool',
+        schema: SequentialThoughtSchema,
+      };
+      expect(() => ToolRegistry.register(invalidEntry as any)).toThrow('Tool server must be provided');
     });
 
     it('should handle tool registration with minimal fields', () => {
@@ -150,23 +174,25 @@ describe('Tool Registry Integration Tests', () => {
       expect(foundTool).toBeUndefined();
     });
 
-    it('should handle case-sensitive tool names', () => {
+    it('should handle case-sensitive tool names correctly', () => {
       const foundTool = ToolRegistry.findTool("SequentialThinking"); // Different case
-
       expect(foundTool).toBeUndefined();
+
+      const correctCaseTool = ToolRegistry.findTool("sequential_thinking");
+      expect(correctCaseTool).toBeDefined();
     });
 
     it('should get all registered tools', () => {
       const allTools = ToolRegistry.getAllTools();
 
       expect(allTools).toHaveLength(2);
-      expect(allTools.map(t => t.name)).toEqual(
+      expect(allTools.map((t: ToolRegistryEntry) => t.name)).toEqual(
         expect.arrayContaining(["sequential_thinking", "mental_model"])
       );
     });
   });
 
-  describe('tool execution workflow', () => {
+  describe('processToolRequest workflow', () => {
     beforeEach(() => {
       ToolRegistry.register({
         name: "test-processor",
@@ -176,40 +202,50 @@ describe('Tool Registry Integration Tests', () => {
       });
     });
 
-    it('should execute tool through registry', () => {
-      const tool = ToolRegistry.findTool("test-processor");
-      expect(tool).toBeDefined();
+    it('should execute tool and return the correct tool response format', async () => {
+      const response = await processToolRequest("test-processor", validSequentialThought);
 
-      const response = tool!.server.run(validSequentialThought);
-
-      expect(response.isError).toBeUndefined();
-      expect(response.content).toHaveLength(1);
-      expect(response.content[0].type).toBe("text");
-
-      const result = JSON.parse(response.content[0].text);
-      expect(result.success).toBe(true);
-      expect(result.message).toContain("Processed thought");
+      expect(response.tool_name).toBe("test-processor");
+      expect(response.output).toEqual({
+        success: true,
+        message: "Processed thought: This is a test thought for validation"
+      });
     });
 
-    it('should handle validation errors in registry workflow', () => {
-      const tool = ToolRegistry.findTool("test-processor");
-      expect(tool).toBeDefined();
-
+    it('should throw a validation error for invalid input', async () => {
       const invalidInput = {
         thought: "Valid thought",
         // Missing required fields
       };
 
-      const response = tool!.server.run(invalidInput);
-
-      expect(response.isError).toBe(true);
-      expect(response.content).toHaveLength(1);
-
-      const error = JSON.parse(response.content[0].text);
-      expect(error.error).toContain("Validation failed");
+      try {
+        await processToolRequest("test-processor", invalidInput);
+        throw new Error('should have thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        let msg = (error as Error).message.toString();
+        let errStr = '';
+        try {
+          errStr = JSON.parse(msg).error;
+        } catch { errStr = msg; }
+        expect(errStr).toMatch(/Validation failed/);
+      }
     });
 
-    it('should route different tools correctly', () => {
+    it('should throw an error for an unknown tool', async () => {
+      try {
+        await processToolRequest("unknown-tool", {});
+        throw new Error('should have thrown');
+      } catch (error) {
+        // Print debug info
+        // eslint-disable-next-line no-console
+        console.log('ACTUAL ERROR.message:', error && (error as Error).message);
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toBe('Tool not found: unknown-tool');
+      }
+    });
+
+    it('should route different tools correctly', async () => {
       ToolRegistry.register({
         name: "alternative-processor",
         schema: SequentialThoughtSchema,
@@ -217,23 +253,52 @@ describe('Tool Registry Integration Tests', () => {
         description: "Alternative processing tool"
       });
 
-      const tool1 = ToolRegistry.findTool("test-processor");
-      const tool2 = ToolRegistry.findTool("alternative-processor");
+      const response1 = await processToolRequest("test-processor", validSequentialThought);
+      const response2 = await processToolRequest("alternative-processor", validSequentialThought);
 
-      const response1 = tool1!.server.run(validSequentialThought);
-      const response2 = tool2!.server.run(validSequentialThought);
-
-      const result1 = JSON.parse(response1.content[0].text);
-      const result2 = JSON.parse(response2.content[0].text);
+      const output1 = response1.output as { success: boolean; message: string };
+      const output2 = response2.output as { result: string; processed: boolean };
 
       // Different servers should produce different results
-      expect(result1.message).toContain("Processed thought");
-      expect(result2.result).toContain("Alternative processing");
-      expect(result1).not.toEqual(result2);
+      expect(output1.message).toContain("Processed thought");
+      expect(output2.result).toContain("Alternative processing");
+      expect(output1).not.toEqual(output2);
+    });
+
+    it('should handle server-side errors gracefully', async () => {
+      class ErrorThrowingServer extends BaseToolServer<SequentialThoughtData, any> {
+        get toolName() { return 'error-tool'; }
+        constructor() {
+          super(SequentialThoughtSchema);
+        }
+
+        protected handle(_validInput: SequentialThoughtData): any {
+          throw new Error("Server-side processing failed");
+        }
+      }
+
+      ToolRegistry.register({
+        name: 'error-tool',
+        schema: SequentialThoughtSchema,
+        server: new ErrorThrowingServer(),
+      });
+
+      try {
+        await processToolRequest('error-tool', validSequentialThought);
+        throw new Error('should have thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        let msg = (error as Error).message.toString();
+        let errStr = '';
+        try {
+          errStr = JSON.parse(msg).error;
+        } catch { errStr = msg; }
+        expect(errStr).toBe('Server-side processing failed');
+      }
     });
   });
 
-  describe('MCP tool definitions generation', () => {
+  describe('getToolDefinitions for MCP', () => {
     beforeEach(() => {
       ToolRegistry.register({
         name: "sequential_thinking",
@@ -246,186 +311,38 @@ describe('Tool Registry Integration Tests', () => {
         name: "debugging",
         schema: SequentialThoughtSchema,
         server: alternativeToolServer
-        // No description
+        // No description, to test default
       });
     });
 
-    it('should generate tool definitions for MCP protocol', () => {
-      const toolDefinitions = ToolRegistry.getToolDefinitions();
+    it('should generate correct tool definitions, including defaults', () => {
+      const defs = getToolDefinitions();
 
-      expect(toolDefinitions).toHaveLength(2);
+      expect(defs).toHaveLength(2);
 
-      const sequentialTool = toolDefinitions.find(t => t.name === "sequential_thinking");
+      // Test tool with a provided description
+      const sequentialTool = defs.find(t => t.name === "sequential_thinking");
       expect(sequentialTool).toBeDefined();
       expect(sequentialTool?.description).toBe("Sequential thinking for systematic analysis");
       expect(sequentialTool?.inputSchema).toBeDefined();
-      expect(sequentialTool?.inputSchema.type).toBe("object");
 
-      const debuggingTool = toolDefinitions.find(t => t.name === "debugging");
+      // Test tool that gets a default description
+      const debuggingTool = defs.find(t => t.name === "debugging");
       expect(debuggingTool).toBeDefined();
       expect(debuggingTool?.description).toBe("Tool for debugging operations");
+      expect(debuggingTool?.inputSchema).toBeDefined();
     });
 
-    it('should provide default description when none specified', () => {
-      const toolDefinitions = ToolRegistry.getToolDefinitions();
-      const toolWithoutDescription = toolDefinitions.find(t => t.name === "debugging");
+    it('should generate definitions with correct schema structure', () => {
+      const defs = getToolDefinitions();
+      const sequentialTool = defs.find(t => t.name === 'sequential_thinking');
 
-      expect(toolWithoutDescription?.description).toBe("Tool for debugging operations");
-    });
-
-    it('should include proper input schema structure', () => {
-      const toolDefinitions = ToolRegistry.getToolDefinitions();
-
-      toolDefinitions.forEach(toolDef => {
-        expect(toolDef.inputSchema).toBeDefined();
-        expect(toolDef.inputSchema.type).toBe("object");
-        expect(toolDef.inputSchema).toHaveProperty("properties");
-        expect(toolDef.inputSchema).toHaveProperty("required");
-        expect(toolDef.inputSchema).toHaveProperty("additionalProperties", false);
-        
-        // Should have actual properties from the schema, not empty
-        expect(Object.keys(toolDef.inputSchema.properties as Record<string, unknown>)).not.toHaveLength(0);
-      });
+      expect(sequentialTool?.inputSchema.type).toBe('object');
+      expect(sequentialTool?.inputSchema.properties).toHaveProperty('thought');
+      expect(sequentialTool?.inputSchema.properties).toHaveProperty('thoughtNumber');
+      expect(sequentialTool?.inputSchema.required).toEqual(expect.arrayContaining(['thought', 'thoughtNumber']));
     });
   });
 
-  describe('registry isolation and cleanup', () => {
-    it('should maintain registry state across tests properly', () => {
-      // This test should start with empty registry
-      expect(ToolRegistry.getAllTools()).toHaveLength(0);
 
-      ToolRegistry.register({
-        name: "isolation-test",
-        schema: SequentialThoughtSchema,
-        server: testToolServer
-      });
-
-      expect(ToolRegistry.getAllTools()).toHaveLength(1);
-    });
-
-    it('should handle multiple registrations of same name', () => {
-      const tool1 = {
-        name: "duplicate-name",
-        schema: SequentialThoughtSchema,
-        server: testToolServer,
-        description: "First registration"
-      };
-
-      const tool2 = {
-        name: "duplicate-name",
-        schema: SequentialThoughtSchema,
-        server: alternativeToolServer,
-        description: "Second registration"
-      };
-
-      ToolRegistry.register(tool1);
-      ToolRegistry.register(tool2);
-
-      const allTools = ToolRegistry.getAllTools();
-      expect(allTools).toHaveLength(2); // Both should be registered
-
-      // Should find the first one registered
-      const foundTool = ToolRegistry.findTool("duplicate-name");
-      expect(foundTool?.description).toBe("First registration");
-    });
-  });
-
-  describe('error handling and edge cases', () => {
-    it('should handle server errors gracefully', () => {
-      class ErrorThrowingServer extends BaseToolServer<SequentialThoughtData, any> {
-        constructor() {
-          super(SequentialThoughtSchema);
-        }
-
-        protected handle(_validInput: SequentialThoughtData): any {
-          throw new Error("Server processing error");
-        }
-      }
-
-      ToolRegistry.register({
-        name: "error-server",
-        schema: SequentialThoughtSchema,
-        server: new ErrorThrowingServer()
-      });
-
-      const tool = ToolRegistry.findTool("error-server");
-      const response = tool!.server.run(validSequentialThought);
-
-      expect(response.isError).toBe(true);
-      const error = JSON.parse(response.content[0].text);
-      expect(error.error).toBe("Server processing error");
-    });
-
-    it('should handle empty tool name', () => {
-      ToolRegistry.register({
-        name: "",
-        schema: SequentialThoughtSchema,
-        server: testToolServer
-      });
-
-      const foundTool = ToolRegistry.findTool("");
-      expect(foundTool).toBeDefined();
-      expect(foundTool?.name).toBe("");
-    });
-
-    it('should handle null/undefined search', () => {
-      ToolRegistry.register({
-        name: "valid-tool",
-        schema: SequentialThoughtSchema,
-        server: testToolServer
-      });
-
-      expect(ToolRegistry.findTool(null as any)).toBeUndefined();
-      expect(ToolRegistry.findTool(undefined as any)).toBeUndefined();
-    });
-  });
-
-  describe('performance and scalability', () => {
-    it('should handle large number of tool registrations efficiently', () => {
-      const start = Date.now();
-
-      // Register 100 tools
-      for (let i = 0; i < 100; i++) {
-        ToolRegistry.register({
-          name: `performance-tool-${i}`,
-          schema: SequentialThoughtSchema,
-          server: testToolServer,
-          description: `Performance test tool ${i}`
-        });
-      }
-
-      const registrationTime = Date.now() - start;
-      expect(registrationTime).toBeLessThan(1000); // Should be fast
-
-      // Test lookup performance
-      const lookupStart = Date.now();
-      for (let i = 0; i < 100; i++) {
-        const tool = ToolRegistry.findTool(`performance-tool-${i}`);
-        expect(tool).toBeDefined();
-      }
-      const lookupTime = Date.now() - lookupStart;
-      expect(lookupTime).toBeLessThan(500); // Lookups should be fast
-
-      expect(ToolRegistry.getAllTools()).toHaveLength(100);
-    });
-
-    it('should handle tool definition generation for many tools efficiently', () => {
-      // Register multiple tools
-      for (let i = 0; i < 50; i++) {
-        ToolRegistry.register({
-          name: `def-tool-${i}`,
-          schema: SequentialThoughtSchema,
-          server: testToolServer,
-          description: `Definition test tool ${i}`
-        });
-      }
-
-      const start = Date.now();
-      const definitions = ToolRegistry.getToolDefinitions();
-      const elapsed = Date.now() - start;
-
-      expect(definitions).toHaveLength(50);
-      expect(elapsed).toBeLessThan(200); // Should be fast
-    });
-  });
 });

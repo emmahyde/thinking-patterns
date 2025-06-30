@@ -38,15 +38,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+server.setRequestHandler(CallToolRequestSchema, (request) => {
   try {
     // Use the registry for all tool processing
-    const result = await processToolRequest(request.params.name, request.params.arguments);
+    const result = processToolRequest(request.params.name, request.params.arguments);
     return result;
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     throw new McpError(
       ErrorCode.MethodNotFound,
-      `Tool '${request.params.name}' not found. Available tools: ${getToolDefinitions().map(t => t.name).join(', ')}`
+      `Tool '${request.params.name}' failed. Reason: ${message}`
     );
   }
 });

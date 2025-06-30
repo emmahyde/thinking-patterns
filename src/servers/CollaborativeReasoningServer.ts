@@ -31,8 +31,8 @@ export class CollaborativeReasoningServer extends BaseToolServer<CollaborativeRe
     }
   }
 
-  protected async handle(validInput: CollaborativeReasoningData): Promise<any> {
-    return await this.process(validInput);
+  protected handle(validInput: CollaborativeReasoningData): any {
+    return this.handleSync(validInput);
   }
 
   /**

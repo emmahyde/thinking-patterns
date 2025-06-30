@@ -267,10 +267,11 @@ Produces:
 
 ## Testing Strategy
 
-- Unit tests for each server
-- Schema validation tests
-- Integration tests for MCP protocol
-- Test utilities in `tests/helpers/`
+- Unit tests for each server class
+- Schema validation tests with Zod
+- Integration tests for MCP protocol compatibility
+- End-to-end testing via test utilities
+- Continuous integration with automated testing
 
 ## Deployment Architecture
 

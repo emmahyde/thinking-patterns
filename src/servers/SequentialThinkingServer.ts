@@ -1,5 +1,5 @@
 import { BaseToolServer } from '../base/BaseToolServer.js';
-import { SequentialThoughtSchema, SequentialThoughtData } from '../schemas/index.js';
+import { SequentialThoughtSchema, SequentialThoughtData, SequentialThoughtResponseSchema, SequentialThoughtResponseData } from '../schemas/index.js';
 import { boxed } from '../utils/index.js';
 import { SessionManager, SequentialThinkingSessionData } from '../services/SessionManager.js';
 import { RedisStorageAdapter } from '../services/RedisStorageAdapter.js';
@@ -31,8 +31,36 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtDa
     }
   }
 
-  protected async handle(validInput: SequentialThoughtData): Promise<any> {
-    return await this.process(validInput);
+  protected handle(validInput: SequentialThoughtData): SequentialThoughtResponseData {
+    // For simplicity, return synchronous result without session persistence
+    const result = {
+      thoughtNumber: validInput.thoughtNumber,
+      totalThoughts: validInput.totalThoughts,
+      nextThoughtNeeded: validInput.nextThoughtNeeded,
+      thought: validInput.thought,
+      isRevision: validInput.isRevision || false,
+      revisesThought: validInput.revisesThought,
+      branchFromThought: validInput.branchFromThought,
+      branchId: validInput.branchId,
+      needsMoreThoughts: validInput.needsMoreThoughts,
+      currentStep: validInput.currentStep,
+      previousSteps: validInput.previousSteps,
+      remainingSteps: validInput.remainingSteps,
+      toolUsageHistory: validInput.toolUsageHistory,
+      status: 'success',
+      hasCurrentStep: !!validInput.currentStep,
+      hasPreviousSteps: !!validInput.previousSteps && validInput.previousSteps.length > 0,
+      hasRemainingSteps: !!validInput.remainingSteps && validInput.remainingSteps.length > 0,
+      hasToolUsageHistory: !!validInput.toolUsageHistory && validInput.toolUsageHistory.length > 0,
+      stage: this.determineStage(validInput.thoughtNumber, validInput.totalThoughts),
+      timestamp: new Date().toISOString(),
+      sessionId: validInput.sessionId || `sync_session_${Date.now()}`,
+      sessionPersisted: false
+    };
+
+    const response = SequentialThoughtResponseSchema.parse(result);
+
+    return response;
   }
 
   /**

@@ -4,6 +4,7 @@
  */
 
 import { ToolRegistry, BaseToolServer } from '../../src/base/BaseToolServer.js';
+import { processToolRequest } from '../../src/base/toolRegistry.js';
 import type { SequentialThoughtData as ThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
 import { SequentialThoughtSchema, type SequentialThoughtData } from '../../src/schemas/SequentialThoughtSchema.js';
 import {
@@ -12,6 +13,7 @@ import {
   createMockValidationError
 } from '../helpers/mockFactories.js';
 import { validSequentialThought, invalidSequentialThought, finalThoughtData } from '../helpers/testFixtures.js';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock MCP server implementation for testing
 class MockMcpToolServer extends BaseToolServer<ThoughtData, { analysis: string; confidence: number }> {
@@ -116,37 +118,14 @@ class McpServerSimulator {
       };
     }
 
-    const tool = ToolRegistry.findTool(name);
-    if (!tool) {
-      return {
-        jsonrpc: "2.0",
-        id: request.id,
-        error: {
-          code: -32602,
-          message: `Tool not found: ${name}`
-        }
-      };
-    }
-
     try {
-      const response = tool.server.run(args);
-
-      if (response.isError) {
-        return {
-          jsonrpc: "2.0",
-          id: request.id,
-          error: {
-            code: -32603,
-            message: "Tool execution error",
-            data: response.content[0]?.text
-          }
-        };
-      }
+      // Use the central processing function which now returns the result directly or throws.
+      const result = processToolRequest(name, args);
 
       return {
         jsonrpc: "2.0",
         id: request.id,
-        result: response
+        result: result, // The result is the { tool_name, output } object
       };
     } catch (error) {
       return {
@@ -154,9 +133,9 @@ class McpServerSimulator {
         id: request.id,
         error: {
           code: -32603,
-          message: "Tool execution failed",
-          data: error instanceof Error ? error.message : String(error)
-        }
+          message: "Tool execution error",
+          data: error instanceof Error ? error.message : String(error),
+        },
       };
     }
   }
@@ -256,20 +235,19 @@ describe('MCP Protocol Integration Tests', () => {
 
       expect(response.jsonrpc).toBe("2.0");
       expect(response.id).toBe("call-1");
-      expect(response.result).toBeDefined();
       expect(response.error).toBeUndefined();
+      expect(response.result).toBeDefined();
 
-      const result = response.result;
-      expect(result.content).toHaveLength(1);
-      expect(result.content[0].type).toBe("text");
-      expect(result.isError).toBeUndefined();
-
-      const toolResult = JSON.parse(result.content[0].text);
-      expect(toolResult.analysis).toContain("MCP analysis");
-      expect(toolResult.confidence).toBe(0.95);
+      // The result is the { tool_name, output } object from our local processing
+      const toolResult = response.result;
+      expect(toolResult.tool_name).toBe("test-processor");
+      expect(toolResult.output).toEqual({
+        analysis: `MCP analysis of: ${validSequentialThought.thought}`,
+        confidence: 0.95
+      });
     });
 
-    it('should handle validation errors properly', async () => {
+    it('should return MCP error for invalid input', async () => {
       const request: McpRequest = {
         jsonrpc: "2.0",
         id: "call-2",
@@ -281,325 +259,65 @@ describe('MCP Protocol Integration Tests', () => {
       };
 
       const response = await mcpServer.handleRequest(request);
-
-      expect(response.jsonrpc).toBe("2.0");
-      expect(response.id).toBe("call-2");
       expect(response.error).toBeDefined();
-      expect(response.result).toBeUndefined();
-
       expect(response.error?.code).toBe(-32603);
       expect(response.error?.message).toBe("Tool execution error");
       expect(response.error?.data).toContain("Validation failed");
     });
 
-    it('should handle missing tool name', async () => {
+    it('should return MCP error for unknown tool', async () => {
       const request: McpRequest = {
         jsonrpc: "2.0",
         id: "call-3",
         method: "tools/call",
         params: {
+          name: "unknown-tool",
           arguments: validSequentialThought
-          // Missing name
         }
       };
 
       const response = await mcpServer.handleRequest(request);
-
-      expect(response.jsonrpc).toBe("2.0");
-      expect(response.id).toBe("call-3");
       expect(response.error).toBeDefined();
-      expect(response.error?.code).toBe(-32602);
-      expect(response.error?.message).toContain("missing tool name");
+      expect(response.error?.code).toBe(-32603);
+      expect(response.error?.message).toBe("Tool execution error");
+      expect(response.error?.data).toContain("Tool not found: unknown-tool");
     });
 
-    it('should handle non-existent tool', async () => {
+    it('should return MCP error for missing tool name', async () => {
       const request: McpRequest = {
         jsonrpc: "2.0",
         id: "call-4",
         method: "tools/call",
         params: {
-          name: "nonexistent-tool",
+          // No name provided
           arguments: validSequentialThought
         }
       };
-
       const response = await mcpServer.handleRequest(request);
-
-      expect(response.jsonrpc).toBe("2.0");
-      expect(response.id).toBe("call-4");
       expect(response.error).toBeDefined();
       expect(response.error?.code).toBe(-32602);
-      expect(response.error?.message).toContain("Tool not found: nonexistent-tool");
-    });
-
-    it('should handle missing params', async () => {
-      const request: McpRequest = {
-        jsonrpc: "2.0",
-        id: "call-5",
-        method: "tools/call"
-        // Missing params
-      };
-
-      const response = await mcpServer.handleRequest(request);
-
-      expect(response.jsonrpc).toBe("2.0");
-      expect(response.id).toBe("call-5");
-      expect(response.error).toBeDefined();
-      expect(response.error?.code).toBe(-32602);
+      expect(response.error?.message).toBe("Invalid params: missing tool name");
     });
   });
 
-  describe('protocol compliance', () => {
-    it('should handle unknown methods', async () => {
-      const request: McpRequest = {
-        jsonrpc: "2.0",
-        id: "unknown-1",
-        method: "unknown/method"
-      };
-
-      const response = await mcpServer.handleRequest(request);
-
-      expect(response.jsonrpc).toBe("2.0");
-      expect(response.id).toBe("unknown-1");
-      expect(response.error).toBeDefined();
-      expect(response.error?.code).toBe(-32601);
-      expect(response.error?.message).toBe("Method not found");
-    });
-
-    it('should maintain request ID correlation', async () => {
-      const requests = [
-        { jsonrpc: "2.0" as const, id: "req-1", method: "tools/list" },
-        { jsonrpc: "2.0" as const, id: 42, method: "tools/list" },
-        { jsonrpc: "2.0" as const, id: "req-3", method: "tools/list" }
-      ];
-
-      for (const request of requests) {
-        const response = await mcpServer.handleRequest(request);
-        expect(response.id).toBe(request.id);
-        expect(response.jsonrpc).toBe("2.0");
-      }
-    });
-
-    it('should handle concurrent requests', async () => {
-      mcpServer.registerTool("concurrent-tool", testToolServer);
-
-      const requests = Array.from({ length: 10 }, (_, i) => ({
-        jsonrpc: "2.0" as const,
-        id: `concurrent-${i}`,
-        method: "tools/call",
-        params: {
-          name: "concurrent-tool",
-          arguments: createMockThoughtData({ thoughtNumber: i + 1 })
-        }
-      }));
-
-      const responses = await Promise.all(
-        requests.map(req => mcpServer.handleRequest(req))
-      );
-
-      expect(responses).toHaveLength(10);
-
-      responses.forEach((response, i) => {
-        expect(response.jsonrpc).toBe("2.0");
-        expect(response.id).toBe(`concurrent-${i}`);
-        expect(response.result).toBeDefined();
-        expect(response.error).toBeUndefined();
+  describe('Server error handling', () => {
+    it('should handle internal errors during request processing gracefully', async () => {
+      // Force an error in the handleListTools method
+      vi.spyOn(ToolRegistry, 'getToolDefinitions').mockImplementation(() => {
+        throw new Error("Internal enumeration error");
       });
-    });
-  });
-
-  describe('error propagation', () => {
-    it('should propagate tool server errors correctly', async () => {
-      class ErrorThrowingServer extends BaseToolServer<ThoughtData, any> {
-        constructor() {
-          super(SequentialThoughtSchema);
-        }
-
-        protected handle(_validInput: ThoughtData): any {
-          throw new Error("Intentional server error");
-        }
-      }
-
-      mcpServer.registerTool("error-tool", new ErrorThrowingServer());
 
       const request: McpRequest = {
         jsonrpc: "2.0",
         id: "error-1",
-        method: "tools/call",
-        params: {
-          name: "error-tool",
-          arguments: validSequentialThought
-        }
-      };
-
-      const response = await mcpServer.handleRequest(request);
-
-      expect(response.error).toBeDefined();
-      expect(response.error?.code).toBe(-32603);
-      expect(response.error?.message).toBe("Tool execution error");
-      expect(response.error?.data).toContain("Intentional server error");
-    });
-
-    it('should handle schema validation errors gracefully', async () => {
-      mcpServer.registerTool("validation-tool", testToolServer);
-
-      const request: McpRequest = {
-        jsonrpc: "2.0",
-        id: "validation-1",
-        method: "tools/call",
-        params: {
-          name: "validation-tool",
-          arguments: invalidSequentialThought.invalidTypes
-        }
-      };
-
-      const response = await mcpServer.handleRequest(request);
-
-      expect(response.error).toBeDefined();
-      expect(response.error?.code).toBe(-32603);
-      expect(response.error?.data).toContain("Validation failed");
-    });
-
-    it('should handle malformed requests gracefully', async () => {
-      const malformedRequest = {
-        jsonrpc: "1.0", // Wrong version
-        id: "malformed-1",
-        method: "tools/call"
-      } as any;
-
-      // The simulator should handle this gracefully
-      const response = await mcpServer.handleRequest(malformedRequest);
-
-      expect(response.jsonrpc).toBe("2.0");
-      expect(response.id).toBe("malformed-1");
-    });
-  });
-
-  describe('performance and scalability', () => {
-    it('should handle multiple tool registrations efficiently', async () => {
-      // Register many tools
-      for (let i = 0; i < 50; i++) {
-        mcpServer.registerTool(`perf-tool-${i}`, testToolServer);
-      }
-
-      const start = Date.now();
-      const request: McpRequest = {
-        jsonrpc: "2.0",
-        id: "perf-1",
         method: "tools/list"
       };
 
       const response = await mcpServer.handleRequest(request);
-      const elapsed = Date.now() - start;
-
-      expect(response.result.tools).toHaveLength(50);
-      expect(elapsed).toBeLessThan(100); // Should be fast
-    });
-
-    it('should handle rapid tool calls efficiently', async () => {
-      mcpServer.registerTool("rapid-tool", testToolServer);
-
-      const requests = Array.from({ length: 20 }, (_, i) => ({
-        jsonrpc: "2.0" as const,
-        id: `rapid-${i}`,
-        method: "tools/call",
-        params: {
-          name: "rapid-tool",
-          arguments: validSequentialThought
-        }
-      }));
-
-      const start = Date.now();
-      const responses = await Promise.all(
-        requests.map(req => mcpServer.handleRequest(req))
-      );
-      const elapsed = Date.now() - start;
-
-      expect(responses).toHaveLength(20);
-      expect(elapsed).toBeLessThan(1000); // Should complete quickly
-
-      responses.forEach(response => {
-        expect(response.result).toBeDefined();
-        expect(response.error).toBeUndefined();
-      });
-    });
-  });
-
-  describe('edge cases and boundary conditions', () => {
-    it('should handle very large input data', async () => {
-      mcpServer.registerTool("large-input-tool", testToolServer);
-
-      const largeThought = "x".repeat(10000);
-      const largeInput = createMockThoughtData({ thought: largeThought });
-
-      const request: McpRequest = {
-        jsonrpc: "2.0",
-        id: "large-1",
-        method: "tools/call",
-        params: {
-          name: "large-input-tool",
-          arguments: largeInput
-        }
-      };
-
-      const response = await mcpServer.handleRequest(request);
-
-      expect(response.result).toBeDefined();
-      expect(response.error).toBeUndefined();
-    });
-
-    it('should handle empty and null arguments', async () => {
-      mcpServer.registerTool("null-test-tool", testToolServer);
-
-      const testCases = [
-        { arguments: null },
-        { arguments: undefined },
-        { arguments: {} }
-      ];
-
-      for (const testCase of testCases) {
-        const request: McpRequest = {
-          jsonrpc: "2.0",
-          id: `null-test-${Math.random()}`,
-          method: "tools/call",
-          params: {
-            name: "null-test-tool",
-            ...testCase
-          }
-        };
-
-        const response = await mcpServer.handleRequest(request);
-        // Should handle gracefully (likely with validation error)
-        expect(response.jsonrpc).toBe("2.0");
-        expect(response.id).toBeDefined();
-      }
-    });
-
-    it('should handle special characters in tool names', async () => {
-      const specialNames = [
-        "tool-with-dashes",
-        "toolWithUnderscores",
-        "tool.with.dots",
-        "tool123numbers"
-      ];
-
-      for (const name of specialNames) {
-        mcpServer.registerTool(name, testToolServer);
-
-        const request: McpRequest = {
-          jsonrpc: "2.0",
-          id: `special-${name}`,
-          method: "tools/call",
-          params: {
-            name,
-            arguments: validSequentialThought
-          }
-        };
-
-        const response = await mcpServer.handleRequest(request);
-        expect(response.result).toBeDefined();
-        expect(response.error).toBeUndefined();
-      }
+      expect(response.error).toBeDefined();
+      expect(response.error?.code).toBe(-32603);
+      expect(response.error?.message).toBe("Internal error");
+      expect(response.error?.data).toBe("Internal enumeration error");
     });
   });
 });

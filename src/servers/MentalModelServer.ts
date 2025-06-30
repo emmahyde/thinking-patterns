@@ -58,10 +58,13 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
   public processModel(input: unknown): { content: Array<{ type: string; text: string }>; data?: any; isError?: boolean } {
     try {
       const validatedInput = this.validate(input);
-      const response = this.run(input);
+      const result = this.handle(validatedInput);
 
       return {
-        ...response,
+        content: [{
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }],
         data: validatedInput  // Add the validated input data for test compatibility
       };
     } catch (error) {

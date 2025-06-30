@@ -3,7 +3,7 @@ import { ToolRecommendationSchema, ToolUsageHistorySchema } from './ToolSchemas.
 
 /**
  * Sequential Thought Schema
- * 
+ *
  * Defines the structure for step-by-step sequential thinking and problem-solving.
  * Includes tool recommendations, step tracking, complexity assessment,
  * and adaptive reasoning processes for systematic analysis.
@@ -42,7 +42,17 @@ export const SequentialThoughtSchema = z.object({
   sessionId: z.string().optional().describe("Optional session identifier for maintaining state across multiple thoughts."),
 });
 
+export const SequentialThoughtResponseSchema = z.object({
+  thoughtNumber: z.number().int().positive().describe("The sequential number of the current thought in the series."),
+  totalThoughts: z.number().int().positive().describe("The total number of thoughts planned for this problem-solving session."),
+  nextThoughtNeeded: z.boolean().describe("A flag indicating whether another thought is required to continue the process."),
+  previousSteps: z.array(StepRecommendationSchema).optional().describe("A record of the steps that have already been completed."),
+  toolUsageHistory: z.array(ToolUsageHistorySchema).optional().describe("A log of the tools that have been used so far, along with their effectiveness."),
+  sessionId: z.string().optional().describe("Optional session identifier for maintaining state across multiple thoughts."),
+});
+
 // Type inference for TypeScript
 export type StepRecommendationData = z.infer<typeof StepRecommendationSchema>;
 export type CurrentStepData = z.infer<typeof CurrentStepSchema>;
 export type SequentialThoughtData = z.infer<typeof SequentialThoughtSchema>;
+export type SequentialThoughtResponseData = z.infer<typeof SequentialThoughtResponseSchema>;

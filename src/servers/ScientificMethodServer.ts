@@ -31,8 +31,8 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
     }
   }
 
-  protected async handle(validInput: ScientificMethodData): Promise<any> {
-    return await this.process(validInput);
+  protected handle(validInput: ScientificMethodData): any {
+    return this.handleSync(validInput);
   }
 
   /**
@@ -185,10 +185,13 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
   public processScientificMethod(input: unknown): { content: Array<{ type: string; text: string }>; data?: any; isError?: boolean } {
     try {
       const validatedInput = this.validate(input);
-      const response = this.run(input);
+      const result = this.handle(validatedInput);
 
       return {
-        ...response,
+        content: [{
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }],
         data: validatedInput  // Add the validated input data for test compatibility
       };
     } catch (error) {

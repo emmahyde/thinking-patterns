@@ -11,14 +11,6 @@ export interface ToolRegistryEntry<TIn = unknown, TOut = unknown> {
 }
 
 /**
- * Standard MCP response envelope
- */
-export interface MCPResponse {
-  content: Array<{ type: string; text: string }>;
-  isError?: boolean;
-}
-
-/**
  * Convert Zod schema to JSON schema for MCP tool definitions
  */
 function zodToJsonSchema(zodSchema: z.ZodSchema): Record<string, unknown> {
@@ -239,34 +231,26 @@ export abstract class BaseToolServer<TIn, TOut> {
    * Main entry point that wraps validation, processing, and error handling
    * Provides standardized {content, isError} envelope response
    * @param rawInput - Raw input data from MCP request
-   * @returns Standardized MCP response
+   * @returns Standardized response with content array and optional error flag
    */
-  public run(rawInput: unknown): MCPResponse {
+  public run(rawInput: unknown): { content: Array<{ type: string; text: string }>; isError?: boolean; data?: any } {
     try {
       // Validate input using schema
       const validatedInput = this.validate(rawInput);
 
-      // Process with concrete implementation (use sync version if available)
-      const result = (this as any).handleSync ? (this as any).handleSync(validatedInput) : this.handle(validatedInput);
+      // Process with concrete implementation
+      const result = this.handle(validatedInput);
 
-      // Format successful response
+      // Return standardized success response
       return {
-        content: [{
-          type: "text",
-          text: JSON.stringify(result, null, 2)
-        }]
+        content: this.formatResponse(result),
+        data: result
       };
+
     } catch (error) {
-      // Format error response
+      // Return standardized error response instead of throwing
       return {
-        content: [{
-          type: "text",
-          text: JSON.stringify({
-            error: error instanceof Error ? error.message : String(error),
-            status: 'failed',
-            timestamp: new Date().toISOString()
-          }, null, 2)
-        }],
+        content: this.formatError(error instanceof Error ? error : new Error(String(error))),
         isError: true
       };
     }
@@ -280,7 +264,7 @@ export abstract class BaseToolServer<TIn, TOut> {
   protected formatResponse(result: TOut): Array<{ type: string; text: string }> {
     return [{
       type: "text",
-      text: JSON.stringify(result, null, 2)
+      text: JSON.stringify(result)
     }];
   }
 
@@ -296,7 +280,7 @@ export abstract class BaseToolServer<TIn, TOut> {
         error: error.message,
         status: 'failed',
         timestamp: new Date().toISOString()
-      }, null, 2)
+      })
     }];
   }
 }
@@ -312,6 +296,24 @@ export class ToolRegistry {
    * @param entry - Tool registry entry
    */
   static register<TIn, TOut>(entry: ToolRegistryEntry<TIn, TOut>): void {
+    // Validate required fields
+    if (!entry.name || typeof entry.name !== 'string') {
+      throw new Error('Tool name must be a non-empty string');
+    }
+
+    if (!entry.server) {
+      throw new Error('Tool server must be provided');
+    }
+
+    if (!entry.schema) {
+      throw new Error('Tool schema must be provided');
+    }
+
+    // Check for duplicate names
+    if (this.tools.find(tool => tool.name === entry.name)) {
+      throw new Error(`Tool with name '${entry.name}' is already registered`);
+    }
+
     this.tools.push(entry as ToolRegistryEntry);
   }
 

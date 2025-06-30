@@ -7,6 +7,7 @@ export default defineConfig({
     setupFiles: ['./tests/helpers/testSetup.ts'],
     include: ['tests/**/*.test.ts'],
     exclude: ['node_modules', 'dist'],
+    disableConsoleIntercept: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -27,4 +28,4 @@ export default defineConfig({
       '@': new URL('./src', import.meta.url).pathname
     }
   }
-}); 
+});

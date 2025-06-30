@@ -173,25 +173,35 @@ export function getToolDefinitions(): Array<{
 /**
  * Process tool request using registry
  */
-export function processToolRequest(toolName: string, arguments_: unknown): {
-  content: Array<{ type: string; text: string }>;
-  isError?: boolean;
-} {
+export function processToolRequest(toolName: string, arguments_: unknown): { tool_name: string, output: any } {
   const tool = ToolRegistry.findTool(toolName);
 
   if (!tool) {
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify({
-          error: `Unknown tool: ${toolName}`,
-          status: 'failed',
-          timestamp: new Date().toISOString()
-        }, null, 2)
-      }],
-      isError: true
-    };
+    // The handler in index.ts will catch this and convert it to a proper McpError
+    throw new Error(`Tool not found: ${toolName}`);
   }
 
-  return tool.server.run(arguments_);
+  // The 'run' method in BaseToolServer handles validation and returns standardized format
+  const standardizedResult = tool.server.run(arguments_);
+
+  // Check if this is an error response and throw if so
+  if (standardizedResult.isError) {
+    // Extract error message from content
+    const errorText = standardizedResult.content[0]?.text;
+    if (errorText) {
+      try {
+        const errorData = JSON.parse(errorText);
+        throw new Error(errorData.error || errorText);
+      } catch {
+        throw new Error(errorText);
+      }
+    }
+    throw new Error('Unknown error occurred');
+  }
+
+  // Return the unwrapped data in the expected MCP format
+  return {
+    tool_name: toolName,
+    output: standardizedResult.data
+  };
 }
