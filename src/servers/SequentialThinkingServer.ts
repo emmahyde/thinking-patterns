@@ -11,7 +11,7 @@ import { Redis } from 'ioredis';
  * Includes Redis session management for persistent state across interactions
  */
 export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtData, any> {
-  private sessionManager: SessionManager | null = null;
+  public sessionManager: SessionManager | null = null;
 
   constructor() {
     super(SequentialThoughtSchema);
@@ -44,7 +44,7 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtDa
     // Handle session management if available
     let sessionData: SequentialThinkingSessionData | null = null;
     let sessionId: string | undefined;
-    
+
     // Extract or generate session ID
     if (validInput.sessionId) {
       sessionId = validInput.sessionId;
@@ -60,18 +60,18 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtDa
       try {
         // Try to get existing session
         sessionData = await this.sessionManager.getSequentialThinkingSession(sessionId);
-        
+
         if (!sessionData && validInput.thoughtNumber === 1) {
           // Create new session for first thought
           await this.sessionManager.createSession(sessionId, 'sequential_thinking');
           sessionData = await this.sessionManager.getSequentialThinkingSession(sessionId);
         }
-        
+
         if (sessionData) {
           // Update session with current thought
           sessionData.thoughtHistory.push(validInput);
           sessionData.currentThought = validInput;
-          
+
           // Handle branching
           if (validInput.branchId && validInput.branchFromThought) {
             if (!sessionData.branches[validInput.branchId]) {
@@ -79,7 +79,7 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtDa
             }
             sessionData.branches[validInput.branchId].push(validInput);
           }
-          
+
           // Save updated session
           await this.sessionManager.updateSequentialThinkingSession(sessionId, sessionData);
         }

@@ -11,7 +11,7 @@ import { Redis } from 'ioredis';
  * Includes Redis session management for persistent scientific inquiries
  */
 export class ScientificMethodServer extends BaseToolServer<ScientificMethodData, any> {
-  private sessionManager: SessionManager | null = null;
+  public sessionManager: SessionManager | null = null;
 
   constructor() {
     super(ScientificMethodSchema);
@@ -78,17 +78,17 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
       try {
         // Try to get existing session
         sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
-        
+
         if (!sessionData) {
           // Create new session
           await this.sessionManager.createSession(inquiryId, 'scientific_method');
           sessionData = await this.sessionManager.getScientificMethodSession(inquiryId);
         }
-        
+
         if (sessionData) {
           // Update session with current data
           sessionData.inquiryData = validInput;
-          
+
           // Add to stage history
           sessionData.stageHistory.push({
             stage: validInput.stage,
@@ -101,7 +101,7 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
               conclusion: validInput.conclusion
             }
           });
-          
+
           // Track hypothesis evolution
           if (validInput.hypothesis) {
             const existingHypothesis = sessionData.hypothesesHistory.find(
@@ -116,7 +116,7 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
               });
             }
           }
-          
+
           // Save updated session
           await this.sessionManager.updateScientificMethodSession(inquiryId, sessionData);
         }

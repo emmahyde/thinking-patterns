@@ -11,7 +11,7 @@ import { Redis } from 'ioredis';
  * Includes Redis session management for persistent domain modeling sessions
  */
 export class DomainModelingServer extends BaseToolServer<DomainModelingData, any> {
-  private sessionManager: SessionManager | null = null;
+  public sessionManager: SessionManager | null = null;
 
   constructor() {
     super(DomainModelingSchema);
@@ -49,17 +49,17 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
       try {
         // Try to get existing session
         sessionData = await this.sessionManager.getDomainModelingSession(modelingId);
-        
+
         if (!sessionData) {
           // Create new session
           await this.sessionManager.createSession(modelingId, 'domain_modeling');
           sessionData = await this.sessionManager.getDomainModelingSession(modelingId);
         }
-        
+
         if (sessionData) {
           // Update session with current data
           sessionData.modelData = validInput;
-          
+
           // Add to iteration history if this is a new iteration
           const existingIteration = sessionData.iterationHistory.find(
             i => i.iteration === validInput.iteration && i.stage === validInput.stage
@@ -77,7 +77,7 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
               changes: this.detectChanges(sessionData.modelData, validInput)
             });
           }
-          
+
           // Add validation results if present
           if (validInput.modelValidation) {
             sessionData.validationResults.push({
@@ -87,7 +87,7 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
               stage: validInput.stage
             });
           }
-          
+
           // Save updated session
           await this.sessionManager.updateDomainModelingSession(modelingId, sessionData);
         }
@@ -121,30 +121,30 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
 
       // Calculate model health
       let modelHealth = 0;
-      
+
       // Base score for having entities (higher base score)
       modelHealth += entityCount * 2;
-      
+
       // Bonus for entities with good attribute count (>3)
       const wellDefinedEntities = validInput.entities.filter((entity: any) => entity.attributes.length > 3).length;
       modelHealth += wellDefinedEntities * 1.5;
-      
+
       // Bonus for relationships
       modelHealth += relationshipCount * 1.5;
-      
+
       // Bonus for domain rules
       modelHealth += domainRuleCount * 2;
-      
+
       // Bonus for boundaries
       if (validInput.boundaries) {
         modelHealth += 2;
       }
-      
+
       // Bonus for validation scores
       if (validInput.modelValidation) {
         const avgValidationScore = (
-          validInput.modelValidation.completeness + 
-          validInput.modelValidation.consistency + 
+          validInput.modelValidation.completeness +
+          validInput.modelValidation.consistency +
           validInput.modelValidation.correctness
         ) / 3;
         modelHealth += avgValidationScore * 5; // Higher validation bonus
@@ -244,7 +244,7 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
     if (axioms.length > 0) {
       sections['Axioms (Core Truths)'] = axioms.map(rule => `• ${rule.name}: ${rule.description}`);
     }
-    
+
     if (businessRules.length > 0) {
       sections['Business Rules'] = businessRules.map(rule => `• ${rule.name}: IF ${rule.condition} THEN ${rule.consequence}`);
     }
@@ -372,7 +372,7 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
       if (sessionData) {
         const iterations = sessionData.iterationHistory;
         const validations = sessionData.validationResults;
-        
+
         return {
           modelingId,
           totalIterations: iterations.length,
@@ -423,4 +423,4 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
       return false;
     }
   }
-} 
+}

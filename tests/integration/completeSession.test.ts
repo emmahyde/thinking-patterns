@@ -1,6 +1,6 @@
 /**
  * Complete Session Management Integration Test
- * 
+ *
  * Tests the full Redis session implementation across all cognitive tools
  * including CLI utilities, session-aware tool registry, and data persistence.
  */
@@ -20,7 +20,7 @@ describe('Complete Session Management Integration', () => {
   let redis: Redis;
   let redisAdapter: RedisStorageAdapter;
   let sessionManager: SessionManager;
-  
+
   // Tool servers
   let sequentialServer: SequentialThinkingServer;
   let collabServer: CollaborativeReasoningServer;
@@ -33,21 +33,21 @@ describe('Complete Session Management Integration', () => {
     redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
     redisAdapter = new RedisStorageAdapter(redis);
     sessionManager = new SessionManager(redisAdapter);
-    
+
     // Initialize tool servers
     sequentialServer = new SequentialThinkingServer();
     collabServer = new CollaborativeReasoningServer();
     scientificServer = new ScientificMethodServer();
     domainServer = new DomainModelingServer();
     problemServer = new ProblemDecompositionServer();
-    
+
     // Register tools with session registry
     sessionAwareToolRegistry.registerTool('sequential_thinking', sequentialServer);
     sessionAwareToolRegistry.registerTool('collaborative_reasoning', collabServer);
     sessionAwareToolRegistry.registerTool('scientific_method', scientificServer);
     sessionAwareToolRegistry.registerTool('domain_modeling', domainServer);
     sessionAwareToolRegistry.registerTool('problem_decomposition', problemServer);
-    
+
     // Clear any existing test data
     await redis.flushdb();
   });
@@ -61,12 +61,12 @@ describe('Complete Session Management Integration', () => {
     it('should detect session capabilities for all tools', () => {
       const tools = [
         'sequential_thinking',
-        'collaborative_reasoning', 
+        'collaborative_reasoning',
         'scientific_method',
         'domain_modeling',
         'problem_decomposition'
       ];
-      
+
       for (const tool of tools) {
         expect(sessionAwareToolRegistry.isSessionCapable(tool)).toBe(true);
       }
@@ -102,7 +102,7 @@ describe('Complete Session Management Integration', () => {
 
       for (const testCase of testCases) {
         const detection = sessionAwareToolRegistry.detectSession(testCase.tool, testCase.input);
-        
+
         expect(detection.hasSessionId).toBe(true);
         expect(detection.sessionIdField).toBe(testCase.expectedField);
         expect(detection.sessionIdValue).toBe(testCase.expectedValue);
@@ -113,7 +113,7 @@ describe('Complete Session Management Integration', () => {
     it('should auto-generate session IDs when needed', () => {
       const sessionId = sessionAwareToolRegistry.generateSessionId('sequential_thinking');
       expect(sessionId).toMatch(/^sequential-thinking-\d+-[a-z0-9]+$/);
-      
+
       const sessionIdWithInput = sessionAwareToolRegistry.generateSessionId('scientific_method', {
         observation: 'test data'
       });
@@ -128,16 +128,16 @@ describe('Complete Session Management Integration', () => {
       await sessionManager.createSession('test-session-1', 'sequential_thinking');
       await sessionManager.createSession('test-session-2', 'collaborative_reasoning');
       await sessionManager.createSession('test-session-3', 'scientific_method');
-      
+
       // Verify each session has correct tool type
       const seq = await sessionManager.getSequentialThinkingSession('test-session-1');
       const collab = await sessionManager.getCollaborativeReasoningSession('test-session-2');
       const sci = await sessionManager.getScientificMethodSession('test-session-3');
-      
+
       expect(seq?.toolType).toBe('sequential_thinking');
       expect(collab?.toolType).toBe('collaborative_reasoning');
       expect(sci?.toolType).toBe('scientific_method');
-      
+
       // Verify cross-contamination doesn't occur
       expect(await sessionManager.getSequentialThinkingSession('test-session-2')).toBeNull();
       expect(await sessionManager.getCollaborativeReasoningSession('test-session-3')).toBeNull();
@@ -146,7 +146,7 @@ describe('Complete Session Management Integration', () => {
 
     it('should persist sequential thinking sessions with Redis', async () => {
       const sessionId = 'seq-test-123';
-      
+
       // Process sequential thinking with session
       const result = await sequentialServer.process({
         sessionId,
@@ -155,11 +155,11 @@ describe('Complete Session Management Integration', () => {
         totalThoughts: 3,
         nextThoughtNeeded: true
       });
-      
+
       expect(result.status).toBe('success');
       expect(result.sessionContext).toBeDefined();
       expect(result.sessionContext.thoughtCount).toBe(1);
-      
+
       // Add another thought
       await sequentialServer.process({
         sessionId,
@@ -168,7 +168,7 @@ describe('Complete Session Management Integration', () => {
         totalThoughts: 3,
         nextThoughtNeeded: true
       });
-      
+
       // Verify session persistence
       const sessionData = await sessionManager.getSequentialThinkingSession(sessionId);
       expect(sessionData?.thoughtHistory).toHaveLength(2);
@@ -177,7 +177,7 @@ describe('Complete Session Management Integration', () => {
 
     it('should persist problem decomposition sessions with revision tracking', async () => {
       const decompositionId = 'prob-test-456';
-      
+
       // Initial decomposition
       const initialResult = await problemServer.process({
         decompositionId,
@@ -190,17 +190,17 @@ describe('Complete Session Management Integration', () => {
             progress: { status: 'not-started' as const }
           },
           {
-            id: 'task-2', 
+            id: 'task-2',
             description: 'Design database schema',
             priority: 'medium' as const,
             progress: { status: 'not-started' as const }
           }
         ]
       });
-      
+
       expect(initialResult.status).toBe('success');
       expect(initialResult.taskCount).toBe(2);
-      
+
       // Update decomposition with progress
       await problemServer.process({
         decompositionId,
@@ -214,13 +214,13 @@ describe('Complete Session Management Integration', () => {
           },
           {
             id: 'task-2',
-            description: 'Design database schema', 
+            description: 'Design database schema',
             priority: 'medium' as const,
             progress: { status: 'in-progress' as const }
           }
         ]
       });
-      
+
       // Verify session tracking
       const sessionData = await sessionManager.getProblemDecompositionSession(decompositionId);
       expect(sessionData?.revisionHistory).toHaveLength(1);
@@ -231,7 +231,7 @@ describe('Complete Session Management Integration', () => {
 
     it('should persist scientific method sessions with stage progression', async () => {
       const inquiryId = 'sci-test-789';
-      
+
       // Start scientific inquiry
       const result = await scientificServer.process({
         inquiryId,
@@ -239,15 +239,16 @@ describe('Complete Session Management Integration', () => {
         iteration: 1,
         observation: 'Users are experiencing slow page load times',
         analysis: '',
-        conclusion: ''
+        conclusion: '',
+        nextStageNeeded: true,
       });
-      
+
       expect(result.status).toBe('success');
       expect(result.sessionContext).toBeDefined();
       expect(result.sessionContext.stageCount).toBe(1);
-      
+
       // Progress to hypothesis stage
-      await scientificServer.process({
+      const hypothesisResult = await scientificServer.process({
         inquiryId,
         stage: 'hypothesis',
         iteration: 2,
@@ -269,9 +270,12 @@ describe('Complete Session Management Integration', () => {
           status: 'proposed'
         },
         analysis: '',
-        conclusion: ''
+        conclusion: '',
+        nextStageNeeded: true,
       });
-      
+
+      expect(hypothesisResult.status).toBe('success');
+
       // Verify session tracking
       const sessionData = await sessionManager.getScientificMethodSession(inquiryId);
       expect(sessionData?.stageHistory).toHaveLength(2);
@@ -284,22 +288,22 @@ describe('Complete Session Management Integration', () => {
     it('should handle session cleanup correctly', async () => {
       // Create test sessions
       const sessionIds = ['cleanup-1', 'cleanup-2', 'cleanup-3'];
-      
+
       for (const sessionId of sessionIds) {
         await sessionManager.createSession(sessionId, 'sequential_thinking');
       }
-      
+
       // Verify sessions exist
       for (const sessionId of sessionIds) {
         const session = await sessionManager.getSession(sessionId);
         expect(session).not.toBeNull();
       }
-      
+
       // Clear sessions
       for (const sessionId of sessionIds) {
         await sessionManager.clearSession(sessionId);
       }
-      
+
       // Verify sessions are cleared
       for (const sessionId of sessionIds) {
         const session = await sessionManager.getSession(sessionId);
@@ -310,7 +314,7 @@ describe('Complete Session Management Integration', () => {
     it('should handle session metadata correctly', async () => {
       const sessionId = 'metadata-test';
       await sessionManager.createSession(sessionId, 'domain_modeling');
-      
+
       const metadata = await sessionManager.getSessionMetadata(sessionId);
       expect(metadata).not.toBeNull();
       expect(metadata?.toolType).toBe('domain_modeling');
@@ -319,21 +323,22 @@ describe('Complete Session Management Integration', () => {
     });
 
     it('should handle session TTL correctly', async () => {
-      const shortTTLManager = new SessionManager(redisAdapter, 1); // 1 second TTL
-      const sessionId = 'ttl-test';
-      
+      process.env.SESSION_TTL_SECONDS = '1';
+      const shortTTLManager = new SessionManager(redisAdapter);
+      const sessionId = 'ttl-session';
       await shortTTLManager.createSession(sessionId, 'sequential_thinking');
-      
+
       // Session should exist immediately
       let session = await shortTTLManager.getSession(sessionId);
       expect(session).not.toBeNull();
-      
+
       // Wait for TTL to expire
       await new Promise(resolve => setTimeout(resolve, 1100));
-      
+
       // Session should be expired
       session = await shortTTLManager.getSession(sessionId);
       expect(session).toBeNull();
+      delete process.env.SESSION_TTL_SECONDS;
     });
   });
 
@@ -343,29 +348,25 @@ describe('Complete Session Management Integration', () => {
       const invalidRedis = new Redis('redis://invalid:6379');
       const invalidAdapter = new RedisStorageAdapter(invalidRedis);
       const invalidManager = new SessionManager(invalidAdapter);
-      
+
       // This should not throw, but return null gracefully
       const session = await invalidManager.getSession('test').catch(() => null);
       expect(session).toBeNull();
-      
-      await invalidRedis.quit().catch(() => {});
-    }, 15000);
+
+      await invalidRedis.quit().catch(() => { });
+    }, { timeout: 15000 });
 
     it('should handle malformed session data gracefully', async () => {
       const sessionId = 'malformed-test';
-      
-      // Manually insert malformed data
-      await redis.set(`session:${sessionId}`, 'invalid json data');
-      
-      // Should handle gracefully
-      const session = await sessionManager.getSession(sessionId);
-      expect(session).toBeNull();
+      await redis.set(`session:${sessionId}`, 'this is not valid json');
+
+      await expect(sessionManager.getSession(sessionId)).rejects.toThrow('Failed to get key');
     });
 
     it('should handle concurrent session access', async () => {
-      const sessionId = 'concurrent-test';
+      const sessionId = 'concurrent-session';
       await sessionManager.createSession(sessionId, 'sequential_thinking');
-      
+
       // Add thoughts sequentially to avoid race conditions
       for (let i = 0; i < 3; i++) {
         await sequentialServer.process({
@@ -376,7 +377,7 @@ describe('Complete Session Management Integration', () => {
           nextThoughtNeeded: i < 2
         });
       }
-      
+
       // Final session should have all thoughts
       const finalSession = await sessionManager.getSequentialThinkingSession(sessionId);
       expect(finalSession?.thoughtHistory).toHaveLength(3);
@@ -386,7 +387,7 @@ describe('Complete Session Management Integration', () => {
   describe('Session-Aware Processing', () => {
     it('should automatically create sessions when processing tools', async () => {
       const sessionId = 'auto-create-test';
-      
+
       // Process without pre-creating session
       const detection = await sessionAwareToolRegistry.processWithSessionAwareness(
         'sequential_thinking',
@@ -398,11 +399,11 @@ describe('Complete Session Management Integration', () => {
           nextThoughtNeeded: false
         }
       );
-      
+
       expect(detection.sessionDetection.hasSessionId).toBe(true);
       expect(detection.sessionCreated).toBe(true);
       expect(detection.sessionMetadata).not.toBeNull();
-      
+
       // Verify session was actually created
       const session = await sessionManager.getSequentialThinkingSession(sessionId);
       expect(session).not.toBeNull();
@@ -410,28 +411,28 @@ describe('Complete Session Management Integration', () => {
 
     it('should track session usage across multiple tool invocations', async () => {
       const sessionId = 'usage-tracking-test';
-      
+
       // Multiple tool invocations using the actual server
       await sequentialServer.process({
-        sessionId, 
-        thought: 'First thought', 
-        thoughtNumber: 1, 
-        totalThoughts: 2, 
-        nextThoughtNeeded: true 
+        sessionId,
+        thought: 'First thought',
+        thoughtNumber: 1,
+        totalThoughts: 2,
+        nextThoughtNeeded: true
       });
-      
+
       await sequentialServer.process({
-        sessionId, 
-        thought: 'Second thought', 
-        thoughtNumber: 2, 
-        totalThoughts: 2, 
-        nextThoughtNeeded: false 
+        sessionId,
+        thought: 'Second thought',
+        thoughtNumber: 2,
+        totalThoughts: 2,
+        nextThoughtNeeded: false
       });
-      
+
       // Check session data
       const sessionData = await sessionAwareToolRegistry.getSessionData('sequential_thinking', sessionId);
       expect(sessionData?.thoughtHistory).toHaveLength(2);
-      
+
       // Check session history
       const history = await sessionAwareToolRegistry.getSessionHistory('sequential_thinking', sessionId);
       expect(history).toHaveLength(2);

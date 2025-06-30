@@ -1,6 +1,6 @@
 /**
  * Basic Session Management Integration Test
- * 
+ *
  * Tests core Redis session functionality with simplified scenarios
  */
 
@@ -23,10 +23,10 @@ describe('Basic Session Management', () => {
     redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
     redisAdapter = new RedisStorageAdapter(redis);
     sessionManager = new SessionManager(redisAdapter);
-    
+
     sequentialServer = new SequentialThinkingServer();
     problemServer = new ProblemDecompositionServer();
-    
+
     // Clear test data
     await redis.flushdb();
   });
@@ -39,7 +39,7 @@ describe('Basic Session Management', () => {
   describe('Core Session Operations', () => {
     it('should create and retrieve sessions', async () => {
       await sessionManager.createSession('test-session', 'sequential_thinking');
-      
+
       const session = await sessionManager.getSession('test-session');
       expect(session).not.toBeNull();
       expect(session?.toolType).toBe('sequential_thinking');
@@ -47,29 +47,31 @@ describe('Basic Session Management', () => {
     });
 
     it('should handle session TTL', async () => {
-      const shortTTLManager = new SessionManager(redisAdapter, 1);
+      process.env.SESSION_TTL_SECONDS = '1';
+      const shortTTLManager = new SessionManager(redisAdapter);
       await shortTTLManager.createSession('ttl-test', 'sequential_thinking');
-      
+
       // Should exist immediately
       let session = await shortTTLManager.getSession('ttl-test');
       expect(session).not.toBeNull();
-      
+
       // Wait for expiry
       await new Promise(resolve => setTimeout(resolve, 1100));
-      
+
       // Should be expired
       session = await shortTTLManager.getSession('ttl-test');
       expect(session).toBeNull();
+      delete process.env.SESSION_TTL_SECONDS;
     });
 
     it('should clear sessions', async () => {
       await sessionManager.createSession('clear-test', 'sequential_thinking');
-      
+
       let session = await sessionManager.getSession('clear-test');
       expect(session).not.toBeNull();
-      
+
       await sessionManager.clearSession('clear-test');
-      
+
       session = await sessionManager.getSession('clear-test');
       expect(session).toBeNull();
     });
@@ -87,7 +89,7 @@ describe('Basic Session Management', () => {
         sessionId: 'test-123',
         thought: 'test'
       });
-      
+
       expect(detection.hasSessionId).toBe(true);
       expect(detection.sessionIdValue).toBe('test-123');
       expect(detection.isSessionCapable).toBe(true);
@@ -95,7 +97,7 @@ describe('Basic Session Management', () => {
 
     it('should persist sequential thinking data', async () => {
       const sessionId = 'seq-test';
-      
+
       const result = await sequentialServer.process({
         sessionId,
         thought: 'First thought',
@@ -103,10 +105,10 @@ describe('Basic Session Management', () => {
         totalThoughts: 2,
         nextThoughtNeeded: true
       });
-      
+
       expect(result.status).toBe('success');
       expect(result.sessionId).toBe(sessionId);
-      
+
       // Verify session was created
       const sessionData = await sessionManager.getSequentialThinkingSession(sessionId);
       expect(sessionData).not.toBeNull();
@@ -115,7 +117,7 @@ describe('Basic Session Management', () => {
 
     it('should persist problem decomposition data', async () => {
       const decompositionId = 'prob-test';
-      
+
       const result = await problemServer.process({
         decompositionId,
         problem: 'Test problem',
@@ -127,10 +129,10 @@ describe('Basic Session Management', () => {
           }
         ]
       });
-      
+
       expect(result.status).toBe('success');
       expect(result.taskCount).toBe(1);
-      
+
       // Verify session was created
       const sessionData = await sessionManager.getProblemDecompositionSession(decompositionId);
       expect(sessionData).not.toBeNull();
@@ -142,10 +144,9 @@ describe('Basic Session Management', () => {
     it('should handle malformed session data', async () => {
       // Manually insert bad data
       await redis.set('session:bad-data', 'invalid json');
-      
-      // Should return null gracefully
-      const session = await sessionManager.getSession('bad-data');
-      expect(session).toBeNull();
+
+      // Should throw a StorageError
+      await expect(sessionManager.getSession('bad-data')).rejects.toThrow('Failed to get key');
     });
 
     it('should handle missing sessions gracefully', async () => {
@@ -157,7 +158,7 @@ describe('Basic Session Management', () => {
   describe('Session Metadata', () => {
     it('should provide session metadata', async () => {
       await sessionManager.createSession('meta-test', 'sequential_thinking');
-      
+
       const metadata = await sessionManager.getSessionMetadata('meta-test');
       expect(metadata).not.toBeNull();
       expect(metadata?.toolType).toBe('sequential_thinking');
@@ -166,16 +167,16 @@ describe('Basic Session Management', () => {
 
     it('should update last accessed time', async () => {
       await sessionManager.createSession('access-test', 'sequential_thinking');
-      
+
       const first = await sessionManager.getSession('access-test');
       const firstAccess = first?.lastAccessedAt;
-      
+
       // Small delay
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       const second = await sessionManager.getSession('access-test');
       const secondAccess = second?.lastAccessedAt;
-      
+
       expect(secondAccess?.getTime()).toBeGreaterThan(firstAccess?.getTime() || 0);
     });
   });

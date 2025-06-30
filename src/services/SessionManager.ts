@@ -72,26 +72,26 @@ export interface ISessionManager {
   getSession(sessionId: string): Promise<SessionData | null>;
   clearSession(sessionId: string): Promise<void>;
   updateSession(sessionId: string, updateData: Partial<SessionData>): Promise<void>;
-  
+
   // Sequential thinking specific methods (legacy compatibility)
   addThought(sessionId: string, thought: ThoughtData): Promise<void>;
   addBranch(sessionId: string, branchId: string, thought: ThoughtData): Promise<void>;
   getThoughtHistory(sessionId: string): Promise<ThoughtData[]>;
   getBranches(sessionId: string): Promise<Record<string, ThoughtData[]>>;
-  
+
   // Tool-specific session management
   getSequentialThinkingSession(sessionId: string): Promise<SequentialThinkingSessionData | null>;
   updateSequentialThinkingSession(sessionId: string, data: Partial<SequentialThinkingSessionData>): Promise<void>;
-  
+
   getCollaborativeReasoningSession(sessionId: string): Promise<CollaborativeReasoningSessionData | null>;
   updateCollaborativeReasoningSession(sessionId: string, data: Partial<CollaborativeReasoningSessionData>): Promise<void>;
-  
+
   getScientificMethodSession(sessionId: string): Promise<ScientificMethodSessionData | null>;
   updateScientificMethodSession(sessionId: string, data: Partial<ScientificMethodSessionData>): Promise<void>;
-  
+
   getDomainModelingSession(sessionId: string): Promise<DomainModelingSessionData | null>;
   updateDomainModelingSession(sessionId: string, data: Partial<DomainModelingSessionData>): Promise<void>;
-  
+
   getProblemDecompositionSession(sessionId: string): Promise<ProblemDecompositionSessionData | null>;
   updateProblemDecompositionSession(sessionId: string, data: Partial<ProblemDecompositionSessionData>): Promise<void>;
 }
@@ -104,18 +104,19 @@ export interface ISessionManager {
 export class SessionManager implements ISessionManager {
   private storage: IStorageService;
   private readonly sessionTTL: number; // Session TTL in seconds
+  private readonly redisNamespace: string;
 
   /**
    * @param storageService The storage service to be used for persistence.
-   * @param sessionTTL The time-to-live for sessions in seconds. Defaults to 4 hours.
    */
-  constructor(storageService: IStorageService, sessionTTL: number = 14400) {
+  constructor(storageService: IStorageService) {
     this.storage = storageService;
-    this.sessionTTL = sessionTTL;
+    this.sessionTTL = process.env.SESSION_TTL_SECONDS ? parseInt(process.env.SESSION_TTL_SECONDS, 10) : 14400;
+    this.redisNamespace = process.env.REDIS_NAMESPACE || 'session';
   }
 
   private getSessionKey(sessionId: string): string {
-    return `session:${sessionId}`;
+    return `${this.redisNamespace}:${sessionId}`;
   }
 
   /**
@@ -152,7 +153,7 @@ export class SessionManager implements ISessionManager {
   async createSession(sessionId: string, toolType: string = 'sequential_thinking'): Promise<void> {
     const now = new Date();
     let newSession: SessionData;
-    
+
     switch (toolType) {
       case 'sequential_thinking':
         newSession = {
@@ -163,7 +164,7 @@ export class SessionManager implements ISessionManager {
           lastAccessedAt: now,
         } as SequentialThinkingSessionData;
         break;
-        
+
       case 'collaborative_reasoning':
         newSession = {
           toolType: 'collaborative_reasoning',
@@ -174,7 +175,7 @@ export class SessionManager implements ISessionManager {
           lastAccessedAt: now,
         } as CollaborativeReasoningSessionData;
         break;
-        
+
       case 'scientific_method':
         newSession = {
           toolType: 'scientific_method',
@@ -185,7 +186,7 @@ export class SessionManager implements ISessionManager {
           lastAccessedAt: now,
         } as ScientificMethodSessionData;
         break;
-        
+
       case 'domain_modeling':
         newSession = {
           toolType: 'domain_modeling',
@@ -196,7 +197,7 @@ export class SessionManager implements ISessionManager {
           lastAccessedAt: now,
         } as DomainModelingSessionData;
         break;
-        
+
       case 'problem_decomposition':
         newSession = {
           toolType: 'problem_decomposition',
@@ -208,11 +209,11 @@ export class SessionManager implements ISessionManager {
           lastAccessedAt: now,
         } as ProblemDecompositionSessionData;
         break;
-        
+
       default:
         throw new Error(`Unsupported tool type: ${toolType}`);
     }
-    
+
     await this.storage.set(this.getSessionKey(sessionId), newSession, this.sessionTTL);
   }
 
@@ -221,15 +222,18 @@ export class SessionManager implements ISessionManager {
     const session = await this.storage.get<SessionData>(sessionKey);
 
     if (session) {
+      if (this.storage.expire) {
+        await this.storage.expire(sessionKey, this.sessionTTL);
+      }
       // Convert all date strings back to Date objects recursively
       const revivedSession = this.reviveDates(session) as SessionData;
       revivedSession.lastAccessedAt = new Date();
-      await this.storage.set(sessionKey, revivedSession, this.sessionTTL);
+      // await this.storage.set(sessionKey, revivedSession, this.sessionTTL);
       return revivedSession;
     }
     return null;
   }
-  
+
   async updateSession(sessionId: string, updateData: Partial<SessionData>): Promise<void> {
     const session = await this.getSession(sessionId);
     if (session) {
@@ -290,56 +294,56 @@ export class SessionManager implements ISessionManager {
     }
     return {};
   }
-  
+
   // Tool-specific session management methods
-  
+
   async getSequentialThinkingSession(sessionId: string): Promise<SequentialThinkingSessionData | null> {
     const session = await this.getSession(sessionId);
     return (session && session.toolType === 'sequential_thinking') ? session as SequentialThinkingSessionData : null;
   }
-  
+
   async updateSequentialThinkingSession(sessionId: string, data: Partial<SequentialThinkingSessionData>): Promise<void> {
     await this.updateSession(sessionId, data);
   }
-  
+
   async getCollaborativeReasoningSession(sessionId: string): Promise<CollaborativeReasoningSessionData | null> {
     const session = await this.getSession(sessionId);
     return (session && session.toolType === 'collaborative_reasoning') ? session as CollaborativeReasoningSessionData : null;
   }
-  
+
   async updateCollaborativeReasoningSession(sessionId: string, data: Partial<CollaborativeReasoningSessionData>): Promise<void> {
     await this.updateSession(sessionId, data);
   }
-  
+
   async getScientificMethodSession(sessionId: string): Promise<ScientificMethodSessionData | null> {
     const session = await this.getSession(sessionId);
     return (session && session.toolType === 'scientific_method') ? session as ScientificMethodSessionData : null;
   }
-  
+
   async updateScientificMethodSession(sessionId: string, data: Partial<ScientificMethodSessionData>): Promise<void> {
     await this.updateSession(sessionId, data);
   }
-  
+
   async getDomainModelingSession(sessionId: string): Promise<DomainModelingSessionData | null> {
     const session = await this.getSession(sessionId);
     return (session && session.toolType === 'domain_modeling') ? session as DomainModelingSessionData : null;
   }
-  
+
   async updateDomainModelingSession(sessionId: string, data: Partial<DomainModelingSessionData>): Promise<void> {
     await this.updateSession(sessionId, data);
   }
-  
+
   async getProblemDecompositionSession(sessionId: string): Promise<ProblemDecompositionSessionData | null> {
     const session = await this.getSession(sessionId);
     return (session && session.toolType === 'problem_decomposition') ? session as ProblemDecompositionSessionData : null;
   }
-  
+
   async updateProblemDecompositionSession(sessionId: string, data: Partial<ProblemDecompositionSessionData>): Promise<void> {
     await this.updateSession(sessionId, data);
   }
-  
+
   // Utility methods
-  
+
   async getSessionMetadata(sessionId: string): Promise<{ toolType: string; createdAt: Date; lastAccessedAt: Date; metadata?: Record<string, any> } | null> {
     const session = await this.getSession(sessionId);
     if (session) {
@@ -352,7 +356,7 @@ export class SessionManager implements ISessionManager {
     }
     return null;
   }
-  
+
   async listActiveSessions(): Promise<string[]> {
     // This would require implementing a session index in Redis
     // For now, returning empty array as it requires additional Redis operations

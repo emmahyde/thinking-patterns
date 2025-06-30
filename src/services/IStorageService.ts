@@ -38,4 +38,12 @@ export interface IStorageService {
    * @returns A promise that resolves to true if the key exists, and false otherwise.
    */
   exists(key: string): Promise<boolean>;
+
+  /**
+   * Sets a time-to-live for a key.
+   * @param key The unique identifier of the item.
+   * @param seconds The time-to-live in seconds.
+   * @returns A promise that resolves when the operation is complete.
+   */
+  expire?(key: string, seconds: number): Promise<void>;
 }

@@ -11,7 +11,7 @@ import { Redis } from 'ioredis';
  * Includes Redis session management for persistent collaborative sessions
  */
 export class CollaborativeReasoningServer extends BaseToolServer<CollaborativeReasoningData, any> {
-  private sessionManager: SessionManager | null = null;
+  public sessionManager: SessionManager | null = null;
 
   constructor() {
     super(CollaborativeReasoningSchema);
@@ -86,25 +86,25 @@ export class CollaborativeReasoningServer extends BaseToolServer<CollaborativeRe
       try {
         // Try to get existing session
         sessionData = await this.sessionManager.getCollaborativeReasoningSession(sessionId);
-        
+
         if (!sessionData) {
           // Create new session
           await this.sessionManager.createSession(sessionId, 'collaborative_reasoning');
           sessionData = await this.sessionManager.getCollaborativeReasoningSession(sessionId);
         }
-        
+
         if (sessionData) {
           // Update session with current data
           sessionData.sessionData = validInput;
-          
+
           // Add to contribution history if this is a new contribution
           if (validInput.contributions && validInput.contributions.length > 0) {
             const latestContribution = validInput.contributions[validInput.contributions.length - 1];
             // Check if this contribution is new
             const existingContribution = sessionData.contributionHistory.find(
-              c => c.personaId === latestContribution.personaId && 
-                   c.content === latestContribution.content &&
-                   c.type === latestContribution.type
+              c => c.personaId === latestContribution.personaId &&
+                c.content === latestContribution.content &&
+                c.type === latestContribution.type
             );
             if (!existingContribution) {
               sessionData.contributionHistory.push({
@@ -114,10 +114,10 @@ export class CollaborativeReasoningServer extends BaseToolServer<CollaborativeRe
               });
             }
           }
-          
+
           // Update stage progress
           sessionData.stageProgress[validInput.stage] = true;
-          
+
           // Save updated session
           await this.sessionManager.updateCollaborativeReasoningSession(sessionId, sessionData);
         }

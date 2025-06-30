@@ -1,5 +1,6 @@
 import { Redis } from 'ioredis';
 import { IStorageService } from './IStorageService.js';
+import { StorageError } from '../errors/CustomErrors.js';
 
 /**
  * A storage adapter that uses Redis as the backend.
@@ -25,9 +26,8 @@ export class RedisStorageAdapter implements IStorageService {
     try {
       const value = await this.client.get(key);
       return value ? JSON.parse(value) as T : null;
-    } catch (error) {
-      console.warn('Redis get error:', error);
-      return null;
+    } catch (error: any) {
+      throw new StorageError(`Failed to get key '${key}'`, 'get', error);
     }
   }
 
@@ -39,11 +39,15 @@ export class RedisStorageAdapter implements IStorageService {
    * @returns A promise that resolves when the operation is complete.
    */
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
-    const stringValue = JSON.stringify(value);
-    if (ttl) {
-      await this.client.set(key, stringValue, 'EX', ttl);
-    } else {
-      await this.client.set(key, stringValue);
+    try {
+      const stringValue = JSON.stringify(value);
+      if (ttl) {
+        await this.client.set(key, stringValue, 'EX', ttl);
+      } else {
+        await this.client.set(key, stringValue);
+      }
+    } catch (error: any) {
+      throw new StorageError(`Failed to set key '${key}'`, 'set', error);
     }
   }
 
@@ -53,7 +57,11 @@ export class RedisStorageAdapter implements IStorageService {
    * @returns A promise that resolves when the operation is complete.
    */
   async delete(key: string): Promise<void> {
-    await this.client.del(key);
+    try {
+      await this.client.del(key);
+    } catch (error: any) {
+      throw new StorageError(`Failed to delete key '${key}'`, 'delete', error);
+    }
   }
 
   /**
@@ -62,7 +70,25 @@ export class RedisStorageAdapter implements IStorageService {
    * @returns A promise that resolves to true if the key exists, and false otherwise.
    */
   async exists(key: string): Promise<boolean> {
-    const result = await this.client.exists(key);
-    return result === 1;
+    try {
+      const result = await this.client.exists(key);
+      return result === 1;
+    } catch (error: any) {
+      throw new StorageError(`Failed to check existence for key '${key}'`, 'exists', error);
+    }
+  }
+
+  /**
+   * Sets a time-to-live for a key in Redis.
+   * @param key The unique identifier of the item.
+   * @param seconds The time-to-live in seconds.
+   * @returns A promise that resolves when the operation is complete.
+   */
+  async expire(key: string, seconds: number): Promise<void> {
+    try {
+      await this.client.expire(key, seconds);
+    } catch (error: any) {
+      throw new StorageError(`Failed to set expiration for key '${key}'`, 'expire', error);
+    }
   }
 }

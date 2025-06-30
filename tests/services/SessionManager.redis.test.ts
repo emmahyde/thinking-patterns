@@ -1,39 +1,31 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import { Redis } from 'ioredis';
 import { RedisStorageAdapter } from '../../src/services/RedisStorageAdapter.js';
 import { SessionManager } from '../../src/services/SessionManager.js';
 
 /**
  * SessionManager Redis Integration Unit Tests
- * 
+ *
  * Tests the SessionManager with Redis storage adapter specifically,
  * focusing on multi-tool session management capabilities.
  */
 
 describe('SessionManager with Redis', () => {
   let redis: Redis;
-  let redisAdapter: RedisStorageAdapter;
+  let storageAdapter: RedisStorageAdapter;
   let sessionManager: SessionManager;
 
   beforeAll(async () => {
-    // Setup Redis connection for tests
     redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      db: 14, // Use separate database for unit tests
+      host: 'localhost',
+      port: 6379,
+      db: 1,
       lazyConnect: true,
-      retryDelayOnFailover: 0,
-      maxRetriesPerRequest: 1,
+      maxRetriesPerRequest: 0,
     });
-
-    try {
-      await redis.connect();
-      redisAdapter = new RedisStorageAdapter(redis);
-      sessionManager = new SessionManager(redisAdapter, 600); // 10 minute TTL
-    } catch (error) {
-      console.warn('Redis not available for tests, skipping Redis unit tests');
-      return;
-    }
+    await redis.connect();
+    storageAdapter = new RedisStorageAdapter(redis);
+    sessionManager = new SessionManager(storageAdapter);
   });
 
   afterAll(async () => {
@@ -44,9 +36,13 @@ describe('SessionManager with Redis', () => {
 
   beforeEach(async () => {
     if (redis) {
-      // Clear test database before each test
       await redis.flushdb();
     }
+  });
+
+  afterEach(() => {
+    delete process.env.SESSION_TTL_SECONDS;
+    delete process.env.REDIS_NAMESPACE;
   });
 
   describe('Multi-Tool Session Creation', () => {
@@ -57,7 +53,7 @@ describe('SessionManager with Redis', () => {
       await sessionManager.createSession(sessionId, 'sequential_thinking');
 
       const session = await sessionManager.getSequentialThinkingSession(sessionId);
-      
+
       expect(session).toBeTruthy();
       expect(session?.toolType).toBe('sequential_thinking');
       expect(session?.thoughtHistory).toEqual([]);
@@ -73,7 +69,7 @@ describe('SessionManager with Redis', () => {
       await sessionManager.createSession(sessionId, 'collaborative_reasoning');
 
       const session = await sessionManager.getCollaborativeReasoningSession(sessionId);
-      
+
       expect(session).toBeTruthy();
       expect(session?.toolType).toBe('collaborative_reasoning');
       expect(session?.sessionData).toEqual({});
@@ -89,7 +85,7 @@ describe('SessionManager with Redis', () => {
       await sessionManager.createSession(sessionId, 'scientific_method');
 
       const session = await sessionManager.getScientificMethodSession(sessionId);
-      
+
       expect(session).toBeTruthy();
       expect(session?.toolType).toBe('scientific_method');
       expect(session?.inquiryData).toEqual({});
@@ -105,7 +101,7 @@ describe('SessionManager with Redis', () => {
       await sessionManager.createSession(sessionId, 'domain_modeling');
 
       const session = await sessionManager.getDomainModelingSession(sessionId);
-      
+
       expect(session).toBeTruthy();
       expect(session?.toolType).toBe('domain_modeling');
       expect(session?.modelData).toEqual({});
@@ -291,7 +287,7 @@ describe('SessionManager with Redis', () => {
       await sessionManager.createSession(sessionId, 'sequential_thinking');
 
       const metadata = await sessionManager.getSessionMetadata(sessionId);
-      
+
       expect(metadata).toBeTruthy();
       expect(metadata?.toolType).toBe('sequential_thinking');
       expect(metadata?.createdAt).toBeInstanceOf(Date);
@@ -344,33 +340,40 @@ describe('SessionManager with Redis', () => {
 
   describe('Session TTL Behavior', () => {
     it('should set TTL on session creation', async () => {
-      if (!redis) return;
-
-      const sessionId = 'ttl-creation-test';
-      await sessionManager.createSession(sessionId, 'sequential_thinking');
-
-      // Check TTL is set
+      const sessionId = 'ttl-test';
+      process.env.SESSION_TTL_SECONDS = '600';
+      const managerWithCustomTTL = new SessionManager(storageAdapter);
+      await managerWithCustomTTL.createSession(sessionId);
       const ttl = await redis.ttl(`session:${sessionId}`);
       expect(ttl).toBeGreaterThan(0);
-      expect(ttl).toBeLessThanOrEqual(600); // Should be ≤ initial TTL
+      expect(ttl).toBeLessThanOrEqual(600);
     });
 
     it('should refresh TTL on session access', async () => {
-      if (!redis) return;
-
-      const shortTTLManager = new SessionManager(redisAdapter, 5); // 5 second TTL
       const sessionId = 'ttl-refresh-test';
-      
-      await shortTTLManager.createSession(sessionId, 'sequential_thinking');
-      
-      // Wait a bit
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Access session (should refresh TTL)
-      await shortTTLManager.getSession(sessionId);
-      
-      const ttl = await redis.ttl(`session:${sessionId}`);
-      expect(ttl).toBeGreaterThan(3); // Should be close to full TTL
+      process.env.SESSION_TTL_SECONDS = '2';
+      const managerWithCustomTTL = new SessionManager(storageAdapter);
+      await managerWithCustomTTL.createSession(sessionId);
+
+      await new Promise(resolve => setTimeout(resolve, 1100)); // Wait for over half the TTL
+
+      const ttl1 = await redis.ttl(`session:${sessionId}`);
+      expect(ttl1).toBeLessThanOrEqual(1); // TTL should have decreased
+
+      await managerWithCustomTTL.getSession(sessionId);
+      const ttl2 = await redis.ttl(`session:${sessionId}`);
+      expect(ttl2).toBeGreaterThan(ttl1); // TTL should have been refreshed
+    });
+
+    it('should expire session after TTL', async () => {
+      const sessionId = 'ttl-expiry-test';
+      process.env.SESSION_TTL_SECONDS = '1';
+      const managerWithCustomTTL = new SessionManager(storageAdapter);
+      await managerWithCustomTTL.createSession(sessionId);
+
+      await new Promise(resolve => setTimeout(resolve, 1100));
+      const session = await managerWithCustomTTL.getSession(sessionId);
+      expect(session).toBeNull();
     });
   });
 
@@ -445,7 +448,7 @@ describe('SessionManager with Redis', () => {
       await sessionManager.updateCollaborativeReasoningSession(sessionId, complexData);
 
       const retrievedSession = await sessionManager.getCollaborativeReasoningSession(sessionId);
-      
+
       expect(retrievedSession?.sessionData.personas[0].background).toContain('🧠');
       expect(retrievedSession?.sessionData.disagreements[0].positions[0].arguments).toEqual(['Holistic', 'Comprehensive']);
       expect(retrievedSession?.stageProgress['integration']).toBe(true);
@@ -474,6 +477,25 @@ describe('SessionManager with Redis', () => {
       const session = await sessionManager.getScientificMethodSession(sessionId);
       expect(session?.stageHistory[0].timestamp).toBeInstanceOf(Date);
       expect(session?.stageHistory[0].timestamp.toISOString()).toBe(testDate.toISOString());
+    });
+  });
+
+  describe('Session Creation and Retrieval', () => {
+    it('should create a new session with a unique ID', async () => {
+      const sessionId = 'seq-unit-test';
+      await sessionManager.createSession(sessionId, 'sequential_thinking');
+      const retrievedSession = await sessionManager.getSession(sessionId);
+      expect(retrievedSession).not.toBeNull();
+      expect(retrievedSession?.toolType).toBe('sequential_thinking');
+    });
+
+    it('should use a custom namespace when provided', async () => {
+      process.env.REDIS_NAMESPACE = 'custom_namespace';
+      const customNamespaceManager = new SessionManager(storageAdapter);
+      const sessionId = 'namespace-test';
+      await customNamespaceManager.createSession(sessionId);
+      const exists = await redis.exists('custom_namespace:namespace-test');
+      expect(exists).toBe(1);
     });
   });
 });

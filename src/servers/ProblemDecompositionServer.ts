@@ -11,7 +11,7 @@ import { Redis } from 'ioredis';
  * Includes Redis session management for persistent decomposition sessions
  */
 export class ProblemDecompositionServer extends BaseToolServer<ProblemDecompositionData, any> {
-  private sessionManager: SessionManager | null = null;
+  public sessionManager: SessionManager | null = null;
 
   constructor() {
     super(ProblemDecompositionSchema);
@@ -49,30 +49,30 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
       try {
         // Try to get existing session
         sessionData = await this.sessionManager.getProblemDecompositionSession(decompositionId);
-        
+
         if (!sessionData) {
           // Create new session
           await this.sessionManager.createSession(decompositionId, 'problem_decomposition');
           sessionData = await this.sessionManager.getProblemDecompositionSession(decompositionId);
         }
-        
+
         if (sessionData) {
           // Store previous data before updating
           const previousData = sessionData.decompositionData;
-          
+
           // Track progress updates for individual tasks BEFORE updating session data
           if (validInput.decomposition && previousData && previousData.decomposition) {
             this.trackProgressChanges(sessionData, validInput.decomposition);
           }
-          
+
           // Update session with current data
           sessionData.decompositionData = validInput;
-          
+
           // Add to revision history if this is a meaningful change
           if (previousData && Object.keys(previousData).length > 0) {
             const changes = this.detectDecompositionChanges(previousData, validInput);
             const revision = sessionData.revisionHistory.length + 1;
-            
+
             sessionData.revisionHistory.push({
               revision,
               timestamp: new Date(),
@@ -80,7 +80,7 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
               changes
             });
           }
-          
+
           // Add metrics to history
           if (validInput.metrics) {
             sessionData.metricsHistory.push({
@@ -88,7 +88,7 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
               metrics: validInput.metrics
             });
           }
-          
+
           // Save updated session
           await this.sessionManager.updateProblemDecompositionSession(decompositionId, sessionData);
         }
@@ -136,9 +136,9 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
         if (task.progress?.status) details.push(task.progress.status);
         if (task.effortEstimate) details.push(`E: ${task.effortEstimate}`);
         const detailsString = details.length > 0 ? ` (${details.join(', ')})` : '';
-        
+
         result.push(`${prefix}${task.description}${detailsString}`);
-        
+
         if (task.subTasks) {
           result = result.concat(formatTasks(task.subTasks, indent + 1));
         }
@@ -167,19 +167,19 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
    */
   private detectDecompositionChanges(previous: ProblemDecompositionData, current: ProblemDecompositionData): any {
     const changes: any = {};
-    
+
     if (previous.problem !== current.problem) {
       changes.problem = { from: previous.problem, to: current.problem };
     }
-    
+
     if (previous.methodology !== current.methodology) {
       changes.methodology = { from: previous.methodology, to: current.methodology };
     }
-    
+
     if (previous.decomposition.length !== current.decomposition.length) {
       changes.taskCount = { from: previous.decomposition.length, to: current.decomposition.length };
     }
-    
+
     return changes;
   }
 
@@ -199,12 +199,12 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
     };
 
     const currentTasks = flattenTasks(tasks);
-    const previousTasks = sessionData.decompositionData.decomposition ? 
+    const previousTasks = sessionData.decompositionData.decomposition ?
       flattenTasks(sessionData.decompositionData.decomposition) : [];
 
     for (const currentTask of currentTasks) {
       const previousTask = previousTasks.find(t => t.id === currentTask.id);
-      
+
       if (previousTask && previousTask.progress?.status !== currentTask.progress?.status) {
         sessionData.progressUpdates.push({
           timestamp: new Date(),
@@ -222,7 +222,7 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
    */
   public async getSessionHistory(sessionId: string): Promise<any[]> {
     if (!this.sessionManager) return [];
-    
+
     try {
       const sessionData = await this.sessionManager.getProblemDecompositionSession(sessionId);
       return sessionData?.revisionHistory || [];
@@ -237,7 +237,7 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
    */
   public async clearSession(sessionId: string): Promise<boolean> {
     if (!this.sessionManager) return false;
-    
+
     try {
       await this.sessionManager.clearSession(sessionId);
       return true;
@@ -252,7 +252,7 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
    */
   public async getSessionData(sessionId: string): Promise<any> {
     if (!this.sessionManager) return null;
-    
+
     try {
       return await this.sessionManager.getProblemDecompositionSession(sessionId);
     } catch (error) {
@@ -260,4 +260,4 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
       return null;
     }
   }
-} 
+}

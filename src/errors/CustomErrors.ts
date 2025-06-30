@@ -82,6 +82,30 @@ export class ProcessingError extends Error {
   }
 }
 
+export class StorageError extends Error {
+  public readonly code: string;
+  public readonly operation: string;
+  public readonly originalError?: Error;
+
+  constructor(message: string, operation: string, originalError?: Error) {
+    super(message);
+    this.name = 'StorageError';
+    this.code = 'STORAGE_ERROR';
+    this.operation = operation;
+    this.originalError = originalError;
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      name: this.name,
+      code: this.code,
+      operation: this.operation,
+      originalError: this.originalError?.message,
+    };
+  }
+}
+
 export interface ErrorResponse {
   code: string;
   message: string;
