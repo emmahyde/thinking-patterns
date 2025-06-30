@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 import { Redis } from 'ioredis';
-import { RedisStorageAdapter } from '../../src/services/RedisStorageAdapter';
-import { StorageError } from '../../src/errors/CustomErrors';
+import { RedisStorageAdapter } from '../../src/services/RedisStorageAdapter.js';
+import { StorageError } from '../../src/errors/CustomErrors.js';
 
 // Mock the ioredis client
 vi.mock('ioredis');
 
 describe('RedisStorageAdapter', () => {
-  let mockRedisClient: vi.Mocked<Redis>;
+  let mockRedisClient: Mocked<Redis>;
   let adapter: RedisStorageAdapter;
 
   beforeEach(() => {
@@ -28,13 +28,13 @@ describe('RedisStorageAdapter', () => {
     for (const { method, args, clientMethod } of testCases) {
       it(`should throw a StorageError when ${method} fails`, async () => {
         const testError = new Error('Redis connection failed');
-        (mockRedisClient[clientMethod as keyof Redis] as vi.Mock).mockRejectedValue(testError);
+        (mockRedisClient[clientMethod as keyof Redis] as Mocked<any>).mockRejectedValue(testError);
 
-        const operation = adapter[method as keyof RedisStorageAdapter];
+        const operation = (...args: any[]) => (adapter[method as keyof RedisStorageAdapter] as Function)(...args);
 
-        await expect(operation.apply(adapter, args)).rejects.toThrow(StorageError);
-        await expect(operation.apply(adapter, args)).rejects.toHaveProperty('operation', method);
-        await expect(operation.apply(adapter, args)).rejects.toHaveProperty('originalError', testError);
+        await expect(operation(...args)).rejects.toThrow(StorageError);
+        await expect(operation(...args)).rejects.toHaveProperty('operation', method);
+        await expect(operation(...args)).rejects.toHaveProperty('originalError', testError);
       });
     }
   });

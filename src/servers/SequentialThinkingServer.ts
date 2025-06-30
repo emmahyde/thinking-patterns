@@ -133,6 +133,9 @@ export class SequentialThinkingServer extends BaseToolServer<SequentialThoughtDa
       };
     }
 
+    // --- NEW: Include full session content ---
+    (result as any).session = sessionData || null;
+
     return result;
   }
 

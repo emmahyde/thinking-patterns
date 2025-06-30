@@ -46,4 +46,25 @@ export interface IStorageService {
    * @returns A promise that resolves when the operation is complete.
    */
   expire?(key: string, seconds: number): Promise<void>;
+
+  // --- Native Redis Structure Methods ---
+
+  hset?(key: string, field: string, value: any): Promise<void>;
+  hget?<T>(key: string, field: string): Promise<T | null>;
+  hgetall?<T = any>(key: string): Promise<Record<string, T>>;
+  hdel?(key: string, field: string): Promise<void>;
+
+  sadd?(key: string, ...members: string[]): Promise<void>;
+  srem?(key: string, ...members: string[]): Promise<void>;
+  smembers?(key: string): Promise<string[]>;
+  sismember?(key: string, member: string): Promise<boolean>;
+
+  zadd?(key: string, ...scoreMembers: Array<[number, string]>): Promise<void>;
+  zrange?(key: string, start: number, stop: number, withScores?: boolean): Promise<string[] | Array<{ member: string, score: number }>>;
+  zrem?(key: string, ...members: string[]): Promise<void>;
+  zscore?(key: string, member: string): Promise<number | null>;
+
+  lpush?(key: string, ...values: string[]): Promise<void>;
+  lrange?(key: string, start: number, stop: number): Promise<string[]>;
+  lrem?(key: string, count: number, value: string): Promise<void>;
 }

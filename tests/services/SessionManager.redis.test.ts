@@ -450,7 +450,7 @@ describe('SessionManager with Redis', () => {
       const retrievedSession = await sessionManager.getCollaborativeReasoningSession(sessionId);
 
       expect(retrievedSession?.sessionData.personas[0].background).toContain('🧠');
-      expect(retrievedSession?.sessionData.disagreements[0].positions[0].arguments).toEqual(['Holistic', 'Comprehensive']);
+      expect(retrievedSession?.sessionData.disagreements?.[0].positions[0].arguments).toEqual(['Holistic', 'Comprehensive']);
       expect(retrievedSession?.stageProgress['integration']).toBe(true);
       expect(retrievedSession?.contributionHistory[0].timestamp).toBeInstanceOf(Date);
     });

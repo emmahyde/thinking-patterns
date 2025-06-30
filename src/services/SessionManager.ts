@@ -362,6 +362,122 @@ export class SessionManager implements ISessionManager {
     // For now, returning empty array as it requires additional Redis operations
     return [];
   }
+
+  // --- Sequential Thinking (new Redis model) ---
+
+  private getSeqMetaKey(sessionId: string): string {
+    return `${this.redisNamespace}:sequential:${sessionId}:meta`;
+  }
+  private getSeqThoughtsKey(sessionId: string): string {
+    return `${this.redisNamespace}:sequential:${sessionId}:thoughts`;
+  }
+  private getSeqBranchesKey(sessionId: string): string {
+    return `${this.redisNamespace}:sequential:${sessionId}:branches`;
+  }
+
+  /**
+   * Creates a new Sequential Thinking session using Redis hash for metadata.
+   */
+  async createSequentialThinkingSession(sessionId: string): Promise<void> {
+    if (!this.storage.hset) {
+      throw new Error('Storage service does not support hset operation required for sequential thinking sessions');
+    }
+    const now = new Date();
+    const meta = {
+      toolType: 'sequential_thinking',
+      createdAt: now.toISOString(),
+      lastAccessedAt: now.toISOString(),
+    };
+    await this.storage.hset(this.getSeqMetaKey(sessionId), 'meta', meta);
+    // No need to initialize thoughts or branches; they are empty by default
+  }
+
+  /**
+   * Adds a thought to the sorted set for the session.
+   */
+  async addSequentialThought(sessionId: string, thought: SequentialThoughtData): Promise<void> {
+    if (!this.storage.zadd) {
+      throw new Error('Storage service does not support zadd operation required for sequential thoughts');
+    }
+    if (!this.storage.hset) {
+      throw new Error('Storage service does not support hset operation required for sequential thoughts');
+    }
+    const key = this.getSeqThoughtsKey(sessionId);
+    await this.storage.zadd(key, [thought.thoughtNumber, JSON.stringify(thought)]);
+    // Optionally update lastAccessedAt
+    await this.storage.hset(this.getSeqMetaKey(sessionId), 'lastAccessedAt', new Date().toISOString());
+  }
+
+  /**
+   /**
+    * Gets the full thought history for a session from the sorted set.
+    */
+   async getSequentialThoughtHistory(sessionId: string): Promise<SequentialThoughtData[]> {
+     if (!this.storage.zrange) {
+       throw new Error('Storage service does not support zrange operation required for sequential thought history');
+     }
+     const key = this.getSeqThoughtsKey(sessionId);
+     const raw = await this.storage.zrange(key, 0, -1);
+     // Ensure we have a string array (not withScores format)
+     if (!Array.isArray(raw)) {
+       return [];
+     }
+     return (raw as string[]).map((v: string) => JSON.parse(v));
+   }
+  /**
+   * Adds a branch (array of thoughts) to the branches hash.
+   */
+  async addSequentialBranch(sessionId: string, branchId: string, thoughts: SequentialThoughtData[]): Promise<void> {
+    if (!this.storage.hset) {
+      throw new Error('Storage service does not support hset operation required for sequential branch management');
+    }
+    await this.storage.hset(this.getSeqBranchesKey(sessionId), branchId, thoughts);
+    await this.storage.hset(this.getSeqMetaKey(sessionId), 'lastAccessedAt', new Date().toISOString());
+  }
+
+  /**
+   /**
+    * Gets all branches for a session from the branches hash.
+    */
+   async getSequentialBranches(sessionId: string): Promise<Record<string, SequentialThoughtData[]>> {
+     if (!this.storage.hgetall) {
+       throw new Error('Storage service does not support hgetall operation required for sequential branches');
+     }
+     return await this.storage.hgetall(this.getSeqBranchesKey(sessionId));
+   }
+  /**
+   /**
+    * Gets the full SequentialThinkingSessionData by reconstructing from Redis primitives.
+    */
+   async getSequentialThinkingSessionNew(sessionId: string): Promise<SequentialThinkingSessionData | null> {
+     if (!this.storage.hget) {
+       throw new Error('Storage service does not support hget operation required for sequential thinking sessions');
+     }
+     const metaRaw = await this.storage.hget(this.getSeqMetaKey(sessionId), 'meta');
+     if (!metaRaw) return null;
+     const meta = typeof metaRaw === 'string' ? JSON.parse(metaRaw) : metaRaw;
+     const thoughtHistory = await this.getSequentialThoughtHistory(sessionId);
+     const branches = await this.getSequentialBranches(sessionId);
+     return {
+       toolType: 'sequential_thinking',
+       createdAt: new Date(meta.createdAt),
+       lastAccessedAt: new Date(meta.lastAccessedAt),
+       thoughtHistory,
+       branches,
+     };
+   }
+  /**
+   /**
+    * Updates only the metadata hash for a Sequential Thinking session.
+    */
+   async updateSequentialThinkingSessionMeta(sessionId: string, update: Partial<{ createdAt: string; lastAccessedAt: string }>): Promise<void> {
+     if (!this.storage.hset) {
+       throw new Error('Storage service does not support hset operation required for sequential thinking session metadata updates');
+     }
+     for (const [k, v] of Object.entries(update)) {
+       await this.storage.hset(this.getSeqMetaKey(sessionId), k, v);
+     }
+   }
 }
 
 // Export session data types for use by tool servers
