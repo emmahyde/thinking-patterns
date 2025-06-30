@@ -86,6 +86,39 @@ Run the container:
 docker run -it emmahyde/thinking-patterns
 ```
 
+### Docker Compose (Redis Support)
+
+This project includes a `docker-compose.yml` file for running Redis, which is used for session storage and caching.
+
+#### Quick Start
+
+```bash
+# Start Redis service
+docker compose up -d
+
+# Verify Redis is running
+docker compose ps
+
+# Test Redis connectivity
+docker compose exec redis redis-cli ping
+```
+
+#### Troubleshooting
+
+**Issue**: `service "redis" has no container to start`
+- **Cause**: Trying to use `docker compose start` when no containers exist
+- **Solution**: Use `docker compose up -d` to create and start containers
+
+**Issue**: `error getting credentials - err: exec: "docker-credential-desktop": executable file not found`
+- **Cause**: Docker credentials issue
+- **Solution**: Pull the image manually first: `docker pull redis:alpine`, then run `docker compose up -d`
+
+#### Current Status After Setup
+- ✅ Redis running on `localhost:6379`
+- ✅ Container name: `thinking-patterns-redis-1`
+- ✅ Network and volume created automatically
+- ✅ Service responding to ping
+
 ### Development
 
 1. Clone the repository
