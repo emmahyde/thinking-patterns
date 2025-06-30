@@ -58,7 +58,6 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
   public processModel(input: unknown): { content: Array<{ type: string; text: string }>; data?: any; isError?: boolean } {
     try {
       const validatedInput = this.validate(input);
-      const result = this.handle(validatedInput);
       const response = this.run(input);
 
       return {
@@ -86,7 +85,7 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
       coherenceScore: 0,
       overallRating: 'N/A'
     };
-    
+
     let totalScore = 0;
     let criteriaCount = 0;
 
@@ -101,12 +100,12 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
         quality.clarityScore += 0.4;
       }
     }
-    
+
     if (modelData.reasoning && modelData.reasoning.length > 30) {
       quality.completenessScore += 0.3;
       quality.coherenceScore += 0.4;
     }
-    
+
     if (modelData.conclusion && modelData.conclusion.length > 20) {
       quality.completenessScore += 0.3;
       quality.coherenceScore += 0.6;
@@ -115,7 +114,7 @@ export class MentalModelServer extends BaseToolServer<MentalModelData, any> {
     const stepComplexity = modelData.steps ? modelData.steps.length : 0;
     const textComplexity = (modelData.problem.length + (modelData.reasoning?.length ?? 0) + (modelData.conclusion?.length ?? 0)) / 100;
     const totalComplexity = stepComplexity + textComplexity;
-    
+
     let complexity: 'low' | 'medium' | 'high' = 'low';
     if (totalComplexity > 10) {
       complexity = 'high';

@@ -208,6 +208,9 @@ export class DomainModelingServer extends BaseToolServer<DomainModelingData, any
         };
       }
 
+      // --- NEW: Include full session content ---
+      (result as any).session = sessionData || null;
+
       return result;
     } catch (error) {
       throw error;

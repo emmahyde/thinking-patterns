@@ -109,14 +109,34 @@ export class ProblemDecompositionServer extends BaseToolServer<ProblemDecomposit
       }, 0);
     })(validInput.decomposition);
 
-    return {
+    const result = {
       ...validInput,
       taskCount,
       status: 'success',
       timestamp: new Date().toISOString(),
       hasMetrics: !!validInput.metrics,
       objectiveCount: validInput.objectives?.length ?? 0,
+      sessionPersisted: !!sessionData, // Indicate if session was persisted
     };
+
+    // Include session context if available
+    if (sessionData) {
+      (result as any).sessionContext = {
+        revisionCount: sessionData.revisionHistory.length,
+        progressUpdateCount: sessionData.progressUpdates.length,
+        metricsHistoryCount: sessionData.metricsHistory.length,
+        sessionCreated: sessionData.createdAt,
+        lastAccessed: sessionData.lastAccessedAt,
+        hasRevisions: sessionData.revisionHistory.length > 0,
+        hasProgressTracking: sessionData.progressUpdates.length > 0,
+        hasMetricsHistory: sessionData.metricsHistory.length > 0
+      };
+    }
+
+    // --- NEW: Include full session content ---
+    (result as any).session = sessionData || null;
+
+    return result;
   }
 
   private formatOutput(data: ProblemDecompositionData): string {

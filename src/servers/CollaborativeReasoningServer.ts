@@ -175,6 +175,9 @@ export class CollaborativeReasoningServer extends BaseToolServer<CollaborativeRe
       };
     }
 
+    // --- NEW: Include full session content ---
+    (result as any).session = sessionData || null;
+
     return result;
   }
 

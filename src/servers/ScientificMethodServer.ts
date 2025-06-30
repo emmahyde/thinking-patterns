@@ -175,6 +175,9 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
       };
     }
 
+    // --- NEW: Include full session content ---
+    (result as any).session = sessionData || null;
+
     return result;
   }
 
@@ -182,7 +185,6 @@ export class ScientificMethodServer extends BaseToolServer<ScientificMethodData,
   public processScientificMethod(input: unknown): { content: Array<{ type: string; text: string }>; data?: any; isError?: boolean } {
     try {
       const validatedInput = this.validate(input);
-      const result = this.handle(validatedInput);
       const response = this.run(input);
 
       return {
