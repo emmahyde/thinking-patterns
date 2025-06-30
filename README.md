@@ -110,6 +110,9 @@ docker run -it emmahyde/thinking-patterns
 ## Real-World Usage Examples for Rails, Ruby & React Developers
 
 ### 1. Sequential Thinking - Rails API Architecture Planning
+#### User Prompt
+> "I'm planning a major architecture change for my Rails app, moving from a single-tenant to a multi-tenant model to support 500+ organizations. I need to figure out the best way to handle data isolation, specifically whether to use Postgres schemas or a shared-table approach with row-level security. Can you help me think through the first steps of designing the database schema?"
+
 ```ruby
 # Planning a multi-tenant Rails API with complex authentication
 const response = await mcp.callTool("sequential_thinking", {
@@ -134,6 +137,9 @@ const response = await mcp.callTool("sequential_thinking", {
 ```
 
 ### 2. Mental Model - React Component Architecture
+#### User Prompt
+> "My React app has a serious prop-drilling problem with our authentication state. It's going down 8 component levels, making things hard to test and maintain. I'd like to apply the 'Component Composition' mental model to refactor this. I want to avoid adding a big library like Redux if possible."
+
 ```typescript
 // Using composition patterns to solve prop drilling in React
 const response = await mcp.callTool("mental_model", {
@@ -151,6 +157,9 @@ const response = await mcp.callTool("mental_model", {
 ```
 
 ### 3. Debugging Approach - Rails N+1 Query Issue
+#### User Prompt
+> "Help! A recent deploy caused our main Rails API endpoint for projects to slow down from 200ms to 8 seconds, and it's timing out. The dashboard is now broken for all users. I need to profile this performance issue and figure out what's going on."
+
 ```ruby
 # Systematic debugging of performance degradation in Rails app
 const response = await mcp.callTool("debugging_approach", {
@@ -183,6 +192,9 @@ const response = await mcp.callTool("debugging_approach", {
 ```
 
 ### 4. Stochastic Algorithm - React Feature Flag Rollout
+#### User Prompt
+> "I want to roll out a new checkout flow in our React app, but I need to do it safely. The current flow converts at 3.2%, and we have 100k daily users. Can we use a Multi-Armed Bandit algorithm to slowly test the new flow and automatically allocate more traffic to the version that performs better?"
+
 ```typescript
 // Progressive feature rollout using multi-armed bandit
 const response = await mcp.callTool("stochastic_algorithm", {
@@ -199,6 +211,9 @@ const response = await mcp.callTool("stochastic_algorithm", {
 ```
 
 ### 5. Collaborative Reasoning - Rails Microservice Extraction
+#### User Prompt
+> "I need to facilitate a discussion about extracting our payment processing logic from our Rails monolith into a dedicated microservice. Can you set up a collaborative session with a Senior Rails Developer persona, who prefers a careful, pragmatic approach, and an SRE persona, who is focused on operational complexity and reliability?"
+
 ```typescript
 // Multi-perspective analysis of monolith decomposition
 const response = await mcp.callTool("collaborative_reasoning", {
@@ -246,6 +261,9 @@ const response = await mcp.callTool("collaborative_reasoning", {
 ```
 
 ### 6. Decision Framework - React State Management
+#### User Prompt
+> "My team needs to choose a state management library for our growing React e-commerce app. We're drowning in prop-drilling. The main candidates are Redux Toolkit, Zustand, Context with useReducer, and Valtio. Can you help us run a multi-criteria analysis considering factors like learning curve, bundle size, developer experience, and TypeScript support?"
+
 ```typescript
 // Choosing state management solution for growing React app
 const response = await mcp.callTool("decision_framework", {
@@ -291,6 +309,9 @@ const response = await mcp.callTool("decision_framework", {
 ```
 
 ### 7. Metacognitive Monitoring - Ruby Performance Optimization
+#### User Prompt
+> "I'm optimizing our Ruby background job processing system, which uses Sidekiq and Redis. We're hitting connection pool exhaustion and need to scale from 1k to 10k jobs per minute. I have some experience here but I'm uncertain about the optimal pool size and the potential impact of batching jobs. I need to structure my thinking and identify my knowledge gaps."
+
 ```ruby
 # Self-assessment during critical performance optimization
 const response = await mcp.callTool("metacognitive_monitoring", {
@@ -327,6 +348,9 @@ const response = await mcp.callTool("metacognitive_monitoring", {
 ```
 
 ### 8. Scientific Method - React Performance Hypothesis
+#### User Prompt
+> "Our product list page in React is very slow, with a 2-second delay on filtering. I've observed in DevTools that all 500+ items are re-rendering on every filter change. I have a hypothesis that using `React.memo` and `useMemo` will solve this. Can you help me structure this as a formal experiment to test my hypothesis?"
+
 ```typescript
 // Testing hypothesis about React re-render optimization
 const response = await mcp.callTool("scientific_method", {
@@ -375,6 +399,9 @@ const response = await mcp.callTool("scientific_method", {
 ```
 
 ### 9. Structured Argumentation - Rails Upgrade Decision
+#### User Prompt
+> "I need to make a strong case to my team for upgrading our application from Rails 6.1 to 7.1 this quarter. There's a lot of pressure to ship new features, but I believe the upgrade is critical for security and performance. Can you help me build a structured argument for this?"
+
 ```ruby
 # Arguing for Rails version upgrade
 const response = await mcp.callTool("structured_argumentation", {
@@ -404,6 +431,9 @@ const response = await mcp.callTool("structured_argumentation", {
 ```
 
 ### 10. Visual Reasoning - React Component Architecture
+#### User Prompt
+> "I need to analyze the component hierarchy of our React checkout flow to find performance bottlenecks. I suspect we have major prop-drilling and re-render issues. Can you help me visualize the component tree and identify where the problems are?"
+
 ```typescript
 // Analyzing component hierarchy for optimization
 const response = await mcp.callTool("visual_reasoning", {
@@ -459,6 +489,9 @@ const response = await mcp.callTool("visual_reasoning", {
 ```
 
 ### 11. Domain Modeling - Rails E-commerce Domain
+#### User Prompt
+> "I'm building a multi-vendor marketplace in Rails and need to model the core domain. This involves vendors, products, orders that can contain items from multiple vendors, and complex commission/payment splitting logic. Can you help me create a detailed domain model?"
+
 ```ruby
 # Modeling complex e-commerce domain in Rails
 const response = await mcp.callTool("domain_modeling", {
@@ -528,6 +561,9 @@ const response = await mcp.callTool("domain_modeling", {
 ```
 
 ### 12. Problem Decomposition - React Native App Feature
+#### User Prompt
+> "I need to break down the work for a major new feature: an offline-first mode for our React Native app used by field technicians. This is a big project involving local storage, a sync engine, and UI changes. Can you help me decompose this problem into a detailed project plan with tasks, dependencies, and risks?"
+
 ```typescript
 // Breaking down offline-first React Native feature
 const response = await mcp.callTool("problem_decomposition", {
@@ -606,6 +642,9 @@ const response = await mcp.callTool("problem_decomposition", {
 ```
 
 ### 13. Critical Thinking - Ruby Gem Selection
+#### User Prompt
+> "I'm choosing an authentication solution for a new Rails API. The options are Devise, Clearance, or building a custom solution. It's an API-only app using JWTs and will have a large user base. I need to critically evaluate these options, considering potential issues, edge cases, and invalid assumptions."
+
 ```ruby
 # Critical analysis of authentication gem choice
 const response = await mcp.callTool("critical_thinking", {
@@ -668,6 +707,9 @@ const response = await mcp.callTool("critical_thinking", {
 ```
 
 ### 14. Recursive Thinking - React Tree Component
+#### User Prompt
+> "I need to build a high-performance file tree component in React that can handle over 10,000 nodes with lazy loading and search. A naive recursive approach will crash the browser. Can you help me think through a more optimized recursive solution using techniques like virtualization and memoization?"
+
 ```typescript
 // Recursive approach to building file explorer component
 const response = await mcp.callTool("recursive_thinking", {
@@ -730,6 +772,9 @@ const response = await mcp.callTool("recursive_thinking", {
 ```
 
 ### 15. Temporal Thinking - Rails Background Job Pipeline
+#### User Prompt
+> "Our Rails app's background job pipeline for user uploads is unreliable, with about 15% of jobs failing or getting stuck. The process involves a virus scan, image processing, CDN upload, and notifications. Can you help me model this entire process as a state machine to identify the bottlenecks and failure points?"
+
 ```ruby
 # Modeling async job processing pipeline with failure handling
 const response = await mcp.callTool("temporal_thinking", {
@@ -886,6 +931,122 @@ const response = await mcp.callTool("temporal_thinking", {
   purpose: "Identify timeout issues and optimize job pipeline for 99% success rate"
 });
 ```
+
+## Additional exemplary prompts:
+
+### 1. `sequential_thinking`
+- "Outline the steps to migrate our monolith's database to a new RDS instance with minimal downtime."
+- "Create a step-by-step plan for a new feature release, from final dev branch merge to production monitoring."
+- "Generate a tutorial for new developers on setting up the local development environment for our project."
+- "Walk me through a typical user journey for purchasing a product on our site, and list each step."
+- "I want to learn Go. Create a 4-week learning plan, breaking down topics week-by-week."
+- "Draft a checklist for our team's sprint planning ceremony."
+- "Outline the chapters for a new e-book on 'Advanced TypeScript Patterns'."
+- "Develop an incident response plan for a critical production database failure."
+
+### 2. `mental_model`
+- "Apply 'First Principles' thinking to our user registration process. What is the absolute minimum we need to achieve our goal?"
+- "Analyze our decision to switch to a microservices architecture using 'Second-Order Thinking'. What are the long-term, indirect consequences?"
+- "Use the 'Inversion' mental model to brainstorm all the ways our upcoming product launch could fail."
+- "Let's use the 'Jobs-to-be-Done' framework. What job are users really hiring our photo-editing app to do?"
+- "Apply the 'Theory of Constraints' to our software development lifecycle. What is the single biggest bottleneck slowing us down?"
+- "We have two potential solutions for our caching layer. Apply 'Occam's Razor' to help us choose the simpler one."
+- "Evaluate my proposal to build a custom analytics engine using the 'Circle of Competence' model. Do we have the required expertise?"
+
+### 3. `debugging_approach`
+- "I'm seeing a recurring `502 Bad Gateway` error on our web server. Help me create a systematic plan to debug it."
+- "Our Node.js service has a memory leak. Outline a debugging approach using heap snapshots and profiling."
+- "We have a flaky test in our CI pipeline that fails randomly. How should I approach debugging this race condition?"
+- "A user is reporting that our CSS layout is broken on Firefox for Android, but it works everywhere else. What steps should I take to diagnose this?"
+- "One of our most important SQL queries has suddenly become very slow. Guide me through profiling and optimizing it."
+- "I'm noticing incorrect data in our users table. Help me formulate a plan to find the source of the data corruption."
+
+### 4. `collaborative_reasoning`
+- "Facilitate a code review for our new authentication service implementation. Personas: 'Security Expert' focused on vulnerability assessment, 'Performance Engineer' focused on scalability concerns, and 'Maintainability Advocate' focused on code quality and future development."
+- "Set up a debate on adopting a serverless architecture. I need a 'DevOps Engineer' persona focused on cost and observability, a 'Senior Developer' focused on developer experience, and a 'Security Architect' focused on risk."
+- "Facilitate a UI/UX review for our new dashboard design. Personas: 'Data-Driven Product Manager', 'Creative UI Designer', and 'Pragmatic Frontend Developer'."
+- "We need to choose a primary programming language for a new startup. Simulate a discussion between advocates for Python, Go, and TypeScript."
+- "Conduct a 'pre-mortem' for our plan to migrate from Heroku to Kubernetes. Use 'Pessimist', 'Optimist', and 'Realist' personas to identify potential risks and opportunities."
+- "Evaluate the ethical implications of using a new third-party AI service for content moderation. Personas: 'User Privacy Advocate', 'Corporate Lawyer', and 'ML Operations Engineer'."
+
+### 5. `decision_framework`
+- "Help me choose a cloud provider (AWS vs. GCP vs. Azure) for our new AI startup. Create a decision matrix with criteria like cost for GPU instances, ease of use for ML services, and data storage options."
+- "We're deciding on a new JavaScript framework (React vs. Vue vs. Svelte). Run a multi-criteria analysis weighing learning curve, performance, and ecosystem size."
+- "Should we refactor our legacy billing module or rewrite it from scratch? Use a decision framework to compare the options based on risk, cost, and long-term maintainability."
+- "Prioritize these 10 feature requests for our next sprint using the RICE framework (Reach, Impact, Confidence, Effort)."
+- "Select a new project management tool (Jira vs. Asana vs. Linear) for our engineering team based on integration capabilities, user experience, and cost."
+
+### 6. `metacognitive_monitoring`
+- "I'm about to start refactoring a critical piece of our authentication service. Can you help me assess my own knowledge, identify my blind spots, and check my assumptions before I begin?"
+- "I've been stuck on this bug for hours. I need to take a step back and monitor my own thinking. Am I suffering from confirmation bias? What assumptions have I made that could be wrong?"
+- "I have to give a presentation on our Q3 technical roadmap. Help me assess my own understanding of each item and my confidence in answering tough questions from the leadership team."
+- "I've been asked to do a code review on the new real-time collaboration feature. Let's do a metacognitive check: Am I qualified to review this? What are the limits of my knowledge on WebSockets?"
+- "As a junior developer, I've been assigned a complex solo task. I want to use metacognitive monitoring to evaluate my readiness and create a plan to fill my knowledge gaps."
+
+### 7. `scientific_method`
+- "I've observed that users who watch our video tutorials are 30% more likely to convert. I want to turn this into a formal experiment. Help me formulate a hypothesis, design an A/B test, and define the metrics."
+- "My hypothesis is that switching our Python web server from Gunicorn to Uvicorn will decrease API response times. How can I design an experiment to test this?"
+- "We've launched a new feature, and support tickets have increased by 15%. Formulate a scientific inquiry to determine if the new feature is the cause of the increase."
+- "I believe that reducing the number of fields on our signup form will increase registrations. Let's use the scientific method to test this idea."
+- "Design an experiment to test the hypothesis that our new recommendation algorithm leads to higher user engagement, measured by time spent on site and number of articles read."
+
+### 8. `structured_argumentation`
+- "I need to convince management to invest 20% of our time in reducing technical debt. Help me build a structured argument with clear premises, a strong conclusion, and supporting evidence."
+- "Create a well-reasoned argument for why we should use a statically typed language like TypeScript over plain JavaScript for our new large-scale project."
+- "I'm writing a proposal to deprecate a legacy service. Help me structure the argument, highlighting the risks of keeping it and the benefits of removing it."
+- "Rebut the argument that 'we're too busy with features to focus on improving our CI/CD pipeline right now'."
+- "Build a case for adopting a design system, focusing on how it will improve developer productivity, UI consistency, and time-to-market."
+
+### 9. `visual_reasoning`
+- "Generate a sequence diagram showing the interaction between our `OrderService`, `PaymentService`, and `NotificationService` when a customer places a new order."
+- "Create a state diagram that models the lifecycle of a user account in our system, from 'pending' to 'active' to 'suspended' to 'deleted'."
+- "I need to understand our application's architecture. Can you create a component diagram showing the main services and their dependencies?"
+- "Help me brainstorm ideas for our new mobile app using a mind map."
+- "Generate an Entity-Relationship Diagram (ERD) for a simple blog application with users, posts, and comments."
+- "Visualize the user flow for our password reset process as a flowchart."
+
+### 10. `domain_modeling`
+- "Model the domain for a university enrollment system. It should include entities like `Student`, `Course`, `Professor`, and `Department`, along with their relationships and key attributes."
+- "Create a domain model for a project management tool. I need entities for `Project`, `Task`, `User`, and `Team`, and rules for how they interact."
+- "I'm building a music streaming service. Help me model the domain, including `Song`, `Album`, `Artist`, and `Playlist` entities, and relationships like 'artist has many albums'."
+- "Model the core concepts of an online booking system for a hotel, including `Guest`, `Room`, `Booking`, and `Payment`."
+- "Design the domain for a social media platform, focusing on entities like `User`, `Post`, `Comment`, `Like`, and `Follow`, and the rules governing their interactions."
+
+### 11. `problem_decomposition`
+- "Break down the epic 'Build a new real-time chat feature' into smaller, manageable user stories and technical tasks."
+- "Decompose the process of migrating our entire infrastructure from on-premise servers to the cloud."
+- "I need to build an e-commerce website. Decompose this large project into key milestones and feature sets for a phased rollout."
+- "Create a work breakdown structure for developing a new mobile app, from design and development to testing and launch."
+- "Decompose the task of 'improving our website's performance by 50%' into specific, actionable sub-tasks."
+
+### 12. `critical_thinking`
+- "Critically evaluate our plan to switch from a monolithic to a microservices architecture. What are the potential hidden costs, risks, and invalid assumptions we're making?"
+- "Analyze my decision to use a NoSQL database for our new project. What are the edge cases where this choice might cause problems? What are the alternative approaches?"
+- "A team member is proposing we build our own authentication system instead of using a battle-tested library. Critically evaluate this proposal for potential issues, especially around security."
+- "Review our company's disaster recovery plan. What are the weakest points? What scenarios have we not considered?"
+- "I'm about to adopt a new, trendy JavaScript framework. Apply critical thinking to this decision. What are the long-term maintenance risks? Is the community support strong enough?"
+
+### 13. `recursive_thinking`
+- "I need to write a function that deeply traverses a JSON object to find all values associated with a specific key. Explain how to solve this using recursion."
+- "Help me design a React component that renders a nested comment thread, like on Reddit. This seems like a recursive problem."
+- "How would you use recursion to calculate the total size of a directory and all its subdirectories on a file system?"
+- "Explain the recursive solution for generating all permutations of a string."
+- "Design a recursive algorithm to solve the Tower of Hanoi puzzle."
+- "I'm trying to parse a mathematical expression with nested parentheses. Can this be solved recursively?"
+
+### 14. `temporal_thinking`
+- "Model the entire user lifecycle in our SaaS product, from 'Trial' to 'Active Subscriber' to 'Churned'. What events trigger transitions between these states?"
+- "Create a temporal model for an e-commerce order, from 'Cart' to 'Paid' to 'Shipped' to 'Delivered' or 'Returned'. Also, model the failure states."
+- "I'm designing a CI/CD pipeline. Model it as a sequence of states: 'Building', 'Testing', 'Deploying to Staging', 'Awaiting Approval', 'Deploying to Production', 'Verifying'."
+- "Model the flow of a document in an approval workflow system. It needs states like 'Draft', 'Pending Review', 'Needs Revision', 'Approved', and 'Archived'."
+- "Visualize the state transitions for a background job that processes video uploads. Include states for 'Queued', 'Processing', 'Failed with Retries', 'Succeeded', and 'Permanently Failed'."
+
+### 15. `stochastic_algorithm`
+- "I need to optimize the hyperparameters for a machine learning model, but each training run is very expensive. Can Bayesian Optimization help me find the best parameters faster?"
+- "We're testing three different headlines for our landing page. How can we use a Multi-Armed Bandit algorithm to quickly find the best one while maximizing conversions during the test?"
+- "I'm building an AI for a simple board game. Would Monte Carlo Tree Search be a good approach to decide the best move?"
+- "Given a sequence of user actions on our website, can we use a Hidden Markov Model to predict whether they are likely to churn?"
+- "Design a simple reinforcement learning agent using a Markov Decision Process to learn how to navigate a maze to find a reward."
 
 ## Contributing
 
