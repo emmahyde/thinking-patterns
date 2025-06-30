@@ -3,9 +3,24 @@
 [![smithery badge](https://smithery.ai/badge/@emmahyde/thinking-patterns)](https://smithery.ai/server/@emmahyde/thinking-patterns)
 [![NPM Version](https://img.shields.io/npm/v/%40emmahyde%2Fthinking-patterns)](https://www.npmjs.com/package/@emmahyde/thinking-patterns)
 
+## 📖 Documentation Index
+
+- **[SUMMARY.md](./SUMMARY.md)** - Executive summary and quick overview
+- **[SYSTEM_INTENT.md](./SYSTEM_INTENT.md)** - Deep dive into the system's purpose and philosophy
+- **[TECHNICAL_ARCHITECTURE.md](./TECHNICAL_ARCHITECTURE.md)** - Technical implementation details and design patterns
+- **[README.md](./README.md)** - This file: comprehensive usage guide and examples
+
+---
+
 A comprehensive Model Context Protocol (MCP) server that combines systematic thinking, mental models, debugging approaches, and stochastic algorithms for enhanced problem-solving capabilities. This server merges the functionality of Clear Thought and Stochastic Thinking servers into a unified cognitive toolkit.
 
 ## Features
+
+### System
+
+[![](./readme/system-map.png)](https://www.mermaidchart.com/play#pako:eNp1VE1v2zAM_StCTq0BY_diGNCPFbsEDZDelsGgZcbmqg9DkrMGw_77KFlOnLi9GNYj_cj3RPrvStoGV3ersix3Rlqzp_ZuZ4QIHWq8Ew6b4b2UVlm3MylHk2k09DHHWRtubooidGTeyLRVDyGgM74ovtbuy7f0KNaPGxGsVb64vY1fCfFS_0YZ6IDi5t6AOgaSoHJMiN7ZWqGuGpRW99ZTIGt-7lZF8WEk13pwCG8i4grfE0ImWOEpArvVr4ndoRyc59rV1HWiXsKZd4tqXzILKXAJyE0Ib9WB02bUXhKaQHuSlcbQ2SYxL9BM_OPYWzbZk0_HgD5c0klHyZjLRhdopvt-ADVAwHQA1w6aq_oT3XY4e_7Sk2HjOLk5mc6tgbStoZhSacsv1k01PwvOLQLv0ftYNGF2z06D59RLTVYpqK2DxHTKGJV9HMtF1oMKVPboGIXxIvi9HzWddT5BALHmkVax8EmcCeyYjnAWdAYy_zM5H8SGZUniifFZGW9EU764Bp2YDJ_JaawGMiPPJOMKy_SP1kjswwAqHVN01jVKisN34k1na6q9A41_rHsbqRfwhTlxNNDR6A7ExeLhmneL9dC2cU-h5ykG2WXWa3i616MPqPk65Dihzg48-b7jrZ_bsA1ukGFwoE6LkBFsqmkS4bTEnwVz0ScCFS9VZqc-mqIDeTbyanyuwTNfy26VNXhsRh3Le2SZPQ_e1aot0Ez5ShpnfAunN_yHgJoU8UbLqcQ2WNlBRMS9anl9Qqf9FBSiKNZPm6K4AB5ft5fIAxz5fwFmjj6AaYgX3az-_Qd2EQSk)
+
+
 
 ### Available Tools
 
@@ -92,430 +107,449 @@ docker run -it emmahyde/thinking-patterns
 <img width="1100" alt="Screenshot 2025-05-29 at 08 41 05" src="https://github.com/user-attachments/assets/43d0c2b7-68fc-4e77-80b6-232d1d19a77c" />
 
 
-## Real-World Usage Examples
+## Real-World Usage Examples for Rails, Ruby & React Developers
 
-### 1. Sequential Thinking - Product Strategy Planning
-```typescript
-// Breaking down a complex product launch strategy
+### 1. Sequential Thinking - Rails API Architecture Planning
+```ruby
+# Planning a multi-tenant Rails API with complex authentication
 const response = await mcp.callTool("sequential_thinking", {
-  thought: "We need to analyze our competitive position before launching the new AI feature. Current market has 3 major players with 60% market share combined. Our differentiator is real-time processing speed.",
+  thought: "Building multi-tenant Rails API. Need to implement row-level security with Postgres RLS. Current: single-tenant monolith with 50k users. Target: support 500 organizations with data isolation.",
   thoughtNumber: 1,
-  totalThoughts: 5,
+  totalThoughts: 4,
   nextThoughtNeeded: true,
   currentStep: {
-    stepDescription: "Conduct competitive analysis and identify market gaps",
+    stepDescription: "Design database schema for multi-tenancy using Postgres schemas vs shared tables with tenant_id",
     recommendedTools: [
       {
-        toolName: "market_research",
+        toolName: "domain_modeling",
         confidence: 0.9,
-        rationale: "Need comprehensive competitor feature comparison",
+        rationale: "Need to model tenant boundaries and data relationships",
         priority: 1
       }
     ],
-    expectedOutcome: "Clear understanding of competitive landscape and positioning opportunities",
-    nextStepConditions: ["Market research completed", "Key differentiators identified"]
+    expectedOutcome: "Clear multi-tenant database architecture with migration path",
+    nextStepConditions: ["Schema design validated", "Performance implications understood"]
   }
 });
 ```
 
-### 2. Mental Model - Business Problem Solving
+### 2. Mental Model - React Component Architecture
 ```typescript
-// Using First Principles thinking for cost optimization
+// Using composition patterns to solve prop drilling in React
 const response = await mcp.callTool("mental_model", {
-  modelName: "First Principles",
-  problem: "Our cloud infrastructure costs have tripled in 6 months, from $10K to $30K monthly, while user growth was only 50%. Need to identify root causes and optimize.",
+  modelName: "Component Composition",
+  problem: "React app with 8-level deep prop drilling for user auth state. Components tightly coupled, hard to test. Need to refactor without adding Redux complexity.",
   steps: [
-    "Break down costs by service: compute (60%), storage (25%), networking (15%)",
-    "Analyze cost per user metrics: went from $2.50 to $5.00 per active user",
-    "Identify inefficiencies: unused reserved instances, over-provisioned databases",
-    "Calculate impact of optimization strategies: right-sizing could save 40%"
+    "Identify leaf components actually using auth state: UserAvatar, ProtectedRoute, ProfileMenu",
+    "Create AuthProvider using Context API with useAuth hook",
+    "Implement compound components pattern for related UI: <UserMenu><UserMenu.Avatar /><UserMenu.Dropdown /></UserMenu>",
+    "Use component composition to eliminate intermediate prop passing"
   ],
-  reasoning: "First principles thinking helps us question each cost component rather than accepting the current architecture as given. By breaking down to fundamental elements, we can rebuild more efficiently.",
-  conclusion: "Implement auto-scaling, consolidate databases, and switch to spot instances for development environments. Projected savings: $12K/month (40% reduction)."
+  reasoning: "Composition over inheritance principle. Context for cross-cutting concerns, compound components for related UI elements. Avoids Redux overhead for simple auth state.",
+  conclusion: "Implement AuthContext with provider pattern, refactor to compound components. Reduces coupling from 8 levels to direct consumption. Testing simplified with mock providers."
 });
 ```
 
-### 3. Debugging Approach - Production System Failure
-```typescript
-// Systematic debugging of a critical production issue
+### 3. Debugging Approach - Rails N+1 Query Issue
+```ruby
+# Systematic debugging of performance degradation in Rails app
 const response = await mcp.callTool("debugging_approach", {
-  approachName: "Root Cause Analysis",
-  issue: "E-commerce checkout system experiencing 15% failure rate during peak hours (6-8 PM). Payment processing succeeds but order confirmation emails fail, causing customer confusion and support tickets.",
+  approachName: "Performance Profiling",
+  issue: "Rails API endpoint timeout after deploy. /api/v1/projects endpoint went from 200ms to 8s response time. Affects project dashboard loading.",
   classification: {
-    category: "reliability",
-    severity: "high",
+    category: "performance",
+    severity: "critical",
     priority: "urgent",
-    impact: "system-wide",
-    frequency: "often"
+    impact: "user-facing",
+    frequency: "always"
   },
   steps: [
-    "Monitor email service logs during peak hours",
-    "Check rate limiting and queuing mechanisms",
-    "Analyze correlation between payment volume and email failures",
-    "Review recent deployments and configuration changes"
+    "Add bullet gem to detect N+1 queries in development",
+    "Enable Rails query logging with explain analyze",
+    "Profile with rack-mini-profiler to identify slow queries",
+    "Check recent commits for association changes"
   ],
   hypotheses: [
     {
-      statement: "Email service rate limits are being exceeded during peak traffic",
-      confidence: 0.8,
-      status: "testing",
-      testPlan: "Monitor email API calls vs. rate limits during 6-8 PM window"
+      statement: "New project.collaborators association missing includes() causing N+1",
+      confidence: 0.85,
+      status: "confirmed",
+      testPlan: "Compare SQL logs before/after adding .includes(:collaborators, :tags)"
     }
   ],
-  findings: "Email service has 1000 requests/minute limit. During peak hours, we're hitting 1200+ requests/minute, causing 15% to be dropped.",
-  resolution: "Implemented exponential backoff retry mechanism and increased email service tier to 2000 requests/minute. Failure rate reduced to <1%."
+  findings: "ProjectsController#index loading collaborators individually for 200 projects. Missing includes(:collaborators, user: :profile) in query.",
+  resolution: "Added .includes(:collaborators, :tags, user: :profile). Response time reduced to 180ms. Added test to prevent regression."
 });
 ```
 
-### 4. Stochastic Algorithm - A/B Testing Optimization
+### 4. Stochastic Algorithm - React Feature Flag Rollout
 ```typescript
-// Multi-armed bandit for dynamic A/B testing
+// Progressive feature rollout using multi-armed bandit
 const response = await mcp.callTool("stochastic_algorithm", {
   algorithm: "Multi-Armed Bandit",
-  problem: "Optimize homepage hero section to maximize sign-up conversions. Have 4 variants: Original (2.1% conversion), Video Demo (2.8%), Customer Testimonials (2.5%), Product Features (2.3%). Need to dynamically allocate traffic to best performers.",
+  problem: "Roll out new React checkout flow to minimize risk. Current flow: 3.2% conversion. New flow: unknown performance. Need safe rollout strategy for 100k daily users.",
   parameters: {
-    "epsilon": "0.1",
-    "variants": "4",
-    "exploration_rate": "10%",
-    "confidence_level": "95%"
+    "epsilon": "0.15",
+    "variants": "2",
+    "success_metric": "checkout_completion_rate",
+    "minimum_sample": "1000"
   },
-  result: "After 2 weeks with 50K visitors: Video Demo variant achieved 3.1% conversion rate with 95% confidence. Recommended allocation: Video Demo (70%), Customer Testimonials (20%), exploration (10%). Projected lift: +47% conversions."
+  result: "Thompson Sampling implementation: Start with 5% traffic. After 2k users: new flow showing 3.8% conversion (95% CI: 3.5-4.1%). Algorithm automatically increased to 35% traffic. Full rollout recommended after 10k samples."
 });
 ```
 
-### 5. Collaborative Reasoning - Technical Architecture Decision
+### 5. Collaborative Reasoning - Rails Microservice Extraction
 ```typescript
-// Multi-stakeholder technical decision making
+// Multi-perspective analysis of monolith decomposition
 const response = await mcp.callTool("collaborative_reasoning", {
-  topic: "Choose database architecture for new social media analytics platform expecting 10M+ users",
+  topic: "Extract payment processing from Rails monolith to separate service. Current: 500k LOC monolith, payment logic intertwined with order management.",
   personas: [
     {
-      id: "cto",
-      name: "CTO",
-      expertise: ["system architecture", "scalability", "cost optimization"],
-      background: "Led scaling at 3 previous startups",
-      perspective: "Long-term technical sustainability and team productivity",
-      biases: ["over-engineering", "perfectionism"],
-      communication: { style: "strategic", tone: "measured" }
+      id: "rails_architect",
+      name: "Senior Rails Developer",
+      expertise: ["Rails patterns", "Active Record", "service objects"],
+      background: "10 years Rails, maintained large monoliths",
+      perspective: "Pragmatic extraction with minimal disruption",
+      biases: ["Rails way preference", "skeptical of microservices"],
+      communication: { style: "practical", tone: "cautious" }
     },
     {
-      id: "senior_dev",
-      name: "Senior Developer",
-      expertise: ["database performance", "query optimization", "development velocity"],
-      background: "8 years building high-traffic applications",
-      perspective: "Developer experience and maintainability",
-      biases: ["status quo bias", "familiar technology preference"],
-      communication: { style: "practical", tone: "direct" }
+      id: "sre",
+      name: "Site Reliability Engineer",
+      expertise: ["distributed systems", "observability", "deployment"],
+      background: "Managed microservices at scale",
+      perspective: "Operational complexity and reliability",
+      biases: ["over-emphasis on monitoring", "complexity aversion"],
+      communication: { style: "data-driven", tone: "analytical" }
     }
   ],
   contributions: [
     {
-      personaId: "cto",
-      content: "We need to consider write-heavy workloads with 1M+ posts/day and complex analytics queries. PostgreSQL with read replicas vs. MongoDB with sharding vs. hybrid approach with PostgreSQL + ClickHouse.",
-      type: "observation",
-      confidence: 0.9
+      personaId: "rails_architect",
+      content: "Start with Strangler Fig pattern. Extract PaymentService class first, then move to engine, finally separate app. Database can stay shared initially with payment_* tables.",
+      type: "proposal",
+      confidence: 0.8
     },
     {
-      personaId: "senior_dev",
-      content: "Team has strong PostgreSQL expertise. MongoDB would require 3-6 months ramp-up. ClickHouse adds operational complexity but analytics performance is 10x better.",
+      personaId: "sre",
+      content: "Need distributed tracing before extraction. Shared database is anti-pattern - plan for event sourcing or sync strategy. What about payment failure rollbacks?",
       type: "concern",
-      confidence: 0.8
+      confidence: 0.9
     }
   ],
-  stage: "critique",
-  activePersonaId: "cto",
-  sessionId: "db-decision-2024",
-  iteration: 2,
+  stage: "synthesis",
+  activePersonaId: "rails_architect",
+  sessionId: "payment-extraction-2024",
+  iteration: 3,
   nextContributionNeeded: true
 });
 ```
 
-### 6. Decision Framework - Vendor Selection
+### 6. Decision Framework - React State Management
 ```typescript
-// Structured decision analysis for choosing a payment processor
+// Choosing state management solution for growing React app
 const response = await mcp.callTool("decision_framework", {
-  decisionStatement: "Select payment processor for international e-commerce platform processing $2M annually across 25 countries",
+  decisionStatement: "Select state management for React e-commerce app. Currently prop drilling with 50+ components. Need: cart state, user auth, product catalog, UI state.",
   options: [
-    { name: "Stripe", description: "Developer-friendly with excellent APIs" },
-    { name: "PayPal", description: "Widely recognized brand with buyer protection" },
-    { name: "Adyen", description: "Enterprise-focused with local payment methods" }
+    { name: "Redux Toolkit", description: "Official Redux with modern patterns" },
+    { name: "Zustand", description: "Lightweight alternative with simple API" },
+    { name: "Context + useReducer", description: "Built-in React solution" },
+    { name: "Valtio", description: "Proxy-based state with mutable API" }
   ],
   analysisType: "multi-criteria",
   criteria: [
     {
-      name: "Transaction Fees",
-      description: "Cost per transaction including international fees",
-      weight: 0.3,
-      evaluationMethod: "quantitative"
-    },
-    {
-      name: "Global Coverage",
-      description: "Number of countries and local payment methods supported",
-      weight: 0.25,
-      evaluationMethod: "quantitative"
-    },
-    {
-      name: "Developer Experience",
-      description: "API quality, documentation, integration ease",
+      name: "Learning Curve",
+      description: "Time for team to become productive",
       weight: 0.25,
       evaluationMethod: "qualitative"
     },
     {
-      name: "Reliability",
-      description: "Uptime, fraud protection, dispute resolution",
+      name: "Bundle Size",
+      description: "Impact on app performance",
       weight: 0.2,
+      evaluationMethod: "quantitative"
+    },
+    {
+      name: "DevX",
+      description: "Developer experience and tooling",
+      weight: 0.3,
+      evaluationMethod: "qualitative"
+    },
+    {
+      name: "Type Safety",
+      description: "TypeScript support and type inference",
+      weight: 0.25,
       evaluationMethod: "qualitative"
     }
   ],
   stage: "evaluation",
-  decisionId: "payment-processor-2024",
+  decisionId: "state-mgmt-2024",
   iteration: 1,
   nextStageNeeded: true
 });
 ```
 
-### 7. Metacognitive Monitoring - Code Review Quality
-```typescript
-// Self-assessment during critical system review
+### 7. Metacognitive Monitoring - Ruby Performance Optimization
+```ruby
+# Self-assessment during critical performance optimization
 const response = await mcp.callTool("metacognitive_monitoring", {
-  task: "Review authentication system changes before production deployment. New OAuth2 implementation affects 100K+ users.",
+  task: "Optimize Ruby background job processing. Current: 1k jobs/minute, target: 10k jobs/minute. Using Sidekiq with Redis, seeing Redis connection pool exhaustion.",
   stage: "execution",
   overallConfidence: 0.7,
   knowledgeAssessment: {
-    domain: "OAuth2 Security Implementation",
-    knowledgeLevel: "proficient",
-    confidenceScore: 0.8,
-    supportingEvidence: "Successfully implemented OAuth2 in 3 previous projects, familiar with security best practices",
-    knownLimitations: ["Limited experience with this specific OAuth provider's edge cases", "Haven't tested token refresh under high load"]
+    domain: "Ruby Concurrency and Sidekiq Optimization",
+    knowledgeLevel: "intermediate",
+    confidenceScore: 0.7,
+    supportingEvidence: "Optimized Sidekiq at previous job, familiar with Redis patterns",
+    knownLimitations: ["Haven't worked with connection pooling at this scale", "Limited experience with Redis Cluster"]
   },
   claims: [
     {
-      claim: "The implementation follows OAuth2 security best practices",
-      status: "fact",
-      confidenceScore: 0.9,
-      evidenceBasis: "Code follows OWASP guidelines, uses secure token storage, implements proper scope validation"
+      claim: "Connection pool size is the bottleneck",
+      status: "hypothesis",
+      confidenceScore: 0.8,
+      evidenceBasis: "Redis TIME_WAIT connections growing, pool size still at default 5"
     },
     {
-      claim: "Token refresh mechanism will handle concurrent requests correctly",
+      claim: "Jobs can be batched to reduce Redis round trips",
       status: "uncertain",
       confidenceScore: 0.6,
-      evidenceBasis: "Implemented locking mechanism but haven't load tested this specific scenario"
+      evidenceBasis: "Many jobs are independent SMS sends, but unsure about batching impact on latency"
     }
   ],
-  uncertaintyAreas: ["Edge case handling under high concurrent load", "Provider-specific token refresh behavior"],
-  recommendedApproach: "Conduct focused load testing on token refresh mechanism and review provider documentation for edge cases before deployment",
-  monitoringId: "auth-review-2024",
+  uncertaintyAreas: ["Optimal connection pool size for our workload", "Impact of job batching on delivery SLAs"],
+  recommendedApproach: "Increase pool size incrementally while monitoring Redis CPU. Prototype job batching with small subset to measure latency impact.",
+  monitoringId: "sidekiq-optimization-2024",
   iteration: 1,
   nextAssessmentNeeded: true
 });
 ```
 
-### 8. Scientific Method - Feature Impact Hypothesis
+### 8. Scientific Method - React Performance Hypothesis
 ```typescript
-// Testing hypothesis about user engagement feature
+// Testing hypothesis about React re-render optimization
 const response = await mcp.callTool("scientific_method", {
   stage: "experiment",
-  observation: "User session duration has plateaued at 4.2 minutes average, while industry benchmark is 6.8 minutes",
-  question: "How can we increase user engagement and session duration?",
+  observation: "Product list page with 500 items has 2s interaction delay when filtering. React DevTools shows all items re-rendering on every filter change.",
+  question: "Will React.memo and useMemo reduce re-renders and improve filter performance?",
   hypothesis: {
-    statement: "Adding personalized content recommendations will increase average session duration by at least 25%",
+    statement: "Memoizing ProductCard components and filter calculations will reduce re-render time by 80%",
     variables: [
       {
-        name: "personalized_recommendations",
+        name: "memoization_strategy",
         type: "independent",
-        operationalization: "ML-powered content suggestions based on user behavior and preferences"
+        operationalization: "React.memo on ProductCard, useMemo for filtered items array"
       },
       {
-        name: "session_duration",
+        name: "interaction_delay",
         type: "dependent",
-        operationalization: "Time from login to logout, measured in minutes"
+        operationalization: "Time between filter click and UI update, measured via Performance API"
       }
     ],
-    assumptions: ["Users want personalized content", "Recommendation algorithm is accurate", "Page load times remain constant"],
-    hypothesisId: "engagement-2024-q1",
-    confidence: 0.75,
-    domain: "User Experience",
+    assumptions: ["ProductCard props are mostly stable", "Filter calculation is expensive", "Re-renders are the primary bottleneck"],
+    hypothesisId: "react-perf-2024",
+    confidence: 0.8,
+    domain: "Frontend Performance",
     iteration: 1,
     status: "testing"
   },
   experiment: {
-    design: "A/B Test",
-    methodology: "50/50 split test over 4 weeks with 10K users per group",
+    design: "Before/after comparison",
+    methodology: "Implement memoization, measure with React Profiler and Performance API",
     predictions: [
       {
-        if: "Users see personalized recommendations on homepage and content pages",
-        then: "Average session duration will increase from 4.2 to 5.25+ minutes (25% improvement)",
-        else: "Session duration will remain at baseline 4.2 minutes"
+        if: "ProductCard wrapped in React.memo with proper prop comparison",
+        then: "Only filtered items will re-render, reducing render time from 2000ms to 400ms",
+        else: "All items continue to re-render"
       }
     ],
-    controlMeasures: ["Same user demographics in both groups", "Identical page load times", "No other feature changes during test period"],
-    experimentId: "engagement-ab-test-2024",
-    hypothesisId: "engagement-2024-q1"
+    controlMeasures: ["Same dataset", "Same testing device", "Production build"],
+    experimentId: "memo-optimization-test",
+    hypothesisId: "react-perf-2024"
   },
-  inquiryId: "user-engagement-study",
+  inquiryId: "react-performance-study",
   iteration: 1,
   nextStageNeeded: true
 });
 ```
 
-### 9. Structured Argumentation - Technical Debt Decision
-```typescript
-// Arguing for technical debt prioritization
+### 9. Structured Argumentation - Rails Upgrade Decision
+```ruby
+# Arguing for Rails version upgrade
 const response = await mcp.callTool("structured_argumentation", {
-  claim: "We should prioritize refactoring the user authentication system over building new features this quarter",
+  claim: "We should upgrade from Rails 6.1 to Rails 7.1 this quarter despite feature pressure",
   premises: [
-    "Current auth system has 23% of all production bugs",
-    "Security vulnerabilities increase customer churn by 15%",
-    "Authentication refactor will reduce future development velocity by 40%",
-    "New features are projected to bring in $500K ARR",
-    "Security incidents cost average $2.3M per breach"
+    "Rails 6.1 security support ends in 6 months",
+    "Rails 7.1 offers 40% performance improvement in Active Record",
+    "Current tech debt interest: 20% of sprint capacity",
+    "Upgrade estimated at 3 sprints with full test coverage",
+    "New features delayed by old Rails version: native ES6 modules, Hotwire"
   ],
-  conclusion: "Despite short-term revenue impact, authentication refactor is critical for long-term business sustainability and customer trust",
-  argumentType: "thesis",
-  confidence: 0.85,
+  conclusion: "Rails upgrade is critical for security, performance, and developer productivity. Delaying increases risk and technical debt exponentially.",
+  argumentType: "risk-mitigation",
+  confidence: 0.9,
   strengths: [
-    "Quantified business impact of security issues",
-    "Clear correlation between auth bugs and customer issues",
-    "Risk mitigation approach aligns with enterprise customer requirements"
+    "Clear security deadline creates urgency",
+    "Performance gains directly impact user experience and costs",
+    "Enables modern features blocking current development"
   ],
   weaknesses: [
-    "Revenue impact is immediate while security benefits are potential",
-    "Assumes auth refactor will eliminate all security issues",
-    "Doesn't consider partial refactor options"
+    "3 sprints of feature development postponed",
+    "Gem compatibility might require additional work",
+    "Team needs upskilling on Rails 7 features"
   ],
   nextArgumentNeeded: false
 });
 ```
 
-### 10. Visual Reasoning - System Architecture Optimization
+### 10. Visual Reasoning - React Component Architecture
 ```typescript
-// Analyzing and optimizing microservices architecture
+// Analyzing component hierarchy for optimization
 const response = await mcp.callTool("visual_reasoning", {
   operation: "analyze",
-  diagramId: "microservices-architecture-2024",
-  diagramType: "network-diagram",
-  purpose: "Optimize microservices communication patterns to reduce latency and improve reliability",
+  diagramId: "react-component-tree-2024",
+  diagramType: "tree-diagram",
+  purpose: "Identify prop drilling and unnecessary re-renders in checkout flow",
   elements: [
     {
-      id: "user-service",
+      id: "app-root",
       type: "node",
-      label: "User Service",
+      label: "App",
       properties: {
-        position: { x: 100, y: 100 },
+        position: { x: 400, y: 50 },
         style: { color: "blue", size: "large" },
-        semantics: { category: "core-service", importance: "critical" }
+        semantics: { rerenders: "frequently", props: ["user", "cart", "theme"] }
       },
-      connectedTo: ["auth-service", "profile-service", "notification-service"]
+      connectedTo: ["checkout-page", "header", "footer"]
     },
     {
-      id: "auth-service",
+      id: "checkout-page",
       type: "node",
-      label: "Auth Service",
+      label: "CheckoutPage",
       properties: {
-        position: { x: 300, y: 100 },
-        style: { color: "red", size: "medium" },
-        semantics: { category: "security", importance: "critical" }
+        position: { x: 400, y: 150 },
+        style: { color: "orange", size: "large" },
+        semantics: { rerenders: "frequently", props: ["user", "cart", "updateCart"] }
       },
-      connectedTo: ["user-service", "api-gateway"]
+      connectedTo: ["cart-summary", "payment-form", "shipping-form"]
     },
     {
-      id: "high-latency-connection",
-      type: "edge",
-      source: "user-service",
-      target: "notification-service",
+      id: "cart-summary",
+      type: "node",
+      label: "CartSummary",
       properties: {
+        position: { x: 200, y: 250 },
         style: { color: "red", size: "medium" },
-        metadata: { latency: "450ms", frequency: "high" }
+        semantics: { rerenders: "very-frequently", props: ["cart", "updateCart"] }
       }
     }
   ],
-  observation: "User service has synchronous calls to notification service causing 450ms latency for user profile updates",
-  insight: "Converting user->notification communication to async messaging could reduce user-facing latency by 80%",
-  transformationType: "restructure",
+  observation: "CartSummary re-renders on every form input change due to cart object reference changing",
+  insight: "Implementing React.memo and splitting cart state (items vs metadata) could eliminate 80% of re-renders",
+  transformationType: "optimization",
   transformationDetails: {
-    target: ["high-latency-connection"],
-    rationale: "Replace synchronous HTTP calls with asynchronous message queue to decouple services",
-    parameters: { "pattern": "event-driven", "queue": "Redis Streams" }
+    target: ["cart-summary", "checkout-page"],
+    rationale: "Separate cart items from cart metadata, memoize expensive calculations",
+    parameters: { "pattern": "state-splitting", "optimization": "React.memo" }
   },
   iteration: 1,
   nextOperationNeeded: true
 });
 ```
 
-### 11. Domain Modeling - E-commerce Platform
-```typescript
-// Modeling order management domain for complex e-commerce
+### 11. Domain Modeling - Rails E-commerce Domain
+```ruby
+# Modeling complex e-commerce domain in Rails
 const response = await mcp.callTool("domain_modeling", {
-  domainName: "Order Management",
-  description: "Complex e-commerce order processing supporting multiple payment methods, international shipping, inventory management, and return handling",
+  domainName: "Multi-vendor Marketplace",
+  description: "Rails application supporting multiple vendors, commission structures, inventory tracking, and payment splitting",
   entities: [
     {
-      name: "Order",
-      description: "Customer purchase containing multiple items with payment and shipping details",
-      attributes: ["orderId", "customerId", "orderDate", "status", "totalAmount", "currency", "shippingAddress"],
-      behaviors: ["calculateTotal", "validateInventory", "processPayment", "generateInvoice"],
-      constraints: ["Total amount must be positive", "Customer must exist", "All items must be available"]
+      name: "Vendor",
+      description: "Seller account with inventory and payment details",
+      attributes: ["id", "shop_name", "commission_rate", "stripe_account_id", "status"],
+      behaviors: ["calculate_payout", "update_inventory", "process_refund"],
+      constraints: ["Commission rate between 5-30%", "Must have verified Stripe account", "Unique shop_name"]
     },
     {
-      name: "OrderItem",
-      description: "Individual product within an order with quantity and pricing",
-      attributes: ["itemId", "productId", "quantity", "unitPrice", "discount"],
-      behaviors: ["calculateSubtotal", "validateStock"],
-      constraints: ["Quantity must be positive", "Unit price must be positive"]
+      name: "Product",
+      description: "Item listed by vendor with variants and inventory",
+      attributes: ["id", "vendor_id", "name", "base_price", "inventory_count"],
+      behaviors: ["check_availability", "reserve_inventory", "calculate_vendor_price"],
+      constraints: ["Belongs to one vendor", "Price must be positive", "Inventory non-negative"]
+    },
+    {
+      name: "Order",
+      description: "Customer purchase potentially spanning multiple vendors",
+      attributes: ["id", "customer_id", "total_amount", "status", "placed_at"],
+      behaviors: ["split_by_vendor", "calculate_commissions", "process_payments"],
+      constraints: ["Must have at least one item", "Status transitions are one-way"]
     }
   ],
   relationships: [
     {
-      name: "contains",
+      name: "sells",
       type: "one-to-many",
+      sourceEntity: "Vendor",
+      targetEntity: "Product",
+      description: "Vendor sells multiple products",
+      cardinality: "1..*",
+      implementation: "has_many :products, dependent: :restrict_with_error"
+    },
+    {
+      name: "contains_items_from",
+      type: "many-to-many",
       sourceEntity: "Order",
-      targetEntity: "OrderItem",
-      description: "An order contains one or more order items",
-      cardinality: "1..*"
+      targetEntity: "Vendor",
+      description: "Order can contain products from multiple vendors",
+      cardinality: "*..*",
+      implementation: "has_many :vendors, through: :order_items"
     }
   ],
   domainRules: [
     {
-      name: "Inventory Reservation",
-      description: "When order is placed, inventory must be reserved until payment confirmation",
+      name: "Commission Calculation",
+      description: "Platform commission deducted from vendor payout on successful delivery",
       type: "business-rule",
-      entities: ["Order", "OrderItem"],
-      condition: "Order status changes to 'placed'",
-      consequence: "Reserve inventory for all order items for 15 minutes"
+      entities: ["Order", "Vendor"],
+      condition: "Order transitions to 'delivered' status",
+      consequence: "Calculate vendor_payout = item_total * (1 - vendor.commission_rate)",
+      implementation: "after_transition to: :delivered, do: :calculate_vendor_payouts"
     }
   ],
-  stage: "logical",
-  abstractionLevel: "medium",
-  paradigm: "domain-driven",
-  modelingId: "ecommerce-order-mgmt",
-  iteration: 1,
+  stage: "implementation",
+  abstractionLevel: "detailed",
+  paradigm: "active-record",
+  modelingId: "marketplace-domain-2024",
+  iteration: 2,
   nextStageNeeded: true
 });
 ```
 
-### 12. Problem Decomposition - Mobile App Development
+### 12. Problem Decomposition - React Native App Feature
 ```typescript
-// Breaking down complex mobile app development project
+// Breaking down offline-first React Native feature
 const response = await mcp.callTool("problem_decomposition", {
-  problem: "Develop cross-platform mobile app for fitness tracking with social features, targeting 100K users in 6 months. Must include workout tracking, social sharing, progress analytics, and premium subscriptions.",
+  problem: "Implement offline-first React Native app for field technicians. Must sync work orders, capture photos, work without internet for days. 50+ technicians in rural areas.",
   decomposition: [
     {
-      id: "mvp-core",
-      description: "MVP with basic workout tracking and user authentication",
-      category: "development",
+      id: "local-storage",
+      description: "Implement SQLite with TypeORM for local data persistence",
+      category: "infrastructure",
       complexity: "high",
       priority: "critical",
-      effortEstimate: "8 weeks",
+      effortEstimate: "2 weeks",
       dependencies: [],
       acceptanceCriteria: [
         {
-          description: "Users can create accounts and log in securely",
+          description: "Store 1000+ work orders with photos locally",
           measurable: true,
           priority: "must-have",
           testable: true
         },
         {
-          description: "Users can track basic workouts (time, type, calories)",
+          description: "Queue updates for sync when online",
           measurable: true,
           priority: "must-have",
           testable: true
@@ -523,25 +557,25 @@ const response = await mcp.callTool("problem_decomposition", {
       ],
       risks: [
         {
-          description: "Cross-platform performance issues",
-          probability: 0.3,
-          impact: "medium",
+          description: "SQLite performance with large photo blobs",
+          probability: 0.4,
+          impact: "high",
           category: "technical",
-          mitigation: "Prototype testing on both iOS and Android early"
+          mitigation: "Store photos in filesystem, references in DB"
         }
       ]
     },
     {
-      id: "social-features",
-      description: "Social sharing, friend connections, and activity feeds",
-      category: "feature-development",
-      complexity: "medium",
-      priority: "high",
-      effortEstimate: "4 weeks",
-      dependencies: ["mvp-core"],
+      id: "sync-engine",
+      description: "Build bidirectional sync with conflict resolution",
+      category: "feature",
+      complexity: "very-high",
+      priority: "critical",
+      effortEstimate: "3 weeks",
+      dependencies: ["local-storage"],
       acceptanceCriteria: [
         {
-          description: "Users can share workout achievements on social platforms",
+          description: "Handle concurrent edits with last-write-wins strategy",
           measurable: true,
           priority: "must-have",
           testable: true
@@ -549,307 +583,307 @@ const response = await mcp.callTool("problem_decomposition", {
       ]
     },
     {
-      id: "premium-subscriptions",
-      description: "Payment processing and premium feature access",
-      category: "monetization",
-      complexity: "high",
+      id: "offline-ui",
+      description: "UI indicators for sync status and offline mode",
+      category: "user-experience",
+      complexity: "medium",
       priority: "high",
-      effortEstimate: "3 weeks",
-      dependencies: ["mvp-core"],
+      effortEstimate: "1 week",
+      dependencies: ["sync-engine"],
       stakeholders: [
         {
-          name: "Product Manager",
-          role: "owner",
+          name: "Field Operations Manager",
+          role: "primary-user",
           influence: "high",
-          interest: "high"
-        },
-        {
-          name: "Legal Team",
-          role: "reviewer",
-          influence: "medium",
           interest: "high"
         }
       ]
     }
   ],
-  methodology: "Feature-driven Development",
-  objectives: ["Launch MVP in 12 weeks", "Achieve 10K downloads in first month", "Establish premium conversion pipeline"]
+  methodology: "Bottom-up Implementation",
+  objectives: ["MVP in 6 weeks", "Support 1 week offline operation", "Sync within 2 minutes on connection"]
 });
 ```
 
-### 13. Critical Thinking - Investment Decision Analysis
-```typescript
-// Critical analysis of a startup acquisition opportunity
+### 13. Critical Thinking - Ruby Gem Selection
+```ruby
+# Critical analysis of authentication gem choice
 const response = await mcp.callTool("critical_thinking", {
-  subject: "Proposed acquisition of AI startup for $15M. Target: 50-person company with patent portfolio and $2M ARR",
+  subject: "Choosing between Devise, Clearance, and custom auth for new Rails API. API-only, JWT tokens needed, 100k+ users expected.",
   potentialIssues: [
     {
-      description: "Patent portfolio may have prior art challenges not discovered in initial review",
-      severity: "high",
-      category: "legal",
-      likelihood: 0.25,
-      mitigation: "Conduct comprehensive patent landscape analysis with IP law firm"
+      description: "Devise is overkill for API-only auth, includes unnecessary view layers",
+      severity: "medium",
+      category: "architectural",
+      likelihood: 0.8,
+      mitigation: "Use devise-jwt extension or consider lighter alternatives"
     },
     {
-      description: "Key technical talent may leave post-acquisition, reducing core value proposition",
+      description: "Custom auth risks security vulnerabilities without expert review",
       severity: "critical",
-      category: "technical",
-      likelihood: 0.4,
-      mitigation: "Structure retention bonuses and equity for top 10 engineers"
+      category: "security",
+      likelihood: 0.6,
+      mitigation: "If custom, use has_secure_password and follow OWASP guidelines"
     }
   ],
   edgeCases: [
     {
-      scenario: "Competing acquisition offer emerges during due diligence",
-      conditions: ["Bidding war scenario", "Target company shops the deal"],
-      currentBehavior: "No competitive bidding strategy defined",
-      expectedBehavior: "Pre-defined maximum bid threshold and walk-away criteria",
-      testability: "moderate",
+      scenario: "JWT token refresh during high-traffic periods",
+      conditions: ["Multiple simultaneous refresh requests", "Redis connection failures"],
+      currentBehavior: "Devise-jwt doesn't handle concurrent refresh well",
+      expectedBehavior: "Atomic token refresh with race condition handling",
+      testability: "high",
       businessImpact: "high"
     }
   ],
   invalidAssumptions: [
     {
-      statement: "AI talent will be excited to join a larger, more bureaucratic organization",
-      validity: "questionable",
-      verification: "Survey similar acquisitions in our portfolio for retention rates",
-      consequences: "If wrong, could lose 50%+ of technical team within 12 months"
+      statement: "JWT is always better than sessions for API auth",
+      validity: "contextual",
+      verification: "Consider session storage for internal APIs, JWT for mobile/external",
+      consequences: "JWT can't be revoked easily, larger payload size"
     },
     {
-      statement: "$2M ARR will scale linearly with our sales resources",
-      validity: "invalid",
-      verification: "Analyze product-market fit and sales cycle complexity",
-      dependencies: ["Customer base analysis", "Sales process evaluation"]
+      statement: "Popular gems are always more secure",
+      validity: "questionable",
+      verification: "Review gem's issue tracker and security advisories",
+      dependencies: ["Gem maintenance status", "Security response time"]
     }
   ],
   alternativeApproaches: [
     {
-      name: "Strategic Partnership",
-      description: "Form joint venture instead of full acquisition",
-      advantages: ["Lower financial risk", "Retain startup agility", "Test integration before full commitment"],
-      disadvantages: ["Less control over roadmap", "Potential for partner conflicts"],
+      name: "Rodauth with JWT",
+      description: "Modern auth framework with JWT plugin",
+      advantages: ["Highly configurable", "Security-first design", "Active maintenance"],
+      disadvantages: ["Smaller community", "Steeper learning curve"],
       complexity: "medium",
-      feasibility: 0.8,
-      timeToImplement: "3-6 months"
-    },
-    {
-      name: "Acqui-hire Focus",
-      description: "Target primarily talent acquisition with technology as secondary benefit",
-      advantages: ["Clear success metrics", "Lower valuation risk", "Faster integration"],
-      disadvantages: ["May miss breakthrough technology value", "Patent portfolio underutilized"],
-      complexity: "low",
-      feasibility: 0.9,
-      timeToImplement: "2-4 months"
+      feasibility: 0.85,
+      timeToImplement: "1-2 weeks"
     }
   ],
   analysisDepth: "comprehensive",
-  confidenceLevel: 0.75,
-  analysisId: "acquisition-analysis-2024"
+  confidenceLevel: 0.8,
+  analysisId: "auth-gem-analysis-2024"
 });
 ```
 
-### 14. Recursive Thinking - Algorithm Optimization
+### 14. Recursive Thinking - React Tree Component
 ```typescript
-// Recursive approach to optimizing a recommendation algorithm
+// Recursive approach to building file explorer component
 const response = await mcp.callTool("recursive_thinking", {
-  problem: "Optimize collaborative filtering recommendation system that currently takes 45 seconds to generate recommendations for 1M users. Target: sub-5 second response time.",
+  problem: "Build React file tree component supporting 10k+ nodes, lazy loading, search, and drag-drop. Current naive implementation freezes browser at 1k nodes.",
   baseCases: [
     {
-      condition: "User has < 10 interactions",
-      solution: "Use popularity-based recommendations from precomputed cache",
+      condition: "Leaf node (file)",
+      solution: "Render simple FileItem component with icon and name",
       complexity: "O(1)"
     },
     {
-      condition: "Processing < 1000 users",
-      solution: "Use standard matrix factorization without optimization",
-      complexity: "O(n²)"
+      condition: "Empty folder",
+      solution: "Render FolderItem with empty state indicator",
+      complexity: "O(1)"
     }
   ],
   recursiveCases: [
     {
-      condition: "Large user base (>1000 users)",
-      decomposition: "Divide users into cohorts based on behavior patterns, process each cohort separately",
-      recombination: "Merge cohort recommendations using weighted scoring based on user similarity",
-      reductionFactor: "Split into roughly equal cohorts of ~1000 users each"
+      condition: "Folder with children",
+      decomposition: "Render FolderItem, recursively render visible children only",
+      recombination: "Virtualize with react-window, render only viewport items",
+      reductionFactor: "Each level handles its immediate children only"
     },
     {
-      condition: "High-dimensional item space (>10K items)",
-      decomposition: "Apply hierarchical clustering to group similar items, process item clusters recursively",
-      recombination: "Aggregate cluster recommendations and re-rank based on user preferences"
+      condition: "Search active",
+      decomposition: "Recursively search each subtree, maintain path to matches",
+      recombination: "Flatten matched paths, auto-expand parent folders",
+      reductionFactor: "Prune subtrees without matches"
     }
   ],
   terminationConditions: [
-    "Cohort size reaches base case threshold (<1000 users)",
-    "Item cluster size manageable for direct computation",
-    "Response time target achieved (5 seconds)",
-    "Recommendation quality threshold maintained (>85% user satisfaction)"
+    "Reached leaf node (file)",
+    "Folder is collapsed (skip children)",
+    "Node is outside viewport (virtualization)",
+    "Search term doesn't match subtree"
   ],
   optimizations: [
     {
-      technique: "memoization",
-      description: "Cache intermediate similarity calculations between user cohorts",
-      implementation: "Redis-based cache with 1-hour TTL for cohort similarity matrices",
-      complexityImprovement: "Reduces repeated computation from O(n²) to O(1) for cached pairs",
-      tradeoffs: ["Increased memory usage", "Cache invalidation complexity"]
+      technique: "virtualization",
+      description: "Render only visible nodes using react-window",
+      implementation: "FixedSizeTree with windowing based on expanded state",
+      complexityImprovement: "O(n) to O(k) where k is viewport size",
+      tradeoffs: ["Complex scroll position calculation", "Dynamic height handling"]
     },
     {
-      technique: "parallel processing",
-      description: "Process user cohorts in parallel using worker threads",
-      implementation: "Map-reduce pattern with cohort-level parallelization",
-      complexityImprovement: "Near-linear speedup with number of available cores"
+      technique: "memoization",
+      description: "Cache rendered subtrees with React.memo",
+      implementation: "Memo based on node ID and expanded state",
+      complexityImprovement: "Avoid re-rendering unchanged subtrees"
     }
   ],
   complexityAnalysis: {
-    timeComplexity: "O(n log n) with cohort division vs O(n²) baseline",
-    spaceComplexity: "O(n) for cohort storage plus O(k) for cache where k is number of cached similarities",
-    maxStackDepth: "O(log n) recursion depth for cohort subdivision"
+    timeComplexity: "O(k) render time where k = visible nodes, O(n) for initial data structure",
+    spaceComplexity: "O(n) for tree structure, O(k) for rendered components",
+    maxStackDepth: "O(d) where d is tree depth"
   },
-  domain: "Machine Learning Systems",
-  problemId: "recommendation-optimization-2024"
+  domain: "React UI Components",
+  problemId: "file-tree-optimization-2024"
 });
 ```
 
-### 15. Temporal Thinking - User Journey Optimization
-```typescript
-// Modeling user onboarding flow over time to identify drop-off points
+### 15. Temporal Thinking - Rails Background Job Pipeline
+```ruby
+# Modeling async job processing pipeline with failure handling
 const response = await mcp.callTool("temporal_thinking", {
-  context: "SaaS application user onboarding process with 65% drop-off rate between signup and first successful action. Need to model user journey to identify intervention points.",
-  initialState: "anonymous_visitor",
+  context: "Rails app processing user uploads through multiple stages: virus scan → image processing → CDN upload → notification. Current: 15% jobs stuck in limbo.",
+  initialState: "upload_received",
   states: [
     {
-      name: "anonymous_visitor",
-      description: "User browsing marketing site, not yet registered",
+      name: "upload_received",
+      description: "File uploaded to temporary storage",
       properties: {
-        duration: { typical: "3 minutes", max: "30 minutes" },
-        isStable: false,
-        priority: "medium"
-      },
-      entryActions: ["Track page views", "Show value proposition"],
-      invariants: ["User has not provided email", "No authentication cookie present"]
-    },
-    {
-      name: "trial_signup",
-      description: "User has provided email and created account",
-      properties: {
-        duration: { min: "30 seconds", typical: "2 minutes", max: "10 minutes" },
-        isStable: false,
-        priority: "critical"
-      },
-      entryActions: ["Send welcome email", "Initialize user workspace", "Track signup conversion"],
-      exitActions: ["Record time to first action"]
-    },
-    {
-      name: "onboarding_tutorial",
-      description: "User going through guided product tutorial",
-      properties: {
-        duration: { typical: "8 minutes", max: "20 minutes" },
+        duration: { typical: "100ms", max: "1s" },
         isStable: false,
         priority: "high"
       },
-      entryActions: ["Start tutorial tracking", "Show progress indicator"],
-      invariants: ["Tutorial completion rate tracked", "Help tooltips available"]
+      entryActions: ["Generate job ID", "Store file metadata", "Enqueue virus scan"],
+      invariants: ["File exists in tmp storage", "Job record created"]
     },
     {
-      name: "first_value_achieved",
-      description: "User has completed their first meaningful action",
+      name: "virus_scanning",
+      description: "ClamAV scanning file for malware",
       properties: {
-        duration: { min: "1 day" },
-        isStable: true,
+        duration: { typical: "2s", max: "30s", timeout: "60s" },
+        isStable: false,
         priority: "critical"
       },
-      entryActions: ["Send congratulations email", "Unlock advanced features"],
-      invariants: ["At least one core action completed"]
+      entryActions: ["Update job status", "Call ClamAV service"],
+      exitActions: ["Log scan results", "Clean up if infected"],
+      invariants: ["Scan process has file lock"]
     },
     {
-      name: "churned",
-      description: "User abandoned the onboarding process",
+      name: "image_processing",
+      description: "Generate thumbnails and optimize images",
       properties: {
+        duration: { typical: "5s", max: "60s" },
+        isStable: false,
+        priority: "medium"
+      },
+      entryActions: ["Load image into memory", "Apply transformations"],
+      exitActions: ["Save processed versions", "Update metadata"]
+    },
+    {
+      name: "cdn_uploading",
+      description: "Upload to S3 and invalidate CloudFront",
+      properties: {
+        duration: { typical: "3s", max: "30s" },
+        isStable: false,
+        priority: "medium",
+        retryable: true
+      },
+      entryActions: ["Generate S3 keys", "Start multipart upload"],
+      exitActions: ["Update URLs in database", "Delete temp files"]
+    },
+    {
+      name: "completed",
+      description: "Processing complete, user notified",
+      properties: {
+        isStable: true,
         isFinal: true,
         priority: "low"
       },
-      entryActions: ["Send re-engagement email series", "Track churn reason"]
+      entryActions: ["Send success notification", "Update file record", "Trigger webhooks"]
+    },
+    {
+      name: "failed",
+      description: "Processing failed, requires intervention",
+      properties: {
+        isStable: true,
+        isFinal: true,
+        priority: "high"
+      },
+      entryActions: ["Send failure notification", "Log error details", "Alert ops team if critical"]
     }
   ],
   events: [
     {
-      name: "signup_completed",
-      description: "User successfully creates account with valid email",
+      name: "virus_scan_timeout",
+      description: "ClamAV didn't respond within 60 seconds",
+      properties: { type: "timeout", predictability: "stochastic" },
+      triggers: ["Sidekiq job timeout", "ClamAV service down"]
+    },
+    {
+      name: "s3_rate_limit",
+      description: "Hit S3 API rate limits",
       properties: { type: "external", predictability: "stochastic" },
-      triggers: ["Form submission", "Social login"]
-    },
-    {
-      name: "tutorial_abandoned",
-      description: "User leaves tutorial without completing",
-      properties: { type: "condition", predictability: "stochastic" },
-      preconditions: ["In tutorial for >2 minutes", "No progress in last 30 seconds"]
-    },
-    {
-      name: "value_action_completed",
-      description: "User completes core product action (create project, invite team, etc.)",
-      properties: { type: "internal", predictability: "deterministic" }
+      preconditions: ["High upload volume", "Retry storms"]
     }
   ],
   transitions: [
     {
-      from: "anonymous_visitor",
-      to: "trial_signup",
-      event: "signup_completed",
-      properties: { probability: 0.12 },
-      action: "Initialize user onboarding flow"
+      from: "upload_received",
+      to: "virus_scanning",
+      event: "scan_job_started",
+      properties: { probability: 0.98 },
+      action: "VirusScanJob.perform_async(file_id)"
     },
     {
-      from: "trial_signup",
-      to: "onboarding_tutorial",
-      event: "tutorial_started",
-      properties: { probability: 0.85 },
-      guard: "Account activation completed"
+      from: "virus_scanning",
+      to: "failed",
+      event: "virus_detected",
+      properties: { probability: 0.002 },
+      action: "Delete infected file and notify user"
     },
     {
-      from: "onboarding_tutorial",
-      to: "churned",
-      event: "tutorial_abandoned",
-      properties: { probability: 0.45 },
-      action: "Track abandonment point and trigger re-engagement"
+      from: "virus_scanning",
+      to: "image_processing",
+      event: "scan_clean",
+      properties: { probability: 0.978 },
+      guard: "File is image type"
     },
     {
-      from: "onboarding_tutorial",
-      to: "first_value_achieved",
-      event: "value_action_completed",
-      properties: { probability: 0.55 },
-      action: "Celebrate success and suggest next steps"
+      from: "cdn_uploading",
+      to: "cdn_uploading",
+      event: "s3_rate_limit",
+      properties: { probability: 0.05, maxRetries: 3 },
+      action: "Exponential backoff retry"
     }
   ],
   timeConstraints: [
     {
-      description: "Users who don't achieve first value within 7 days have 90% churn probability",
-      type: "deadline",
-      value: "7 days"
+      description: "Total processing must complete within 5 minutes for UX",
+      type: "end-to-end",
+      value: "5 minutes"
     },
     {
-      description: "Tutorial should complete within 10 minutes for optimal engagement",
-      type: "duration",
-      value: "10 minutes"
+      description: "Virus scan timeout to prevent job pile-up",
+      type: "state-timeout",
+      value: "60 seconds",
+      state: "virus_scanning"
     }
   ],
   analysis: {
     criticalPaths: [
       {
-        path: ["anonymous_visitor", "trial_signup", "onboarding_tutorial", "first_value_achieved"],
-        probability: 0.056,
-        duration: "30 minutes average"
+        path: ["upload_received", "virus_scanning", "image_processing", "cdn_uploading", "completed"],
+        probability: 0.83,
+        duration: "15 seconds typical, 2 minutes max"
       }
     ],
     bottlenecks: [
       {
-        state: "onboarding_tutorial",
-        reason: "45% abandonment rate during tutorial phase",
-        impact: "high"
+        state: "virus_scanning",
+        reason: "ClamAV service timeouts causing 8% failure rate",
+        impact: "critical"
+      },
+      {
+        state: "cdn_uploading",
+        reason: "S3 rate limits during peak hours",
+        impact: "medium"
       }
     ]
   },
-  modelId: "user-onboarding-2024",
-  domain: "User Experience",
-  purpose: "Identify optimization opportunities in user onboarding to reduce churn from 65% to <30%"
+  modelId: "upload-pipeline-2024",
+  domain: "Background Job Processing",
+  purpose: "Identify timeout issues and optimize job pipeline for 99% success rate"
 });
 ```
 
