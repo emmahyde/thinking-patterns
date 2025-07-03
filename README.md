@@ -179,32 +179,6 @@ npm run build
 npm start
 ```
 
-## 🐳 Docker Compose (Redis Support)
-
-For session storage and caching:
-
-```bash
-# Start Redis service
-docker compose up -d
-
-# Verify Redis is running
-docker compose ps
-
-# Test Redis connectivity
-docker compose exec redis redis-cli ping
-```
-
-## 🔍 Common Issues & Solutions
-
-**Issue**: `service "redis" has no container to start`
-- **Solution**: Use `docker compose up -d` instead of `docker compose start`
-
-**Issue**: `error getting credentials - err: exec: "docker-credential-desktop"`
-- **Solution**: `docker pull redis:alpine` then `docker compose up -d`
-
-**Issue**: Tool not found
-- **Solution**: Verify MCP client configuration and restart client
-
 ## 🎯 Use Cases
 
 ### Software Development
