@@ -129,7 +129,6 @@ Add to your MCP client configuration:
 - **sequential_thinking** & **problem_decomposition** - Perfect for planning and breaking down complex tasks
 - **debugging_approach** - Send error messages directly for systematic troubleshooting
 - **collaborative_reasoning** - Simulate team discussions to uncover blind spots
-- **temporal_thinking** - Auto-generates Mermaid diagrams for system flows
 
 ## 📋 Prerequisites
 
