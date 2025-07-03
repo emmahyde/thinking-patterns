@@ -38,7 +38,7 @@ LLMs struggle to maintain consistent reasoning patterns throughout extended conv
 
 - **Attention Drift Prevention:** Without structural anchors, models experience "goal drift" as new contextual information competes with original objectives. Schema validation creates persistent attention anchors.
 - **State Crystallization:** Explicit articulation of reasoning state (forced by tool parameters) appears to strengthen internal representation compared to implicit state maintenance. Models demonstrate measurably better state consistency when reasoning is externalized.
-- **Error-Driven Learning:** Schema validation errors create immediate corrective feedback loops, unlike instruction-based approaches where non-compliance often goes undetected until task completion.
+- **Error-Driven Learning:** Schema validation errors create immediate, interactive corrective feedback loops within a single response, unlike instruction-based approaches where non-compliance often goes undetected until task completion.
 - **Cognitive Load Distribution:** Externalizing structural requirements to schemas allows models to allocate more processing capacity to problem-solving rather than format compliance, similar to how humans benefit from external memory aids.
 - **Iterative Reinforcement:** Repeated successful tool interactions strengthen adherence patterns through practice, creating compound consistency benefits over conversation length.
 
