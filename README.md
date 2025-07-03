@@ -233,7 +233,7 @@ docker compose exec redis redis-cli ping
 
 ## 🔗 Integration Examples
 
-### Cursor IDE
+### `npx`
 ```json
 {
   "mcpServers": {
@@ -245,7 +245,7 @@ docker compose exec redis redis-cli ping
 }
 ```
 
-### Claude Desktop
+### Local Development
 ```json
 {
   "mcpServers": {
