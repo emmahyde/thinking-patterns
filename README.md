@@ -3,7 +3,8 @@
 [![smithery badge](https://smithery.ai/badge/@emmahyde/thinking-patterns)](https://smithery.ai/server/@emmahyde/thinking-patterns)
 [![NPM Version](https://img.shields.io/npm/v/%40emmahyde%2Fthinking-patterns)](https://www.npmjs.com/package/@emmahyde/thinking-patterns)
 
-A comprehensive Model Context Protocol (MCP) server that provides AI systems with 15 structured thinking frameworks for enhanced problem-solving capabilities. Transform abstract cognitive patterns into concrete, invocable tools.
+## TL;DR
+A comprehensive MCP server that provides AI systems with structured thinking frameworks that follow existing problem-solving paradigms. Transform abstract cognitive patterns into concrete, invocable tools. Enforces adherence to the paradigms through schema validation.
 
 ## 📚 Documentation
 
@@ -13,6 +14,51 @@ A comprehensive Model Context Protocol (MCP) server that provides AI systems wit
 - **[SUMMARY.md](./SUMMARY.md)** - Executive summary and overview
 - **[SYSTEM_INTENT.md](./SYSTEM_INTENT.md)** - System purpose and philosophy
 - **[TECHNICAL_ARCHITECTURE.md](./TECHNICAL_ARCHITECTURE.md)** - Technical implementation details
+
+## Problem
+LLMs struggle to maintain consistent reasoning patterns throughout extended conversations due to context window limitations and degrading adherence to initial instructions. Traditional approaches like "keep X in mind" or role-based prompting fail when:
+
+- Critical context passes out of the attention window
+- Models acknowledge constraints but don't consistently apply them
+- Reasoning structures decay over multi-turn interactions
+
+`thinking-patterns` enforces structural consistency through interactive schema validation rather than passive instruction-following.
+
+## Solution
+
+`thinking-patterns` works by implicitly encouraging good engineering behaviors and approaches:
+
+- Schema validation ensures reasoning patterns persist beyond context window limits
+- Structural requirements live in tool definitions rather than repeated prompt text, reducing token overhead
+- Tool interaction success/failure provides objective metrics for reasoning quality
+  - Indicates to the model that they are not following the pattern appropriately without additional user interaction
+- Reusable thinking structures across different problem domains
+
+### Forced Materialization
+
+**Principle:** Models adhere better to explicitly materialized outputs than implicit acknowledgments
+**Implementation:** Required tool interactions force the model to concretize reasoning patterns in structured formats
+**Result:** Higher consistency rates compared to instruction-only approaches
+
+### Schema-Driven Validation
+
+**Mechanism:** Each reasoning step must conform to predefined schemas with required parameters
+**Enforcement:** Invalid requests return errors, creating a feedback loop that reinforces proper structure
+**Benefit:** Structural adherence becomes a prerequisite for task completion rather than an optional guideline
+
+### Context Window Optimization
+
+**Problem:** Repetitive prompt boilerplate consumes valuable context tokens
+**Solution:** Externalize structural requirements to tool schemas, reducing in-context overhead
+**Impact:** More tokens available for actual problem-solving content
+
+### Reasoning Improvements
+
+- **Attention Drift Prevention:** Without structural anchors, models experience "goal drift" as new contextual information competes with original objectives. Schema validation creates persistent attention anchors.
+- **State Crystallization:** Explicit articulation of reasoning state (forced by tool parameters) appears to strengthen internal representation compared to implicit state maintenance. Models demonstrate measurably better state consistency when reasoning is externalized.
+- **Error-Driven Learning:** Schema validation errors create immediate corrective feedback loops, unlike instruction-based approaches where non-compliance often goes undetected until task completion.
+- **Cognitive Load Distribution:** Externalizing structural requirements to schemas allows models to allocate more processing capacity to problem-solving rather than format compliance, similar to how humans benefit from external memory aids.
+- **Iterative Reinforcement:** Repeated successful tool interactions strengthen adherence patterns through practice, creating compound consistency benefits over conversation length.
 
 ## 🚀 Quick Start
 
