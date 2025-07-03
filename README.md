@@ -117,7 +117,7 @@ Add to your MCP client configuration:
 - **temporal_thinking** - Time-based system analysis with state transitions
 
 ### Probabilistic & Optimization
-- **stochastic_algorithm** - Decision-making under uncertainty
+- **stochastic_algorithm** - Decision-making under uncertainty \[BETA\]
   - Markov Decision Processes (MDPs)
   - Monte Carlo Tree Search (MCTS)
   - Multi-Armed Bandit algorithms
