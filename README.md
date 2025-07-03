@@ -34,30 +34,6 @@ LLMs struggle to maintain consistent reasoning patterns throughout extended conv
   - Indicates to the model that they are not following the pattern appropriately without additional user interaction
 - Reusable thinking structures across different problem domains
 
-### Forced Materialization
-
-**Principle:** Models adhere better to explicitly materialized outputs than implicit acknowledgments
-
-**Implementation:** Required tool interactions force the model to concretize reasoning patterns in structured formats
-
-**Result:** Higher consistency rates compared to instruction-only approaches
-
-### Schema-Driven Validation
-
-**Mechanism:** Each reasoning step must conform to predefined schemas with required parameters
-
-**Enforcement:** Invalid requests return errors, creating a feedback loop that reinforces proper structure
-
-**Benefit:** Structural adherence becomes a prerequisite for task completion rather than an optional guideline
-
-### Context Window Optimization
-
-**Problem:** Repetitive prompt boilerplate consumes valuable context tokens
-
-**Solution:** Externalize structural requirements to tool schemas, reducing in-context overhead
-
-**Impact:** More tokens available for actual problem-solving content
-
 ### Reasoning Improvements
 
 - **Attention Drift Prevention:** Without structural anchors, models experience "goal drift" as new contextual information competes with original objectives. Schema validation creates persistent attention anchors.
