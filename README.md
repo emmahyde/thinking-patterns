@@ -1,6 +1,6 @@
 # Thinking Patterns MCP Server
 
-[![smithery badge](https://smithery.ai/badge/@emmahyde/thinking-patterns)](https://smithery.ai/server/@emmahyde/thinking-patterns)
+[![LightNow capabilities](https://lightnow.ai/badge/io.github.emmahyde/thinking-patterns)](https://lightnow.ai/servers/io.github.emmahyde/thinking-patterns)
 [![NPM Version](https://img.shields.io/npm/v/%40emmahyde%2Fthinking-patterns)](https://www.npmjs.com/package/@emmahyde/thinking-patterns)
 
 ## TL;DR
